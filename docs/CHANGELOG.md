@@ -10,7 +10,7 @@
 - Added workflow runtime package.
 - Added knowledge engine package.
 - Added plugin runtime package.
+- Added storage package.
 - Added composed runtime package.
 - Added SDK public API package.
 - Added playground app.
-

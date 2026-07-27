@@ -33,6 +33,7 @@ Application-specific business logic belongs in separate repositories.
 | `@ai-platform-core/workflow` | Workflow definitions, instances, approval, retry hooks |
 | `@ai-platform-core/knowledge` | Knowledge, references, confidence, memory search |
 | `@ai-platform-core/plugin` | Plugin manifest and lifecycle runtime |
+| `@ai-platform-core/storage` | Memory key-value storage and environment reader |
 | `@ai-platform-core/runtime` | Composed platform runtime |
 | `@ai-platform-core/sdk` | Public API surface |
 
@@ -53,4 +54,3 @@ The first stable core should be grown in this order:
 4. Workflow
 5. SDK
 6. Validate with one real application repository
-

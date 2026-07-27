@@ -21,6 +21,7 @@
     "@ai-platform-core/knowledge": "workspace:*",
     "@ai-platform-core/plugin": "workspace:*",
     "@ai-platform-core/runtime": "workspace:*",
+    "@ai-platform-core/storage": "workspace:*",
     "@ai-platform-core/workflow": "workspace:*"
   }
 }

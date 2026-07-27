@@ -83,6 +83,9 @@ importers:
       '@ai-platform-core/plugin':
         specifier: workspace:*
         version: link:../plugin
+      '@ai-platform-core/storage':
+        specifier: workspace:*
+        version: link:../storage
       '@ai-platform-core/workflow':
         specifier: workspace:*
         version: link:../workflow
@@ -107,11 +110,20 @@ importers:
       '@ai-platform-core/runtime':
         specifier: workspace:*
         version: link:../runtime
+      '@ai-platform-core/storage':
+        specifier: workspace:*
+        version: link:../storage
       '@ai-platform-core/workflow':
         specifier: workspace:*
         version: link:../workflow
 
   packages/shared: {}
+
+  packages/storage:
+    dependencies:
+      '@ai-platform-core/kernel':
+        specifier: workspace:*
+        version: link:../kernel
 
   packages/workflow:
     dependencies:

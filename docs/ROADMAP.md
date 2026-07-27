@@ -50,7 +50,6 @@
 
 - Capability SDK
 - Workflow SDK
-- Storage SDK placeholder
+- Storage SDK
 - Plugin SDK
 - Knowledge SDK
-

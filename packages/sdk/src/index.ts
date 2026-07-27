@@ -1,3 +1,5 @@
+import { createPlatformRuntime } from "@ai-platform-core/runtime";
+
 export {
   type Capability,
   type CapabilityContext,
@@ -35,8 +37,17 @@ export {
 export { type PluginManifest, type PluginRuntime, createPluginRuntime } from "@ai-platform-core/plugin";
 export { type PlatformRuntime, createPlatformRuntime } from "@ai-platform-core/runtime";
 export {
+  type EnvironmentReader,
+  type KeyValueStore,
+  type StorageRecord,
+  createEnvironmentReader,
+  createMemoryKeyValueStore
+} from "@ai-platform-core/storage";
+export {
   type WorkflowDefinition,
   type WorkflowInstance,
   type WorkflowRuntime,
   createWorkflowRuntime
 } from "@ai-platform-core/workflow";
+
+export const createPlatform = createPlatformRuntime;

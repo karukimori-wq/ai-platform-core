@@ -81,3 +81,9 @@
 - Today/month/year/all metrics
 - Client, capability, provider, and model grouping
 - SDK dashboard query API
+
+## v0.1.5 Outcome and Feedback Metrics
+
+- Analytics outcome and feedback read models
+- Dashboard outcome score, ROI, acceptance, edit, and rating metrics
+- Dashboard test coverage for outcome and feedback aggregation

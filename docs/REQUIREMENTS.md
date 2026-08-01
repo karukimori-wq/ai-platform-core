@@ -181,6 +181,13 @@ Initial metrics:
 - totalTokens
 - totalCost
 - averageLatencyMs
+- outcomeCount
+- averageOutcomeScore
+- averageRoi
+- feedbackCount
+- acceptedCount
+- editedCount
+- averageRating
 
 ## Non-Functional Requirements
 

@@ -34,6 +34,8 @@ export interface AnalyticsRepository {
   readonly recordFeedback: (feedback: ActivityFeedback) => Promise<Result<void>>;
   readonly summarize: () => Promise<Result<AnalyticsSummary>>;
   readonly listUsage: () => Promise<Result<readonly UsageRecord[]>>;
+  readonly listOutcomes: () => Promise<Result<readonly ActivityOutcome[]>>;
+  readonly listFeedback: () => Promise<Result<readonly ActivityFeedback[]>>;
 }
 
 const increment = (
@@ -96,6 +98,8 @@ export const createMemoryAnalyticsRepository = (): AnalyticsRepository => {
         byModel: usage.reduce((acc, record) => increment(acc, record.model), {})
       });
     },
-    listUsage: async () => ok([...usage])
+    listUsage: async () => ok([...usage]),
+    listOutcomes: async () => ok([...outcomes]),
+    listFeedback: async () => ok([...feedback])
   };
 };

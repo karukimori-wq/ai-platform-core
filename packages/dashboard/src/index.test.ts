@@ -19,11 +19,32 @@ describe("dashboard query service", () => {
       latencyMs: 100,
       occurredAt: new Date("2026-08-02T10:00:00.000Z")
     });
+    await analytics.recordOutcome({
+      activityId: "activity-1",
+      result: "published",
+      score: 0.8,
+      roi: 1.5
+    });
+    await analytics.recordFeedback({
+      activityId: "activity-1",
+      rating: 4,
+      edited: true,
+      accepted: true,
+      memo: "usable"
+    });
     const dashboard = createDashboardQueryService(analytics, { now: () => new Date("2026-08-02T12:00:00.000Z") });
     const view = await dashboard.getView({ period: "today" });
     expect(view.ok).toBe(true);
     if (!view.ok) return;
     expect(view.value.metric.totalTokens).toBe(10);
+    expect(view.value.metric.outcomeCount).toBe(1);
+    expect(view.value.metric.averageOutcomeScore).toBe(0.8);
+    expect(view.value.metric.averageRoi).toBe(1.5);
+    expect(view.value.metric.feedbackCount).toBe(1);
+    expect(view.value.metric.acceptedCount).toBe(1);
+    expect(view.value.metric.editedCount).toBe(1);
+    expect(view.value.metric.averageRating).toBe(4);
     expect(view.value.byClient["client-a"]?.usageCount).toBe(1);
+    expect(view.value.byCapability["SNS.Generate"]?.acceptedCount).toBe(1);
   });
 });

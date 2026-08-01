@@ -47,3 +47,9 @@
 - Added grouping by client, capability, provider, and model.
 - Exposed Dashboard Query APIs through the SDK.
 - Connected Dashboard Query Service to PlatformRuntime.
+
+## 0.1.5
+
+- Added Analytics read APIs for outcomes and feedback.
+- Added Dashboard metrics for outcome count, average outcome score, average ROI, feedback count, accepted count, edited count, and average rating.
+- Added Dashboard aggregation tests for outcome and feedback signals.

@@ -19,6 +19,7 @@
     "@ai-platform-core/analytics": "workspace:*",
     "@ai-platform-core/capability": "workspace:*",
     "@ai-platform-core/client": "workspace:*",
+    "@ai-platform-core/dashboard": "workspace:*",
     "@ai-platform-core/event": "workspace:*",
     "@ai-platform-core/gateway": "workspace:*",
     "@ai-platform-core/kernel": "workspace:*",

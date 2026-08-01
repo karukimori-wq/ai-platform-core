@@ -13,6 +13,7 @@ This repository provides only platform code:
 - Capability runtime
 - Workflow runtime
 - Analytics engine
+- Dashboard query engine
 - Knowledge engine
 - Plugin runtime
 - SDK
@@ -38,6 +39,7 @@ Application-specific business logic belongs in separate repositories.
 | `@ai-platform-core/provider` | Provider interface, registry, echo provider for tests |
 | `@ai-platform-core/gateway` | Single AI entrypoint, provider routing, usage recording |
 | `@ai-platform-core/analytics` | Usage records and summary by client, capability, provider, model |
+| `@ai-platform-core/dashboard` | Dashboard-ready usage metrics by period and dimension |
 | `@ai-platform-core/event` | Domain events, event bus, dispatcher, memory event store |
 | `@ai-platform-core/capability` | Capability interface, registry, permission checker, runtime |
 | `@ai-platform-core/workflow` | Workflow definitions, instances, approval, retry hooks |

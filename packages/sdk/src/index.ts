@@ -41,6 +41,14 @@ export {
   validateClientManifest
 } from "@ai-platform-core/client";
 export {
+  type DashboardMetric,
+  type DashboardPeriod,
+  type DashboardQuery,
+  type DashboardQueryService,
+  type DashboardView,
+  createDashboardQueryService
+} from "@ai-platform-core/dashboard";
+export {
   type DomainEvent,
   type EventBus,
   type EventDispatcher,

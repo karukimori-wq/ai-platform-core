@@ -7,6 +7,7 @@ import {
   type CapabilityRuntime
 } from "@ai-platform-core/capability";
 import { createClientRegistry, type ClientRegistry } from "@ai-platform-core/client";
+import { createDashboardQueryService, type DashboardQueryService } from "@ai-platform-core/dashboard";
 import {
   createEventBus,
   createEventDispatcher,
@@ -35,6 +36,7 @@ export interface PlatformRuntime {
   readonly eventBus: EventBus;
   readonly eventDispatcher: EventDispatcher;
   readonly analytics: AnalyticsRepository;
+  readonly dashboard: DashboardQueryService;
   readonly gateway: AIGateway;
   readonly providers: ProviderRegistry;
   readonly workflow: WorkflowRuntime;
@@ -67,6 +69,7 @@ export const createPlatformRuntime = (): PlatformRuntime => {
     eventBus,
     eventDispatcher,
     analytics,
+    dashboard: createDashboardQueryService(analytics, clock),
     gateway: createAIGateway(activity, providers, analytics, createAllowAllAuthenticator(), clock, logger, clients),
     providers,
     workflow: createWorkflowRuntime(capability),

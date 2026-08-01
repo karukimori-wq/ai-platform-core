@@ -69,6 +69,7 @@ MVP must capture:
 | `gateway` | Authentication, provider routing, token/cost/latency recording |
 | `provider` | Replaceable AI provider interfaces |
 | `analytics` | Usage records and summaries |
+| `dashboard` | Dashboard-ready usage views by period and dimension |
 | `event` | EventBus, dispatcher, subscribers, EventStore |
 | `capability` | Capability interface, registry, permission checks, execution |
 | `workflow` | Workflow definitions, instances, approval, retry, rollback, timeout |
@@ -155,6 +156,31 @@ Initial Activity events:
 - ActivityFeedbackRecorded
 
 The memory runtime stores these events through EventStore. Future infrastructure adapters can replace the memory EventStore with PostgreSQL, Redis, Kafka, or another event backend without changing the Activity contract.
+
+## Dashboard
+
+Dashboard queries must be API-ready and UI-agnostic.
+
+Initial dashboard periods:
+
+- today
+- month
+- year
+- all
+
+Initial dashboard dimensions:
+
+- client
+- capability
+- provider
+- model
+
+Initial metrics:
+
+- usageCount
+- totalTokens
+- totalCost
+- averageLatencyMs
 
 ## Non-Functional Requirements
 

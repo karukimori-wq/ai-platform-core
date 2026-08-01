@@ -39,3 +39,11 @@
 - Added optional ActivityRuntime event dispatching.
 - Connected PlatformRuntime Activity lifecycle events to the memory EventStore.
 - Exposed Activity event and EventDispatcher types through the SDK.
+
+## 0.1.4
+
+- Added dashboard package with dashboard-ready usage metrics.
+- Added period filters for today, month, year, and all usage.
+- Added grouping by client, capability, provider, and model.
+- Exposed Dashboard Query APIs through the SDK.
+- Connected Dashboard Query Service to PlatformRuntime.

@@ -75,3 +75,9 @@
 - Activity lifecycle events
 - Runtime EventStore connection
 - EventBus subscription support for Activity events
+
+## v0.1.4 Dashboard Query Engine
+
+- Today/month/year/all metrics
+- Client, capability, provider, and model grouping
+- SDK dashboard query API

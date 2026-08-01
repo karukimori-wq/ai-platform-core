@@ -1,3 +1,4 @@
+import type { DomainEvent, EventDispatcher } from "@ai-platform-core/event";
 import { type Clock, type IdGenerator, type Result, type UUID, err, ok, platformError } from "@ai-platform-core/kernel";
 
 export type ActivityStatus =
@@ -76,6 +77,25 @@ export interface Activity {
   readonly updatedAt: Date;
 }
 
+export type ActivityEventType =
+  | "ActivityCreated"
+  | "ActivityStatusChanged"
+  | "ActivityCompleted"
+  | "ActivityOutcomeRecorded"
+  | "ActivityFeedbackRecorded";
+
+export type ActivityEventPayload = Readonly<{
+  activityId: string;
+  client: string;
+  capability: string;
+  workflow?: string;
+  status?: ActivityStatus;
+  provider?: string;
+  model?: string;
+}>;
+
+export type ActivityEvent = DomainEvent<ActivityEventPayload>;
+
 export interface ActivityRepository {
   readonly save: (activity: Activity) => Promise<Result<Activity>>;
   readonly get: (id: string) => Promise<Result<Activity>>;
@@ -110,51 +130,100 @@ export interface ActivityRuntime {
 export const createActivityRuntime = (
   repository: ActivityRepository,
   idGenerator: IdGenerator,
-  clock: Clock
+  clock: Clock,
+  dispatcher?: EventDispatcher
 ): ActivityRuntime => ({
   create: async (request) => {
     const now = clock.now();
-    return repository.save({
+    const saved = await repository.save({
       id: idGenerator.uuid(),
       request,
       status: "created",
       createdAt: now,
       updatedAt: now
     });
+    if (!saved.ok) return saved;
+    const dispatched = await dispatchActivityEvent(saved.value, "ActivityCreated", idGenerator, clock, dispatcher);
+    return dispatched.ok ? saved : dispatched;
   },
   transition: async (id, status) => {
     const activity = await repository.get(id);
     if (!activity.ok) return activity;
-    return repository.save({ ...activity.value, status, updatedAt: clock.now() });
+    const saved = await repository.save({ ...activity.value, status, updatedAt: clock.now() });
+    if (!saved.ok) return saved;
+    const dispatched = await dispatchActivityEvent(saved.value, "ActivityStatusChanged", idGenerator, clock, dispatcher);
+    return dispatched.ok ? saved : dispatched;
   },
   complete: async (result) => {
     const activity = await repository.get(result.activityId);
     if (!activity.ok) return activity;
-    return repository.save({
+    const saved = await repository.save({
       ...activity.value,
       result,
       status: "completed",
       updatedAt: clock.now()
     });
+    if (!saved.ok) return saved;
+    const dispatched = await dispatchActivityEvent(saved.value, "ActivityCompleted", idGenerator, clock, dispatcher);
+    return dispatched.ok ? saved : dispatched;
   },
   recordOutcome: async (outcome) => {
     const activity = await repository.get(outcome.activityId);
     if (!activity.ok) return activity;
-    return repository.save({
+    const saved = await repository.save({
       ...activity.value,
       outcome,
       status: "outcome_recorded",
       updatedAt: clock.now()
     });
+    if (!saved.ok) return saved;
+    const dispatched = await dispatchActivityEvent(saved.value, "ActivityOutcomeRecorded", idGenerator, clock, dispatcher);
+    return dispatched.ok ? saved : dispatched;
   },
   recordFeedback: async (feedback) => {
     const activity = await repository.get(feedback.activityId);
     if (!activity.ok) return activity;
-    return repository.save({
+    const saved = await repository.save({
       ...activity.value,
       feedback,
       status: "feedback_recorded",
       updatedAt: clock.now()
     });
+    if (!saved.ok) return saved;
+    const dispatched = await dispatchActivityEvent(saved.value, "ActivityFeedbackRecorded", idGenerator, clock, dispatcher);
+    return dispatched.ok ? saved : dispatched;
   }
 });
+
+const activityPayload = (activity: Activity): ActivityEventPayload => {
+  const base: ActivityEventPayload = {
+    activityId: activity.id.value,
+    client: activity.request.client,
+    capability: activity.request.capability,
+    status: activity.status
+  };
+  const withWorkflow = activity.request.workflow === undefined ? base : { ...base, workflow: activity.request.workflow };
+  const withProvider = activity.result?.provider === undefined ? withWorkflow : { ...withWorkflow, provider: activity.result.provider };
+  return activity.result?.model === undefined ? withProvider : { ...withProvider, model: activity.result.model };
+};
+
+const dispatchActivityEvent = async (
+  activity: Activity,
+  type: ActivityEventType,
+  idGenerator: IdGenerator,
+  clock: Clock,
+  dispatcher?: EventDispatcher
+): Promise<Result<void>> => {
+  if (dispatcher === undefined) return ok(undefined);
+  return dispatcher.dispatch([
+    {
+      id: idGenerator.uuid(),
+      type,
+      aggregateId: activity.id,
+      version: 1,
+      occurredAt: clock.now(),
+      payload: activityPayload(activity),
+      metadata: { source: "activity-runtime" }
+    }
+  ]);
+};

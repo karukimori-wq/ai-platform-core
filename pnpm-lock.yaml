@@ -45,6 +45,9 @@ importers:
 
   packages/activity:
     dependencies:
+      '@ai-platform-core/event':
+        specifier: workspace:*
+        version: link:../event
       '@ai-platform-core/kernel':
         specifier: workspace:*
         version: link:../kernel

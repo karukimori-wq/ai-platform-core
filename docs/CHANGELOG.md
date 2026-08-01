@@ -32,3 +32,10 @@
 - Added Gateway token and cost budget checks.
 - Exposed client manifest APIs through the SDK.
 - Updated runtime composition to include the client registry.
+
+## 0.1.3
+
+- Added Activity lifecycle DomainEvent types.
+- Added optional ActivityRuntime event dispatching.
+- Connected PlatformRuntime Activity lifecycle events to the memory EventStore.
+- Exposed Activity event and EventDispatcher types through the SDK.

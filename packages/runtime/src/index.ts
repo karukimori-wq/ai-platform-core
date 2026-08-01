@@ -7,7 +7,14 @@ import {
   type CapabilityRuntime
 } from "@ai-platform-core/capability";
 import { createClientRegistry, type ClientRegistry } from "@ai-platform-core/client";
-import { createEventBus, createEventDispatcher, createMemoryEventStore } from "@ai-platform-core/event";
+import {
+  createEventBus,
+  createEventDispatcher,
+  createMemoryEventStore,
+  type EventBus,
+  type EventDispatcher,
+  type EventStore
+} from "@ai-platform-core/event";
 import { createCryptoIdGenerator, createNoopLogger, systemClock, type Clock, type Logger } from "@ai-platform-core/kernel";
 import { createAIGateway, createAllowAllAuthenticator, type AIGateway } from "@ai-platform-core/gateway";
 import { createPluginRuntime, type PluginRuntime } from "@ai-platform-core/plugin";
@@ -24,6 +31,9 @@ export interface PlatformRuntime {
   readonly capability: CapabilityRuntime;
   readonly clients: ClientRegistry;
   readonly activity: ActivityRuntime;
+  readonly events: EventStore;
+  readonly eventBus: EventBus;
+  readonly eventDispatcher: EventDispatcher;
   readonly analytics: AnalyticsRepository;
   readonly gateway: AIGateway;
   readonly providers: ProviderRegistry;
@@ -41,18 +51,21 @@ export const createPlatformRuntime = (): PlatformRuntime => {
   const capability = createCapabilityRuntime(registry, createPermissionChecker());
   const clock = systemClock();
   const logger = createNoopLogger();
-  const activity = createActivityRuntime(createMemoryActivityRepository(), createCryptoIdGenerator(), clock);
+  const eventStore = createMemoryEventStore();
+  const eventBus = createEventBus();
+  const eventDispatcher = createEventDispatcher(eventStore, eventBus);
+  const activity = createActivityRuntime(createMemoryActivityRepository(), createCryptoIdGenerator(), clock, eventDispatcher);
   const analytics = createMemoryAnalyticsRepository();
   const providers = createProviderRegistry();
   providers.register(createEchoProvider());
-  const store = createMemoryEventStore();
-  const bus = createEventBus();
-  createEventDispatcher(store, bus);
   return {
     registry,
     clients,
     capability,
     activity,
+    events: eventStore,
+    eventBus,
+    eventDispatcher,
     analytics,
     gateway: createAIGateway(activity, providers, analytics, createAllowAllAuthenticator(), clock, logger, clients),
     providers,

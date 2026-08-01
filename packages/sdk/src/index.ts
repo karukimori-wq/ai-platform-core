@@ -9,6 +9,9 @@ export {
   type ActivityResult,
   type ActivityRuntime,
   type ActivityStatus,
+  type ActivityEvent,
+  type ActivityEventPayload,
+  type ActivityEventType,
   type CostUsage,
   type TokenUsage,
   createActivityRuntime,
@@ -40,6 +43,7 @@ export {
 export {
   type DomainEvent,
   type EventBus,
+  type EventDispatcher,
   type EventStore,
   createEventBus,
   createEventDispatcher,

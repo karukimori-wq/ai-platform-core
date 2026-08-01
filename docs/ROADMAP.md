@@ -69,3 +69,9 @@
 - Client capability allowlist validation
 - Activity budget checks in Gateway
 - SDK exports for client manifests
+
+## v0.1.3 Activity Event Sourcing
+
+- Activity lifecycle events
+- Runtime EventStore connection
+- EventBus subscription support for Activity events

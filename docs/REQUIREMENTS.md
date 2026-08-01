@@ -142,6 +142,20 @@ Gateway must reject a request when:
 - the provider response exceeds the Activity token budget
 - the provider response exceeds the Activity cost budget
 
+## Activity Events
+
+Activity lifecycle changes must be representable as DomainEvents.
+
+Initial Activity events:
+
+- ActivityCreated
+- ActivityStatusChanged
+- ActivityCompleted
+- ActivityOutcomeRecorded
+- ActivityFeedbackRecorded
+
+The memory runtime stores these events through EventStore. Future infrastructure adapters can replace the memory EventStore with PostgreSQL, Redis, Kafka, or another event backend without changing the Activity contract.
+
 ## Non-Functional Requirements
 
 | Category | Requirement |

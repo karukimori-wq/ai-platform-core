@@ -5,9 +5,13 @@ AI Platform Core is a TypeScript monorepo for building reusable platform primiti
 This repository provides only platform code:
 
 - Kernel
+- AI Gateway
+- Activity runtime
+- Provider registry
 - Event engine
 - Capability runtime
 - Workflow runtime
+- Analytics engine
 - Knowledge engine
 - Plugin runtime
 - SDK
@@ -28,6 +32,10 @@ Application-specific business logic belongs in separate repositories.
 | Package | Role |
 | --- | --- |
 | `@ai-platform-core/kernel` | Result, errors, logger, clock, UUID, config, DI, value objects |
+| `@ai-platform-core/activity` | AI Activity contract, lifecycle, outcome, feedback |
+| `@ai-platform-core/provider` | Provider interface, registry, echo provider for tests |
+| `@ai-platform-core/gateway` | Single AI entrypoint, provider routing, usage recording |
+| `@ai-platform-core/analytics` | Usage records and summary by client, capability, provider, model |
 | `@ai-platform-core/event` | Domain events, event bus, dispatcher, memory event store |
 | `@ai-platform-core/capability` | Capability interface, registry, permission checker, runtime |
 | `@ai-platform-core/workflow` | Workflow definitions, instances, approval, retry hooks |
@@ -49,8 +57,12 @@ pnpm check
 The first stable core should be grown in this order:
 
 1. Kernel
-2. Event
-3. Capability
-4. Workflow
-5. SDK
-6. Validate with one real application repository
+2. Activity
+3. Provider
+4. Gateway
+5. Analytics
+6. Event
+7. Capability
+8. Workflow
+9. SDK
+10. Validate with one real application repository

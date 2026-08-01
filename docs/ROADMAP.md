@@ -53,3 +53,12 @@
 - Storage SDK
 - Plugin SDK
 - Knowledge SDK
+
+## v0.1.1 AI Activity Observability
+
+- Activity runtime
+- Provider registry
+- AI Gateway
+- Analytics repository
+- Gateway usage recording
+- Revised requirements document

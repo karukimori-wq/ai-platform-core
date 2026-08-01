@@ -14,3 +14,13 @@
 - Added composed runtime package.
 - Added SDK public API package.
 - Added playground app.
+
+## 0.1.1
+
+- Added activity package with AI Activity contract and lifecycle runtime.
+- Added provider package with provider interface, registry, and echo provider.
+- Added analytics package with usage recording and summaries.
+- Added gateway package as the single AI usage entrypoint.
+- Exposed activity, provider, analytics, and gateway APIs through the SDK.
+- Updated runtime composition to include activity, analytics, providers, and gateway.
+- Added revised requirements documentation with non-functional requirements.

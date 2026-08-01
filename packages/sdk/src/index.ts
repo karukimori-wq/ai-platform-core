@@ -1,6 +1,27 @@
 import { createPlatformRuntime } from "@ai-platform-core/runtime";
 
 export {
+  type Activity,
+  type ActivityBudget,
+  type ActivityFeedback,
+  type ActivityOutcome,
+  type ActivityRequest,
+  type ActivityResult,
+  type ActivityRuntime,
+  type ActivityStatus,
+  type CostUsage,
+  type TokenUsage,
+  createActivityRuntime,
+  createMemoryActivityRepository
+} from "@ai-platform-core/activity";
+export {
+  type AnalyticsRepository,
+  type AnalyticsSummary,
+  type UsageRecord,
+  createMemoryAnalyticsRepository,
+  createUsageRecord
+} from "@ai-platform-core/analytics";
+export {
   type Capability,
   type CapabilityContext,
   type CapabilityRuntime,
@@ -16,6 +37,14 @@ export {
   createEventDispatcher,
   createMemoryEventStore
 } from "@ai-platform-core/event";
+export {
+  type AIGateway,
+  type GatewayAuthContext,
+  type GatewayAuthenticator,
+  type GatewayRequest,
+  createAIGateway,
+  createAllowAllAuthenticator
+} from "@ai-platform-core/gateway";
 export {
   DateRange,
   Email,
@@ -35,6 +64,15 @@ export {
   createMemoryKnowledgeRepository
 } from "@ai-platform-core/knowledge";
 export { type PluginManifest, type PluginRuntime, createPluginRuntime } from "@ai-platform-core/plugin";
+export {
+  type AIMessage,
+  type AIProvider,
+  type AIProviderRequest,
+  type AIProviderResponse,
+  type ProviderRegistry,
+  createEchoProvider,
+  createProviderRegistry
+} from "@ai-platform-core/provider";
 export { type PlatformRuntime, createPlatformRuntime } from "@ai-platform-core/runtime";
 export {
   type EnvironmentReader,

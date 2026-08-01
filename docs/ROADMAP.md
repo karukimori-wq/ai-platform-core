@@ -62,3 +62,10 @@
 - Analytics repository
 - Gateway usage recording
 - Revised requirements document
+
+## v0.1.2 Client Manifest Enforcement
+
+- Client manifest registry
+- Client capability allowlist validation
+- Activity budget checks in Gateway
+- SDK exports for client manifests

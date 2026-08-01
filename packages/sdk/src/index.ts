@@ -30,6 +30,14 @@ export {
   createPermissionChecker
 } from "@ai-platform-core/capability";
 export {
+  type ClientBudgetPolicy,
+  type ClientManifest,
+  type ClientRegistry,
+  type ClientType,
+  createClientRegistry,
+  validateClientManifest
+} from "@ai-platform-core/client";
+export {
   type DomainEvent,
   type EventBus,
   type EventStore,

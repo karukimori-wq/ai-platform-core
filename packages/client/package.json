@@ -1,5 +1,5 @@
 {
-  "name": "@ai-platform-core/gateway",
+  "name": "@ai-platform-core/client",
   "version": "0.1.0",
   "type": "module",
   "private": true,
@@ -15,10 +15,6 @@
     "test:coverage": "vitest run --coverage --passWithNoTests"
   },
   "dependencies": {
-    "@ai-platform-core/activity": "workspace:*",
-    "@ai-platform-core/analytics": "workspace:*",
-    "@ai-platform-core/client": "workspace:*",
-    "@ai-platform-core/kernel": "workspace:*",
-    "@ai-platform-core/provider": "workspace:*"
+    "@ai-platform-core/kernel": "workspace:*"
   }
 }

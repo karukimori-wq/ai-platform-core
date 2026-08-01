@@ -64,6 +64,7 @@ MVP must capture:
 | Package | Responsibility |
 | --- | --- |
 | `kernel` | Result, errors, logger, config, clock, UUID, DI, entity, value objects |
+| `client` | Client Manifest registration, validation, and capability access checks |
 | `activity` | AI Activity contract, lifecycle, result, outcome, feedback |
 | `gateway` | Authentication, provider routing, token/cost/latency recording |
 | `provider` | Replaceable AI provider interfaces |
@@ -115,6 +116,31 @@ MVP must capture:
 - edited
 - accepted
 - memo
+
+## Client Manifest
+
+Each client must declare a manifest before it can execute platform capabilities.
+
+`ClientManifest` includes:
+
+- id
+- name
+- type
+- version
+- provider
+- capabilities
+- knowledge
+- analytics
+- budget
+- metadata
+
+Gateway must reject a request when:
+
+- the authenticated client differs from `ActivityRequest.client`
+- the client is not registered
+- the requested capability is not declared by the client manifest
+- the provider response exceeds the Activity token budget
+- the provider response exceeds the Activity cost budget
 
 ## Non-Functional Requirements
 

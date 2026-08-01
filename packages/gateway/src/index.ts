@@ -1,6 +1,7 @@
 import type { ActivityRequest, ActivityResult, ActivityRuntime } from "@ai-platform-core/activity";
 import type { AnalyticsRepository } from "@ai-platform-core/analytics";
 import { createUsageRecord } from "@ai-platform-core/analytics";
+import type { ClientRegistry } from "@ai-platform-core/client";
 import type { Clock, Logger, Result } from "@ai-platform-core/kernel";
 import { err, ok, platformError } from "@ai-platform-core/kernel";
 import type { AIMessage, ProviderRegistry } from "@ai-platform-core/provider";
@@ -34,13 +35,18 @@ export const createAIGateway = (
   analytics: AnalyticsRepository,
   authenticator: GatewayAuthenticator,
   clock: Clock,
-  logger: Logger
+  logger: Logger,
+  clients?: ClientRegistry
 ): AIGateway => ({
   run: async (request) => {
     const authenticated = authenticator.authenticate(request.auth);
     if (!authenticated.ok) return authenticated;
     if (request.auth.clientId !== request.activity.client) {
       return err(platformError("GATEWAY_CLIENT_MISMATCH", "Authenticated client must match ActivityRequest client."));
+    }
+    if (clients !== undefined) {
+      const allowed = clients.canUseCapability(request.activity.client, request.activity.capability);
+      if (!allowed.ok) return allowed;
     }
 
     const created = await activityRuntime.create(request.activity);
@@ -67,6 +73,14 @@ export const createAIGateway = (
       await activityRuntime.transition(created.value.id.value, "failed");
       logger.error("AI provider execution failed.", { activityId: created.value.id.value, provider: providerId });
       return response;
+    }
+    if (request.activity.budget?.maxTokens !== undefined && response.value.tokens.total > request.activity.budget.maxTokens) {
+      await activityRuntime.transition(created.value.id.value, "failed");
+      return err(platformError("GATEWAY_TOKEN_BUDGET_EXCEEDED", "Provider response exceeded the Activity token budget."));
+    }
+    if (request.activity.budget?.maxCost !== undefined && response.value.cost.amount > request.activity.budget.maxCost) {
+      await activityRuntime.transition(created.value.id.value, "failed");
+      return err(platformError("GATEWAY_COST_BUDGET_EXCEEDED", "Provider response exceeded the Activity cost budget."));
     }
 
     const result: ActivityResult = {

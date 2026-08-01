@@ -6,6 +6,7 @@ import {
   createPermissionChecker,
   type CapabilityRuntime
 } from "@ai-platform-core/capability";
+import { createClientRegistry, type ClientRegistry } from "@ai-platform-core/client";
 import { createEventBus, createEventDispatcher, createMemoryEventStore } from "@ai-platform-core/event";
 import { createCryptoIdGenerator, createNoopLogger, systemClock, type Clock, type Logger } from "@ai-platform-core/kernel";
 import { createAIGateway, createAllowAllAuthenticator, type AIGateway } from "@ai-platform-core/gateway";
@@ -21,6 +22,7 @@ export interface AIRuntime {
 export interface PlatformRuntime {
   readonly registry: ReturnType<typeof createCapabilityRegistry>;
   readonly capability: CapabilityRuntime;
+  readonly clients: ClientRegistry;
   readonly activity: ActivityRuntime;
   readonly analytics: AnalyticsRepository;
   readonly gateway: AIGateway;
@@ -35,6 +37,7 @@ export interface PlatformRuntime {
 
 export const createPlatformRuntime = (): PlatformRuntime => {
   const registry = createCapabilityRegistry();
+  const clients = createClientRegistry();
   const capability = createCapabilityRuntime(registry, createPermissionChecker());
   const clock = systemClock();
   const logger = createNoopLogger();
@@ -47,10 +50,11 @@ export const createPlatformRuntime = (): PlatformRuntime => {
   createEventDispatcher(store, bus);
   return {
     registry,
+    clients,
     capability,
     activity,
     analytics,
-    gateway: createAIGateway(activity, providers, analytics, createAllowAllAuthenticator(), clock, logger),
+    gateway: createAIGateway(activity, providers, analytics, createAllowAllAuthenticator(), clock, logger, clients),
     providers,
     workflow: createWorkflowRuntime(capability),
     plugin: createPluginRuntime(),

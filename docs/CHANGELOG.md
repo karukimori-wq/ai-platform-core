@@ -24,3 +24,11 @@
 - Exposed activity, provider, analytics, and gateway APIs through the SDK.
 - Updated runtime composition to include activity, analytics, providers, and gateway.
 - Added revised requirements documentation with non-functional requirements.
+
+## 0.1.2
+
+- Added client package with Client Manifest types, validation, and registry.
+- Added Gateway validation for registered client capability access.
+- Added Gateway token and cost budget checks.
+- Exposed client manifest APIs through the SDK.
+- Updated runtime composition to include the client registry.

@@ -64,6 +64,12 @@ importers:
         specifier: workspace:*
         version: link:../kernel
 
+  packages/client:
+    dependencies:
+      '@ai-platform-core/kernel':
+        specifier: workspace:*
+        version: link:../kernel
+
   packages/event:
     dependencies:
       '@ai-platform-core/kernel':
@@ -78,6 +84,9 @@ importers:
       '@ai-platform-core/analytics':
         specifier: workspace:*
         version: link:../analytics
+      '@ai-platform-core/client':
+        specifier: workspace:*
+        version: link:../client
       '@ai-platform-core/kernel':
         specifier: workspace:*
         version: link:../kernel
@@ -119,6 +128,9 @@ importers:
       '@ai-platform-core/capability':
         specifier: workspace:*
         version: link:../capability
+      '@ai-platform-core/client':
+        specifier: workspace:*
+        version: link:../client
       '@ai-platform-core/event':
         specifier: workspace:*
         version: link:../event
@@ -152,6 +164,9 @@ importers:
       '@ai-platform-core/capability':
         specifier: workspace:*
         version: link:../capability
+      '@ai-platform-core/client':
+        specifier: workspace:*
+        version: link:../client
       '@ai-platform-core/event':
         specifier: workspace:*
         version: link:../event

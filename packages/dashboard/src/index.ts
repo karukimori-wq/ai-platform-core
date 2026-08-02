@@ -54,9 +54,15 @@ export interface ClientBudgetView {
   readonly clients: readonly ClientBudgetMetric[];
 }
 
+export interface ClientBudgetAlertView {
+  readonly period: "month";
+  readonly clients: readonly ClientBudgetMetric[];
+}
+
 export interface DashboardQueryService {
   readonly getView: (query: DashboardQuery) => Promise<Result<DashboardView>>;
   readonly getClientBudgetView: (query?: Pick<DashboardQuery, "now">) => Promise<Result<ClientBudgetView>>;
+  readonly getClientBudgetAlerts: (query?: Pick<DashboardQuery, "now">) => Promise<Result<ClientBudgetAlertView>>;
 }
 
 const emptyMetric = (): DashboardMetric => ({
@@ -229,44 +235,55 @@ export const createDashboardQueryService = (
   analytics: AnalyticsRepository,
   clock: Clock,
   clients?: ClientRegistry
-): DashboardQueryService => ({
-  getView: async (query) => {
-    const usage = await analytics.listUsage();
-    if (!usage.ok) return usage;
-    const outcomes = await analytics.listOutcomes();
-    if (!outcomes.ok) return outcomes;
-    const feedback = await analytics.listFeedback();
-    if (!feedback.ok) return feedback;
-    const now = query.now ?? clock.now();
-    const records = filterByPeriod(usage.value, query.period, now);
-    const outcomesByActivityId = new Map(outcomes.value.map((outcome) => [outcome.activityId, outcome]));
-    const feedbackByActivityId = new Map(feedback.value.map((item) => [item.activityId, item]));
-    const signalsByActivityId = new Map<string, ActivitySignals>(
-      records.map((record) => [
-        record.activityId,
-        createActivitySignals(record.activityId, outcomesByActivityId, feedbackByActivityId)
-      ])
-    );
-    return ok({
-      period: query.period,
-      metric: records.reduce((metric, record) => addRecord(metric, record, signalsByActivityId.get(record.activityId) ?? {}), emptyAccumulator()).metric,
-      byClient: toMetrics(groupBy(records, signalsByActivityId, (record) => record.client)),
-      byCapability: toMetrics(groupBy(records, signalsByActivityId, (record) => record.capability)),
-      byProvider: toMetrics(groupBy(records, signalsByActivityId, (record) => record.provider)),
-      byModel: toMetrics(groupBy(records, signalsByActivityId, (record) => record.model))
-    });
-  },
-  getClientBudgetView: async (query) => {
-    const usage = await analytics.listUsage();
-    if (!usage.ok) return usage;
-    const now = query?.now ?? clock.now();
-    const records = filterByPeriod(usage.value, "month", now);
-    const clientIds = collectClientIds(records, clients);
-    return ok({
-      period: "month",
-      clients: clientIds.map((clientId) =>
-        createClientBudgetMetric(clientId, records.filter((record) => record.client === clientId), clients)
-      )
-    });
-  }
-});
+): DashboardQueryService => {
+  const service: DashboardQueryService = {
+    getView: async (query) => {
+      const usage = await analytics.listUsage();
+      if (!usage.ok) return usage;
+      const outcomes = await analytics.listOutcomes();
+      if (!outcomes.ok) return outcomes;
+      const feedback = await analytics.listFeedback();
+      if (!feedback.ok) return feedback;
+      const now = query.now ?? clock.now();
+      const records = filterByPeriod(usage.value, query.period, now);
+      const outcomesByActivityId = new Map(outcomes.value.map((outcome) => [outcome.activityId, outcome]));
+      const feedbackByActivityId = new Map(feedback.value.map((item) => [item.activityId, item]));
+      const signalsByActivityId = new Map<string, ActivitySignals>(
+        records.map((record) => [
+          record.activityId,
+          createActivitySignals(record.activityId, outcomesByActivityId, feedbackByActivityId)
+        ])
+      );
+      return ok({
+        period: query.period,
+        metric: records.reduce((metric, record) => addRecord(metric, record, signalsByActivityId.get(record.activityId) ?? {}), emptyAccumulator()).metric,
+        byClient: toMetrics(groupBy(records, signalsByActivityId, (record) => record.client)),
+        byCapability: toMetrics(groupBy(records, signalsByActivityId, (record) => record.capability)),
+        byProvider: toMetrics(groupBy(records, signalsByActivityId, (record) => record.provider)),
+        byModel: toMetrics(groupBy(records, signalsByActivityId, (record) => record.model))
+      });
+    },
+    getClientBudgetView: async (query) => {
+      const usage = await analytics.listUsage();
+      if (!usage.ok) return usage;
+      const now = query?.now ?? clock.now();
+      const records = filterByPeriod(usage.value, "month", now);
+      const clientIds = collectClientIds(records, clients);
+      return ok({
+        period: "month",
+        clients: clientIds.map((clientId) =>
+          createClientBudgetMetric(clientId, records.filter((record) => record.client === clientId), clients)
+        )
+      });
+    },
+    getClientBudgetAlerts: async (query) => {
+      const budgetView = await service.getClientBudgetView(query);
+      if (!budgetView.ok) return budgetView;
+      return ok({
+        period: "month",
+        clients: budgetView.value.clients.filter((client) => client.status !== "ok")
+      });
+    }
+  };
+  return service;
+};

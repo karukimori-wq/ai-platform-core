@@ -190,4 +190,92 @@ describe("dashboard query service", () => {
     expect(view.value.clients.find((client) => client.clientId === "warning-client")?.status).toBe("warning");
     expect(view.value.clients.find((client) => client.clientId === "exceeded-client")?.status).toBe("exceeded");
   });
+
+  it("returns only client budget alerts", async () => {
+    const analytics = createMemoryAnalyticsRepository();
+    const clients = createClientRegistry();
+    clients.register({
+      id: "ok-client",
+      name: "OK Client",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyTokenLimit: 100 }
+    });
+    clients.register({
+      id: "warning-client",
+      name: "Warning Client",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyTokenLimit: 100 }
+    });
+    clients.register({
+      id: "exceeded-client",
+      name: "Exceeded Client",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyCostLimit: 10 }
+    });
+    await analytics.recordUsage({
+      activityId: "activity-ok",
+      client: "ok-client",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 20,
+      outputTokens: 20,
+      totalTokens: 40,
+      costAmount: 0,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    await analytics.recordUsage({
+      activityId: "activity-warning",
+      client: "warning-client",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 40,
+      outputTokens: 40,
+      totalTokens: 80,
+      costAmount: 0,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    await analytics.recordUsage({
+      activityId: "activity-exceeded",
+      client: "exceeded-client",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 1,
+      outputTokens: 1,
+      totalTokens: 2,
+      costAmount: 10,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    const dashboard = createDashboardQueryService(
+      analytics,
+      { now: () => new Date("2026-08-02T12:00:00.000Z") },
+      clients
+    );
+
+    const alerts = await dashboard.getClientBudgetAlerts();
+
+    expect(alerts.ok).toBe(true);
+    if (!alerts.ok) return;
+    expect(alerts.value.clients.map((client) => client.clientId)).toEqual(["warning-client", "exceeded-client"]);
+  });
 });

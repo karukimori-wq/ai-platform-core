@@ -72,7 +72,7 @@ export const createPlatformRuntime = (): PlatformRuntime => {
     eventBus,
     eventDispatcher,
     analytics,
-    dashboard: createDashboardQueryService(analytics, clock),
+    dashboard: createDashboardQueryService(analytics, clock, clients),
     gateway: createAIGateway(activity, providers, analytics, createAllowAllAuthenticator(), clock, logger, clients, knowledge),
     knowledge,
     providers,

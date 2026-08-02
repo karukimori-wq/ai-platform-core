@@ -143,6 +143,8 @@ Gateway must reject a request when:
 - the requested capability is not declared by the client manifest
 - the provider response exceeds the Activity token budget
 - the provider response exceeds the Activity cost budget
+- the registered client has reached or would exceed its monthly token budget
+- the registered client has reached or would exceed its monthly cost budget
 - the authenticated client does not own the Activity being updated with outcome or feedback
 
 Gateway must only attach Knowledge records declared by the registered Client Manifest.
@@ -213,6 +215,7 @@ Initial metrics:
 | Observability | Gateway must record provider, model, tokens, cost, latency, client, capability, and workflow. |
 | Client boundary | Gateway must validate Activity ownership before recording outcome or feedback. |
 | Knowledge boundary | Gateway must not attach Knowledge records outside the client manifest allowlist. |
+| Budget boundary | Gateway must enforce both per-Activity budget and Client Manifest monthly budget. |
 
 ## Not Included In MVP
 

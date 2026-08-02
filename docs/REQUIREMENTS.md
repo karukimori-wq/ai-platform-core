@@ -157,6 +157,8 @@ Gateway must resolve provider and model in this order:
 
 Gateway may retry provider execution and fall back to configured replacement providers without changing the ActivityRequest contract.
 
+Provider adapters must keep provider-specific request details behind the shared AIProvider interface.
+
 ## Activity Events
 
 Activity lifecycle changes must be representable as DomainEvents.

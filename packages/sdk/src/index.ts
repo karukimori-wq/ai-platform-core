@@ -22,6 +22,7 @@ export {
   type AnalyticsSummary,
   type UsageRecord,
   createMemoryAnalyticsRepository,
+  createStoredAnalyticsRepository,
   createUsageRecord
 } from "@ai-platform-core/analytics";
 export {

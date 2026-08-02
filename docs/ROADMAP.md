@@ -149,3 +149,8 @@
 
 - Total, warning, and exceeded alert counts
 - SDK exposure for budget alert summary type
+
+## v0.1.16 Dashboard Alert Reason Counts
+
+- Reason-level counts in budget alert summary
+- Token and cost alert reason totals for Dashboard views

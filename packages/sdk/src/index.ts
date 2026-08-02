@@ -61,6 +61,8 @@ export {
   type AIGateway,
   type GatewayAuthContext,
   type GatewayAuthenticator,
+  type GatewayFeedbackRequest,
+  type GatewayOutcomeRequest,
   type GatewayRequest,
   createAIGateway,
   createAllowAllAuthenticator

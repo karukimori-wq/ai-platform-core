@@ -41,6 +41,102 @@ describe("ai gateway", () => {
     expect(summary.value.usageCount).toBe(1);
   });
 
+  it("records outcome and feedback for an owned activity", async () => {
+    const providers = createProviderRegistry();
+    providers.register(createEchoProvider());
+    const analytics = createMemoryAnalyticsRepository();
+    const gateway = createAIGateway(
+      createActivityRuntime(createMemoryActivityRepository(), createCryptoIdGenerator(), systemClock()),
+      providers,
+      analytics,
+      createAllowAllAuthenticator(),
+      systemClock(),
+      createNoopLogger()
+    );
+    const result = await gateway.run({
+      auth: { clientId: "client-a", permissions: [] },
+      activity: {
+        client: "client-a",
+        capability: "SNS.Generate",
+        goal: "Generate a post",
+        context: {},
+        provider: "echo",
+        model: "test",
+        input: { topic: "AI" }
+      },
+      messages: [{ role: "user", content: "hello" }]
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    const outcome = await gateway.recordOutcome({
+      auth: { clientId: "client-a", permissions: [] },
+      outcome: {
+        activityId: result.value.activityId,
+        result: "published",
+        score: 0.9,
+        roi: 1.2
+      }
+    });
+    const feedback = await gateway.recordFeedback({
+      auth: { clientId: "client-a", permissions: [] },
+      feedback: {
+        activityId: result.value.activityId,
+        rating: 5,
+        edited: false,
+        accepted: true
+      }
+    });
+
+    expect(outcome.ok).toBe(true);
+    expect(feedback.ok).toBe(true);
+    const outcomes = await analytics.listOutcomes();
+    const feedbackItems = await analytics.listFeedback();
+    expect(outcomes.ok).toBe(true);
+    expect(feedbackItems.ok).toBe(true);
+    if (!outcomes.ok || !feedbackItems.ok) return;
+    expect(outcomes.value).toHaveLength(1);
+    expect(feedbackItems.value).toHaveLength(1);
+  });
+
+  it("rejects outcome recording for another client's activity", async () => {
+    const providers = createProviderRegistry();
+    providers.register(createEchoProvider());
+    const gateway = createAIGateway(
+      createActivityRuntime(createMemoryActivityRepository(), createCryptoIdGenerator(), systemClock()),
+      providers,
+      createMemoryAnalyticsRepository(),
+      createAllowAllAuthenticator(),
+      systemClock(),
+      createNoopLogger()
+    );
+    const result = await gateway.run({
+      auth: { clientId: "client-a", permissions: [] },
+      activity: {
+        client: "client-a",
+        capability: "SNS.Generate",
+        goal: "Generate a post",
+        context: {},
+        provider: "echo",
+        model: "test",
+        input: { topic: "AI" }
+      },
+      messages: [{ role: "user", content: "hello" }]
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    const outcome = await gateway.recordOutcome({
+      auth: { clientId: "client-b", permissions: [] },
+      outcome: {
+        activityId: result.value.activityId,
+        result: "published"
+      }
+    });
+
+    expect(outcome.ok).toBe(false);
+  });
+
   it("blocks capabilities not declared by the client manifest", async () => {
     const providers = createProviderRegistry();
     providers.register(createEchoProvider());

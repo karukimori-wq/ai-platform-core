@@ -120,6 +120,7 @@ export const createMemoryActivityRepository = (): ActivityRepository => {
 };
 
 export interface ActivityRuntime {
+  readonly get: (id: string) => Promise<Result<Activity>>;
   readonly create: (request: ActivityRequest) => Promise<Result<Activity>>;
   readonly transition: (id: string, status: ActivityStatus) => Promise<Result<Activity>>;
   readonly complete: (result: ActivityResult) => Promise<Result<Activity>>;
@@ -133,6 +134,7 @@ export const createActivityRuntime = (
   clock: Clock,
   dispatcher?: EventDispatcher
 ): ActivityRuntime => ({
+  get: async (id) => repository.get(id),
   create: async (request) => {
     const now = clock.now();
     const saved = await repository.save({

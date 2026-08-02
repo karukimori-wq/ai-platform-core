@@ -53,3 +53,10 @@
 - Added Analytics read APIs for outcomes and feedback.
 - Added Dashboard metrics for outcome count, average outcome score, average ROI, feedback count, accepted count, edited count, and average rating.
 - Added Dashboard aggregation tests for outcome and feedback signals.
+
+## 0.1.6
+
+- Added Gateway APIs for recording Activity outcomes and feedback.
+- Added ActivityRuntime read access for owner validation.
+- Added Gateway ownership checks before outcome and feedback mutation.
+- Exposed Gateway outcome and feedback request contracts through the SDK.

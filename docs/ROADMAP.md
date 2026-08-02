@@ -87,3 +87,10 @@
 - Analytics outcome and feedback read models
 - Dashboard outcome score, ROI, acceptance, edit, and rating metrics
 - Dashboard test coverage for outcome and feedback aggregation
+
+## v0.1.6 Gateway Outcome and Feedback Recording
+
+- Gateway outcome recording API
+- Gateway feedback recording API
+- Activity ownership validation before outcome or feedback mutation
+- SDK exports for Gateway outcome and feedback request contracts

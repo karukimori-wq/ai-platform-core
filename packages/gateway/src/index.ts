@@ -1,4 +1,4 @@
-import type { ActivityRequest, ActivityResult, ActivityRuntime } from "@ai-platform-core/activity";
+import type { ActivityFeedback, ActivityOutcome, ActivityRequest, ActivityResult, ActivityRuntime } from "@ai-platform-core/activity";
 import type { AnalyticsRepository } from "@ai-platform-core/analytics";
 import { createUsageRecord } from "@ai-platform-core/analytics";
 import type { ClientRegistry } from "@ai-platform-core/client";
@@ -17,17 +17,46 @@ export interface GatewayRequest {
   readonly messages: readonly AIMessage[];
 }
 
+export interface GatewayOutcomeRequest {
+  readonly auth: GatewayAuthContext;
+  readonly outcome: ActivityOutcome;
+}
+
+export interface GatewayFeedbackRequest {
+  readonly auth: GatewayAuthContext;
+  readonly feedback: ActivityFeedback;
+}
+
 export interface GatewayAuthenticator {
   readonly authenticate: (context: GatewayAuthContext) => Result<void>;
 }
 
 export interface AIGateway {
   readonly run: (request: GatewayRequest) => Promise<Result<ActivityResult>>;
+  readonly recordOutcome: (request: GatewayOutcomeRequest) => Promise<Result<void>>;
+  readonly recordFeedback: (request: GatewayFeedbackRequest) => Promise<Result<void>>;
 }
 
 export const createAllowAllAuthenticator = (): GatewayAuthenticator => ({
   authenticate: () => ok(undefined)
 });
+
+const authenticateGatewayRequest = (
+  authenticator: GatewayAuthenticator,
+  auth: GatewayAuthContext
+): Result<void> => authenticator.authenticate(auth);
+
+const ensureActivityOwner = async (
+  activityRuntime: ActivityRuntime,
+  activityId: string,
+  clientId: string
+): Promise<Result<void>> => {
+  const activity = await activityRuntime.get(activityId);
+  if (!activity.ok) return activity;
+  return activity.value.request.client === clientId
+    ? ok(undefined)
+    : err(platformError("GATEWAY_CLIENT_MISMATCH", "Authenticated client must match the Activity owner."));
+};
 
 export const createAIGateway = (
   activityRuntime: ActivityRuntime,
@@ -39,7 +68,7 @@ export const createAIGateway = (
   clients?: ClientRegistry
 ): AIGateway => ({
   run: async (request) => {
-    const authenticated = authenticator.authenticate(request.auth);
+    const authenticated = authenticateGatewayRequest(authenticator, request.auth);
     if (!authenticated.ok) return authenticated;
     if (request.auth.clientId !== request.activity.client) {
       return err(platformError("GATEWAY_CLIENT_MISMATCH", "Authenticated client must match ActivityRequest client."));
@@ -99,5 +128,25 @@ export const createAIGateway = (
     const recorded = await analytics.recordUsage(createUsageRecord(completed.value, result, clock.now()));
     if (!recorded.ok) return recorded;
     return ok(result);
+  },
+  recordOutcome: async (request) => {
+    const authenticated = authenticateGatewayRequest(authenticator, request.auth);
+    if (!authenticated.ok) return authenticated;
+    const owner = await ensureActivityOwner(activityRuntime, request.outcome.activityId, request.auth.clientId);
+    if (!owner.ok) return owner;
+    const recordedActivity = await activityRuntime.recordOutcome(request.outcome);
+    if (!recordedActivity.ok) return recordedActivity;
+    const recordedAnalytics = await analytics.recordOutcome(request.outcome);
+    return recordedAnalytics.ok ? ok(undefined) : recordedAnalytics;
+  },
+  recordFeedback: async (request) => {
+    const authenticated = authenticateGatewayRequest(authenticator, request.auth);
+    if (!authenticated.ok) return authenticated;
+    const owner = await ensureActivityOwner(activityRuntime, request.feedback.activityId, request.auth.clientId);
+    if (!owner.ok) return owner;
+    const recordedActivity = await activityRuntime.recordFeedback(request.feedback);
+    if (!recordedActivity.ok) return recordedActivity;
+    const recordedAnalytics = await analytics.recordFeedback(request.feedback);
+    return recordedAnalytics.ok ? ok(undefined) : recordedAnalytics;
   }
 });

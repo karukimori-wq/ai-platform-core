@@ -137,6 +137,9 @@ importers:
       '@ai-platform-core/kernel':
         specifier: workspace:*
         version: link:../kernel
+      '@ai-platform-core/secrets':
+        specifier: workspace:*
+        version: link:../secrets
 
   packages/runtime:
     dependencies:

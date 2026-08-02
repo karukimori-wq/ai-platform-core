@@ -160,7 +160,7 @@ Gateway may retry provider execution and fall back to configured replacement pro
 
 Provider adapters must keep provider-specific request details behind the shared AIProvider interface.
 
-Provider API keys and provider secrets must be read from platform-owned SecretReader or SecretStore implementations.
+Provider API keys and provider secrets must be read from platform-owned SecretReader or SecretStore implementations. Provider adapter config must reference secret keys instead of holding raw provider credentials.
 
 ## Activity Events
 

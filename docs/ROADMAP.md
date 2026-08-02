@@ -178,3 +178,9 @@
 - Platform-owned SecretStore package
 - Memory and environment secret readers
 - Runtime and SDK exposure for secret management
+
+## v0.1.21 Secret-Backed Provider Credentials
+
+- SecretReader-backed OpenAI-compatible provider credentials
+- Provider adapter config without direct API key ownership
+- Tests for missing provider secrets

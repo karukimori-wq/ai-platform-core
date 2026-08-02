@@ -1,5 +1,6 @@
 import type { CostUsage, TokenUsage } from "@ai-platform-core/activity";
 import { type Result, err, ok, platformError } from "@ai-platform-core/kernel";
+import type { SecretReader } from "@ai-platform-core/secrets";
 
 export interface AIMessage {
   readonly role: "system" | "user" | "assistant" | "tool";
@@ -35,7 +36,8 @@ export interface AIProvider {
 export interface OpenAICompatibleProviderConfig {
   readonly id?: string;
   readonly baseUrl?: string;
-  readonly apiKey: string;
+  readonly secretReader: SecretReader;
+  readonly apiKeySecretKey: string;
   readonly organization?: string;
   readonly defaultHeaders?: Readonly<Record<string, string>>;
   readonly fetch?: typeof fetch;
@@ -122,11 +124,13 @@ export const createOpenAICompatibleProvider = (config: OpenAICompatibleProviderC
   return {
     id: config.id ?? "openai",
     chat: async (request) => {
+      const apiKey = await config.secretReader.get(config.apiKeySecretKey);
+      if (!apiKey.ok) return apiKey;
       const response = await fetchImpl(`${baseUrl}/chat/completions`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
-          authorization: `Bearer ${config.apiKey}`,
+          authorization: `Bearer ${apiKey.value}`,
           ...config.defaultHeaders,
           ...(config.organization === undefined ? {} : { "openai-organization": config.organization })
         },

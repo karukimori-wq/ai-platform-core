@@ -147,3 +147,9 @@
 - Added secrets package for platform-owned secret storage.
 - Added memory and environment secret readers.
 - Wired SecretStore into PlatformRuntime and SDK exports.
+
+## 0.1.21
+
+- Updated OpenAI-compatible provider to read API keys from SecretReader.
+- Removed direct API key ownership from provider adapter config.
+- Added provider tests for secret-backed authorization and missing secret errors.

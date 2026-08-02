@@ -276,6 +276,7 @@ describe("dashboard query service", () => {
 
     expect(alerts.ok).toBe(true);
     if (!alerts.ok) return;
+    expect(alerts.value.summary).toEqual({ total: 2, warning: 1, exceeded: 1 });
     expect(alerts.value.clients.map((client) => client.clientId)).toEqual(["exceeded-client", "warning-client"]);
     expect(alerts.value.clients.find((client) => client.clientId === "exceeded-client")?.reasons).toEqual(["cost-limit"]);
     expect(alerts.value.clients.find((client) => client.clientId === "warning-client")?.reasons).toEqual(["token-warning"]);

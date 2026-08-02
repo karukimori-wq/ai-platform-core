@@ -196,3 +196,9 @@
 - Platform HTTP handler with Gateway and analytics routes
 - Client-scoped usage totals endpoint
 - Application API server integration guide
+
+## v0.1.24 HTTP Usage Period Filters
+
+- Today, month, year, and all-period usage total filters
+- Current-month default usage totals
+- SDK exposure for HTTP usage period values

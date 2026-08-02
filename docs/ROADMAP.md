@@ -115,3 +115,10 @@
 - Gateway monthly cost budget checks from Client Manifest
 - Analytics-backed budget usage calculation
 - Gateway tests for projected monthly budget rejection
+
+## v0.1.10 Dashboard Client Budget View
+
+- Dashboard client monthly budget query
+- Remaining token and cost metrics
+- Usage ratio and limit reached flags
+- Runtime and SDK exposure for budget dashboard data

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createPlatformRuntime } from "@ai-platform-core/runtime";
-import { createGatewayHttpHandler } from "./index";
+import { createGatewayHttpHandler, createPlatformHttpHandler } from "./index";
 
 describe("gateway http handler", () => {
   it("runs gateway requests and records client usage", async () => {
@@ -56,5 +56,56 @@ describe("gateway http handler", () => {
 
     expect(missing.status).toBe(404);
     expect(method.status).toBe(405);
+  });
+
+  it("returns scoped usage totals", async () => {
+    const runtime = createPlatformRuntime();
+    runtime.clients.register({
+      id: "fortune_teller_a",
+      name: "Fortune Teller A",
+      type: "web",
+      version: "0.1.0",
+      provider: "echo",
+      defaultModel: "echo-report-v1",
+      capabilities: ["report.generate"],
+      knowledge: [],
+      analytics: true
+    });
+    const closedHandler = createPlatformHttpHandler(runtime);
+    const handler = createPlatformHttpHandler(runtime, {
+      authorizeUsageRequest: (_request, clientId) => clientId === "fortune_teller_a"
+    });
+
+    await handler(new Request("https://example.com/v1/gateway/run", {
+      method: "POST",
+      body: JSON.stringify({
+        auth: { clientId: "fortune_teller_a", permissions: ["report.generate"] },
+        activity: {
+          client: "fortune_teller_a",
+          capability: "report.generate",
+          workflow: "numerology",
+          goal: "Create a report.",
+          context: { app: "Numeria Studio" },
+          input: { lifePath: 7 }
+        },
+        messages: [{ role: "user", content: "Draft a report." }]
+      })
+    }));
+
+    const hidden = await closedHandler(new Request("https://example.com/v1/analytics/usage?client=fortune_teller_a"));
+    const forbidden = await handler(new Request("https://example.com/v1/analytics/usage?client=other_client"));
+    const response = await handler(new Request("https://example.com/v1/analytics/usage?client=fortune_teller_a"));
+    const body = await response.json() as Readonly<{
+      ok: boolean;
+      summary: Readonly<{ client: string; usageCount: number; totalTokens: number }>;
+    }>;
+
+    expect(hidden.status).toBe(404);
+    expect(forbidden.status).toBe(403);
+    expect(response.status).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(body.summary.client).toBe("fortune_teller_a");
+    expect(body.summary.usageCount).toBe(1);
+    expect(body.summary.totalTokens).toBeGreaterThan(0);
   });
 });

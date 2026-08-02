@@ -129,6 +129,7 @@ Each client must declare a manifest before it can execute platform capabilities.
 - type
 - version
 - provider
+- defaultModel
 - capabilities
 - knowledge
 - analytics
@@ -145,6 +146,12 @@ Gateway must reject a request when:
 - the authenticated client does not own the Activity being updated with outcome or feedback
 
 Gateway must only attach Knowledge records declared by the registered Client Manifest.
+
+Gateway must resolve provider and model in this order:
+
+1. `ActivityRequest.provider` / `ActivityRequest.model`
+2. `ClientManifest.provider` / `ClientManifest.defaultModel`
+3. platform fallback provider `echo` and model `default`
 
 ## Activity Events
 

@@ -120,8 +120,74 @@ describe("dashboard query service", () => {
     expect(clientA?.remainingCost).toBe(6);
     expect(clientA?.costUsageRatio).toBe(0.4);
     expect(clientA?.tokenLimitReached).toBe(false);
+    expect(clientA?.status).toBe("ok");
     expect(clientB?.usedTokens).toBe(0);
     expect(clientB?.monthlyTokenLimit).toBeUndefined();
     expect(clientC?.usedTokens).toBe(20);
+  });
+
+  it("marks client budget status as warning or exceeded", async () => {
+    const analytics = createMemoryAnalyticsRepository();
+    const clients = createClientRegistry();
+    clients.register({
+      id: "warning-client",
+      name: "Warning Client",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyTokenLimit: 100 }
+    });
+    clients.register({
+      id: "exceeded-client",
+      name: "Exceeded Client",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyCostLimit: 10 }
+    });
+    await analytics.recordUsage({
+      activityId: "activity-warning",
+      client: "warning-client",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 40,
+      outputTokens: 40,
+      totalTokens: 80,
+      costAmount: 0,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    await analytics.recordUsage({
+      activityId: "activity-exceeded",
+      client: "exceeded-client",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 1,
+      outputTokens: 1,
+      totalTokens: 2,
+      costAmount: 10,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    const dashboard = createDashboardQueryService(
+      analytics,
+      { now: () => new Date("2026-08-02T12:00:00.000Z") },
+      clients
+    );
+
+    const view = await dashboard.getClientBudgetView();
+
+    expect(view.ok).toBe(true);
+    if (!view.ok) return;
+    expect(view.value.clients.find((client) => client.clientId === "warning-client")?.status).toBe("warning");
+    expect(view.value.clients.find((client) => client.clientId === "exceeded-client")?.status).toBe("exceeded");
   });
 });

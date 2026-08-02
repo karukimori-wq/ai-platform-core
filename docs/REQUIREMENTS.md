@@ -203,6 +203,7 @@ Initial metrics:
 - costLimitReached
 - budgetStatus
 - budgetAlertReasons
+- budgetAlertSummary
 - outcomeCount
 - averageOutcomeScore
 - averageRoi

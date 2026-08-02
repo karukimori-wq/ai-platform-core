@@ -134,3 +134,8 @@
 - Dashboard client budget alert query
 - Warning and exceeded client filtering
 - SDK exposure for budget alert view
+
+## v0.1.13 Dashboard Alert Ordering
+
+- Exceeded budget alerts before warning alerts
+- Deterministic clientId ordering within the same status

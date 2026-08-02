@@ -60,6 +60,9 @@ importers:
       '@ai-platform-core/kernel':
         specifier: workspace:*
         version: link:../kernel
+      '@ai-platform-core/storage':
+        specifier: workspace:*
+        version: link:../storage
 
   packages/capability:
     dependencies:
@@ -114,6 +117,24 @@ importers:
       '@ai-platform-core/provider':
         specifier: workspace:*
         version: link:../provider
+
+  packages/http:
+    dependencies:
+      '@ai-platform-core/activity':
+        specifier: workspace:*
+        version: link:../activity
+      '@ai-platform-core/gateway':
+        specifier: workspace:*
+        version: link:../gateway
+      '@ai-platform-core/kernel':
+        specifier: workspace:*
+        version: link:../kernel
+      '@ai-platform-core/provider':
+        specifier: workspace:*
+        version: link:../provider
+      '@ai-platform-core/runtime':
+        specifier: workspace:*
+        version: link:../runtime
 
   packages/kernel: {}
 
@@ -209,6 +230,9 @@ importers:
       '@ai-platform-core/gateway':
         specifier: workspace:*
         version: link:../gateway
+      '@ai-platform-core/http':
+        specifier: workspace:*
+        version: link:../http
       '@ai-platform-core/kernel':
         specifier: workspace:*
         version: link:../kernel

@@ -22,6 +22,7 @@
     "@ai-platform-core/dashboard": "workspace:*",
     "@ai-platform-core/event": "workspace:*",
     "@ai-platform-core/gateway": "workspace:*",
+    "@ai-platform-core/knowledge": "workspace:*",
     "@ai-platform-core/kernel": "workspace:*",
     "@ai-platform-core/plugin": "workspace:*",
     "@ai-platform-core/provider": "workspace:*",

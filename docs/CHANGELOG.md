@@ -60,3 +60,10 @@
 - Added ActivityRuntime read access for owner validation.
 - Added Gateway ownership checks before outcome and feedback mutation.
 - Exposed Gateway outcome and feedback request contracts through the SDK.
+
+## 0.1.7
+
+- Added optional Gateway Knowledge lookup before provider execution.
+- Added Client Manifest Knowledge allowlist filtering.
+- Added ActivityResult.knowledgeUsed population from matched Knowledge records.
+- Wired the PlatformRuntime Gateway to the memory Knowledge repository.

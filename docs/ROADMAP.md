@@ -94,3 +94,10 @@
 - Gateway feedback recording API
 - Activity ownership validation before outcome or feedback mutation
 - SDK exports for Gateway outcome and feedback request contracts
+
+## v0.1.7 Gateway Knowledge Context
+
+- Gateway Knowledge search before provider execution
+- Client manifest Knowledge allowlist enforcement
+- ActivityResult.knowledgeUsed population from matched Knowledge records
+- PlatformRuntime Knowledge repository wiring

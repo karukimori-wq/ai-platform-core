@@ -1,6 +1,7 @@
 import { createActivityRuntime, createMemoryActivityRepository } from "@ai-platform-core/activity";
 import { createMemoryAnalyticsRepository } from "@ai-platform-core/analytics";
 import { createClientRegistry } from "@ai-platform-core/client";
+import { createMemoryKnowledgeRepository } from "@ai-platform-core/knowledge";
 import { createCryptoIdGenerator, createNoopLogger, systemClock } from "@ai-platform-core/kernel";
 import { createEchoProvider, createProviderRegistry } from "@ai-platform-core/provider";
 import { describe, expect, it } from "vitest";
@@ -175,5 +176,65 @@ describe("ai gateway", () => {
     });
 
     expect(result.ok).toBe(false);
+  });
+
+  it("uses only knowledge allowed by the client manifest", async () => {
+    const providers = createProviderRegistry();
+    providers.register(createEchoProvider());
+    const clients = createClientRegistry();
+    clients.register({
+      id: "client-a",
+      name: "Client A",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: ["knowledge-allowed"],
+      analytics: true
+    });
+    const knowledge = createMemoryKnowledgeRepository();
+    await knowledge.save({
+      id: "knowledge-allowed",
+      content: "AI posting guidance",
+      confidence: 0.9,
+      references: [],
+      lifecycle: "active",
+      metadata: {}
+    });
+    await knowledge.save({
+      id: "knowledge-blocked",
+      content: "AI posting guidance",
+      confidence: 0.9,
+      references: [],
+      lifecycle: "active",
+      metadata: {}
+    });
+    const gateway = createAIGateway(
+      createActivityRuntime(createMemoryActivityRepository(), createCryptoIdGenerator(), systemClock()),
+      providers,
+      createMemoryAnalyticsRepository(),
+      createAllowAllAuthenticator(),
+      systemClock(),
+      createNoopLogger(),
+      clients,
+      knowledge
+    );
+
+    const result = await gateway.run({
+      auth: { clientId: "client-a", permissions: [] },
+      activity: {
+        client: "client-a",
+        capability: "SNS.Generate",
+        goal: "AI posting",
+        context: {},
+        provider: "echo",
+        model: "test",
+        input: {}
+      },
+      messages: [{ role: "user", content: "hello" }]
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.knowledgeUsed).toEqual(["knowledge-allowed"]);
   });
 });

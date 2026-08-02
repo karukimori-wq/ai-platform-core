@@ -37,13 +37,13 @@ Application-specific business logic belongs in separate repositories.
 | `@ai-platform-core/client` | Client manifest registry and capability access validation |
 | `@ai-platform-core/activity` | AI Activity contract, lifecycle, outcome, feedback |
 | `@ai-platform-core/provider` | Provider interface, registry, echo provider for tests |
-| `@ai-platform-core/gateway` | Single AI entrypoint, provider routing, usage, outcome, and feedback recording |
+| `@ai-platform-core/gateway` | Single AI entrypoint, provider routing, allowed knowledge lookup, usage, outcome, and feedback recording |
 | `@ai-platform-core/analytics` | Usage, outcome, and feedback records with summary APIs |
 | `@ai-platform-core/dashboard` | Dashboard-ready usage, outcome, feedback, and ROI metrics by period and dimension |
 | `@ai-platform-core/event` | Domain events, event bus, dispatcher, memory event store |
 | `@ai-platform-core/capability` | Capability interface, registry, permission checker, runtime |
 | `@ai-platform-core/workflow` | Workflow definitions, instances, approval, retry hooks |
-| `@ai-platform-core/knowledge` | Knowledge, references, confidence, memory search |
+| `@ai-platform-core/knowledge` | Knowledge, references, confidence, lifecycle, and memory search |
 | `@ai-platform-core/plugin` | Plugin manifest and lifecycle runtime |
 | `@ai-platform-core/storage` | Memory key-value storage and environment reader |
 | `@ai-platform-core/runtime` | Composed platform runtime |

@@ -18,6 +18,7 @@ import {
 } from "@ai-platform-core/event";
 import { createCryptoIdGenerator, createNoopLogger, systemClock, type Clock, type Logger } from "@ai-platform-core/kernel";
 import { createAIGateway, createAllowAllAuthenticator, type AIGateway } from "@ai-platform-core/gateway";
+import { createMemoryKnowledgeRepository, type KnowledgeRepository } from "@ai-platform-core/knowledge";
 import { createPluginRuntime, type PluginRuntime } from "@ai-platform-core/plugin";
 import { createEchoProvider, createProviderRegistry, type ProviderRegistry } from "@ai-platform-core/provider";
 import { createMemoryKeyValueStore, type KeyValueStore } from "@ai-platform-core/storage";
@@ -38,6 +39,7 @@ export interface PlatformRuntime {
   readonly analytics: AnalyticsRepository;
   readonly dashboard: DashboardQueryService;
   readonly gateway: AIGateway;
+  readonly knowledge: KnowledgeRepository;
   readonly providers: ProviderRegistry;
   readonly workflow: WorkflowRuntime;
   readonly plugin: PluginRuntime;
@@ -58,6 +60,7 @@ export const createPlatformRuntime = (): PlatformRuntime => {
   const eventDispatcher = createEventDispatcher(eventStore, eventBus);
   const activity = createActivityRuntime(createMemoryActivityRepository(), createCryptoIdGenerator(), clock, eventDispatcher);
   const analytics = createMemoryAnalyticsRepository();
+  const knowledge = createMemoryKnowledgeRepository();
   const providers = createProviderRegistry();
   providers.register(createEchoProvider());
   return {
@@ -70,7 +73,8 @@ export const createPlatformRuntime = (): PlatformRuntime => {
     eventDispatcher,
     analytics,
     dashboard: createDashboardQueryService(analytics, clock),
-    gateway: createAIGateway(activity, providers, analytics, createAllowAllAuthenticator(), clock, logger, clients),
+    gateway: createAIGateway(activity, providers, analytics, createAllowAllAuthenticator(), clock, logger, clients, knowledge),
+    knowledge,
     providers,
     workflow: createWorkflowRuntime(capability),
     plugin: createPluginRuntime(),

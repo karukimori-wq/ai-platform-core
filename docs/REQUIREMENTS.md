@@ -144,6 +144,8 @@ Gateway must reject a request when:
 - the provider response exceeds the Activity cost budget
 - the authenticated client does not own the Activity being updated with outcome or feedback
 
+Gateway must only attach Knowledge records declared by the registered Client Manifest.
+
 ## Activity Events
 
 Activity lifecycle changes must be representable as DomainEvents.
@@ -203,6 +205,7 @@ Initial metrics:
 | Type safety | Strict TypeScript is required. `any` is prohibited. |
 | Observability | Gateway must record provider, model, tokens, cost, latency, client, capability, and workflow. |
 | Client boundary | Gateway must validate Activity ownership before recording outcome or feedback. |
+| Knowledge boundary | Gateway must not attach Knowledge records outside the client manifest allowlist. |
 
 ## Not Included In MVP
 

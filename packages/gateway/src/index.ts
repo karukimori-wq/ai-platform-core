@@ -2,6 +2,7 @@ import type { ActivityFeedback, ActivityOutcome, ActivityRequest, ActivityResult
 import type { AnalyticsRepository } from "@ai-platform-core/analytics";
 import { createUsageRecord } from "@ai-platform-core/analytics";
 import type { ClientRegistry } from "@ai-platform-core/client";
+import type { KnowledgeRepository, KnowledgeSearchResult } from "@ai-platform-core/knowledge";
 import type { Clock, Logger, Result } from "@ai-platform-core/kernel";
 import { err, ok, platformError } from "@ai-platform-core/kernel";
 import type { AIMessage, ProviderRegistry } from "@ai-platform-core/provider";
@@ -37,6 +38,11 @@ export interface AIGateway {
   readonly recordFeedback: (request: GatewayFeedbackRequest) => Promise<Result<void>>;
 }
 
+export interface GatewayKnowledgeContext {
+  readonly usedIds: readonly string[];
+  readonly metadata: Readonly<Record<string, unknown>>;
+}
+
 export const createAllowAllAuthenticator = (): GatewayAuthenticator => ({
   authenticate: () => ok(undefined)
 });
@@ -58,6 +64,40 @@ const ensureActivityOwner = async (
     : err(platformError("GATEWAY_CLIENT_MISMATCH", "Authenticated client must match the Activity owner."));
 };
 
+const unique = (values: readonly string[]): readonly string[] => [...new Set(values)];
+
+const searchKnowledge = async (
+  request: GatewayRequest,
+  clients?: ClientRegistry,
+  knowledge?: KnowledgeRepository
+): Promise<Result<GatewayKnowledgeContext>> => {
+  if (knowledge === undefined) return ok({ usedIds: [], metadata: {} });
+  const searched = await knowledge.search(request.activity.goal);
+  if (!searched.ok) return searched;
+  const allowedKnowledgeIds = clients?.get(request.activity.client);
+  if (allowedKnowledgeIds !== undefined && !allowedKnowledgeIds.ok) return allowedKnowledgeIds;
+  const filtered = filterKnowledgeResults(searched.value, allowedKnowledgeIds?.value.knowledge);
+  return ok({
+    usedIds: filtered.map((result) => result.knowledge.id),
+    metadata: {
+      knowledgeUsed: filtered.map((result) => ({
+        id: result.knowledge.id,
+        confidence: result.knowledge.confidence,
+        score: result.score,
+        references: result.knowledge.references.map((reference) => reference.id)
+      }))
+    }
+  });
+};
+
+const filterKnowledgeResults = (
+  results: readonly KnowledgeSearchResult[],
+  allowedIds?: readonly string[]
+): readonly KnowledgeSearchResult[] => {
+  if (allowedIds === undefined) return results;
+  return results.filter((result) => allowedIds.includes(result.knowledge.id));
+};
+
 export const createAIGateway = (
   activityRuntime: ActivityRuntime,
   providers: ProviderRegistry,
@@ -65,7 +105,8 @@ export const createAIGateway = (
   authenticator: GatewayAuthenticator,
   clock: Clock,
   logger: Logger,
-  clients?: ClientRegistry
+  clients?: ClientRegistry,
+  knowledge?: KnowledgeRepository
 ): AIGateway => ({
   run: async (request) => {
     const authenticated = authenticateGatewayRequest(authenticator, request.auth);
@@ -86,6 +127,8 @@ export const createAIGateway = (
     const model = request.activity.model ?? "default";
     const provider = providers.get(providerId);
     if (!provider.ok) return provider;
+    const knowledgeContext = await searchKnowledge(request, clients, knowledge);
+    if (!knowledgeContext.ok) return knowledgeContext;
 
     const startedAt = clock.now().getTime();
     const response = await provider.value.chat({
@@ -95,7 +138,8 @@ export const createAIGateway = (
       metadata: {
         activityId: created.value.id.value,
         capability: request.activity.capability,
-        workflow: request.activity.workflow
+        workflow: request.activity.workflow,
+        ...knowledgeContext.value.metadata
       }
     });
     if (!response.ok) {
@@ -120,7 +164,7 @@ export const createAIGateway = (
       tokens: response.value.tokens,
       cost: response.value.cost,
       latencyMs: clock.now().getTime() - startedAt,
-      knowledgeUsed: response.value.knowledgeUsed
+      knowledgeUsed: unique([...knowledgeContext.value.usedIds, ...response.value.knowledgeUsed])
     };
     const completed = await activityRuntime.complete(result);
     if (!completed.ok) return completed;

@@ -119,3 +119,8 @@
 - Added Dashboard budget alert summary.
 - Added total, warning, and exceeded counts to budget alert views.
 - Exposed budget alert summary type through the SDK.
+
+## 0.1.16
+
+- Added reason-level counts to Dashboard budget alert summary.
+- Added token and cost alert reason totals for budget alert views.

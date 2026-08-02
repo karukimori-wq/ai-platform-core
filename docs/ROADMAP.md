@@ -190,3 +190,9 @@
 - Fetch-compatible HTTP handler for Gateway run requests
 - Application API server integration surface
 - SDK exports for HTTP handler utilities
+
+## v0.1.23 HTTP Usage Endpoint
+
+- Platform HTTP handler with Gateway and analytics routes
+- Client-scoped usage totals endpoint
+- Application API server integration guide

@@ -159,3 +159,9 @@
 - Added fetch-compatible Gateway HTTP handler package.
 - Added HTTP request parsing for Gateway run requests.
 - Exposed HTTP handler utilities through the SDK.
+
+## 0.1.23
+
+- Added platform HTTP handler routing for Gateway runs and analytics usage reads.
+- Added client-scoped usage total endpoint for application API servers.
+- Documented application API server integration and usage lookup.

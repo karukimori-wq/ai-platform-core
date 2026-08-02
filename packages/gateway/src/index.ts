@@ -1,7 +1,7 @@
 import type { ActivityFeedback, ActivityOutcome, ActivityRequest, ActivityResult, ActivityRuntime } from "@ai-platform-core/activity";
 import type { AnalyticsRepository } from "@ai-platform-core/analytics";
 import { createUsageRecord } from "@ai-platform-core/analytics";
-import type { ClientRegistry } from "@ai-platform-core/client";
+import type { ClientBudgetPolicy, ClientRegistry } from "@ai-platform-core/client";
 import type { KnowledgeRepository, KnowledgeSearchResult } from "@ai-platform-core/knowledge";
 import type { Clock, Logger, Result } from "@ai-platform-core/kernel";
 import { err, ok, platformError } from "@ai-platform-core/kernel";
@@ -48,6 +48,11 @@ export interface GatewayRoute {
   readonly model: string;
 }
 
+interface GatewayBudgetUsage {
+  readonly tokens: number;
+  readonly cost: number;
+}
+
 export const createAllowAllAuthenticator = (): GatewayAuthenticator => ({
   authenticate: () => ok(undefined)
 });
@@ -70,6 +75,55 @@ const ensureActivityOwner = async (
 };
 
 const unique = (values: readonly string[]): readonly string[] => [...new Set(values)];
+
+const isSameMonth = (left: Date, right: Date): boolean =>
+  left.getUTCFullYear() === right.getUTCFullYear() && left.getUTCMonth() === right.getUTCMonth();
+
+const readClientBudget = (request: GatewayRequest, clients?: ClientRegistry): Result<ClientBudgetPolicy | undefined> => {
+  if (clients === undefined) return ok(undefined);
+  const client = clients.get(request.activity.client);
+  return client.ok ? ok(client.value.budget) : client;
+};
+
+const readMonthlyUsage = async (
+  analytics: AnalyticsRepository,
+  clientId: string,
+  now: Date
+): Promise<Result<GatewayBudgetUsage>> => {
+  const records = await analytics.listUsage();
+  if (!records.ok) return records;
+  const monthlyRecords = records.value.filter((record) => record.client === clientId && isSameMonth(record.occurredAt, now));
+  return ok({
+    tokens: monthlyRecords.reduce((sum, record) => sum + record.totalTokens, 0),
+    cost: monthlyRecords.reduce((sum, record) => sum + record.costAmount, 0)
+  });
+};
+
+const ensureMonthlyBudget = (
+  budget: ClientBudgetPolicy | undefined,
+  usage: GatewayBudgetUsage
+): Result<void> => {
+  if (budget?.monthlyTokenLimit !== undefined && usage.tokens > budget.monthlyTokenLimit) {
+    return err(platformError("GATEWAY_CLIENT_TOKEN_BUDGET_EXCEEDED", "Client monthly token budget would be exceeded."));
+  }
+  if (budget?.monthlyCostLimit !== undefined && usage.cost > budget.monthlyCostLimit) {
+    return err(platformError("GATEWAY_CLIENT_COST_BUDGET_EXCEEDED", "Client monthly cost budget would be exceeded."));
+  }
+  return ok(undefined);
+};
+
+const ensureMonthlyBudgetAvailable = (
+  budget: ClientBudgetPolicy | undefined,
+  usage: GatewayBudgetUsage
+): Result<void> => {
+  if (budget?.monthlyTokenLimit !== undefined && usage.tokens >= budget.monthlyTokenLimit) {
+    return err(platformError("GATEWAY_CLIENT_TOKEN_BUDGET_EXCEEDED", "Client monthly token budget has been reached."));
+  }
+  if (budget?.monthlyCostLimit !== undefined && usage.cost >= budget.monthlyCostLimit) {
+    return err(platformError("GATEWAY_CLIENT_COST_BUDGET_EXCEEDED", "Client monthly cost budget has been reached."));
+  }
+  return ok(undefined);
+};
 
 const resolveGatewayRoute = (request: GatewayRequest, clients?: ClientRegistry): Result<GatewayRoute> => {
   if (clients === undefined) {
@@ -142,6 +196,12 @@ export const createAIGateway = (
     if (!route.ok) return route;
     const provider = providers.get(route.value.providerId);
     if (!provider.ok) return provider;
+    const clientBudget = readClientBudget(request, clients);
+    if (!clientBudget.ok) return clientBudget;
+    const monthlyUsage = await readMonthlyUsage(analytics, request.activity.client, clock.now());
+    if (!monthlyUsage.ok) return monthlyUsage;
+    const existingBudget = ensureMonthlyBudgetAvailable(clientBudget.value, monthlyUsage.value);
+    if (!existingBudget.ok) return existingBudget;
 
     const created = await activityRuntime.create(request.activity);
     if (!created.ok) return created;
@@ -174,6 +234,14 @@ export const createAIGateway = (
     if (request.activity.budget?.maxCost !== undefined && response.value.cost.amount > request.activity.budget.maxCost) {
       await activityRuntime.transition(created.value.id.value, "failed");
       return err(platformError("GATEWAY_COST_BUDGET_EXCEEDED", "Provider response exceeded the Activity cost budget."));
+    }
+    const projectedBudget = ensureMonthlyBudget(clientBudget.value, {
+      tokens: monthlyUsage.value.tokens + response.value.tokens.total,
+      cost: monthlyUsage.value.cost + response.value.cost.amount
+    });
+    if (!projectedBudget.ok) {
+      await activityRuntime.transition(created.value.id.value, "failed");
+      return projectedBudget;
     }
 
     const result: ActivityResult = {

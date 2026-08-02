@@ -1,5 +1,6 @@
 import type { ActivityFeedback, ActivityOutcome } from "@ai-platform-core/activity";
 import type { AnalyticsRepository, UsageRecord } from "@ai-platform-core/analytics";
+import type { ClientBudgetPolicy, ClientRegistry } from "@ai-platform-core/client";
 import { type Clock, type Result, ok } from "@ai-platform-core/kernel";
 
 export type DashboardPeriod = "today" | "month" | "year" | "all";
@@ -32,8 +33,29 @@ export interface DashboardView {
   readonly byModel: Readonly<Record<string, DashboardMetric>>;
 }
 
+export interface ClientBudgetMetric {
+  readonly clientId: string;
+  readonly monthlyTokenLimit?: number;
+  readonly monthlyCostLimit?: number;
+  readonly currency?: string;
+  readonly usedTokens: number;
+  readonly usedCost: number;
+  readonly remainingTokens?: number;
+  readonly remainingCost?: number;
+  readonly tokenUsageRatio?: number;
+  readonly costUsageRatio?: number;
+  readonly tokenLimitReached: boolean;
+  readonly costLimitReached: boolean;
+}
+
+export interface ClientBudgetView {
+  readonly period: "month";
+  readonly clients: readonly ClientBudgetMetric[];
+}
+
 export interface DashboardQueryService {
   readonly getView: (query: DashboardQuery) => Promise<Result<DashboardView>>;
+  readonly getClientBudgetView: (query?: Pick<DashboardQuery, "now">) => Promise<Result<ClientBudgetView>>;
 }
 
 const emptyMetric = (): DashboardMetric => ({
@@ -151,9 +173,56 @@ const createActivitySignals = (
   };
 };
 
+const readBudget = (clientId: string, clients?: ClientRegistry): ClientBudgetPolicy | undefined => {
+  const client = clients?.get(clientId);
+  return client?.ok === true ? client.value.budget : undefined;
+};
+
+const collectClientIds = (
+  records: readonly UsageRecord[],
+  clients?: ClientRegistry
+): readonly string[] => [...new Set([...clients?.list().map((client) => client.id) ?? [], ...records.map((record) => record.client)])];
+
+const createClientBudgetMetric = (
+  clientId: string,
+  records: readonly UsageRecord[],
+  clients?: ClientRegistry
+): ClientBudgetMetric => {
+  const budget = readBudget(clientId, clients);
+  const usedTokens = records.reduce((sum, record) => sum + record.totalTokens, 0);
+  const usedCost = records.reduce((sum, record) => sum + record.costAmount, 0);
+  const metric: ClientBudgetMetric = {
+    clientId,
+    usedTokens,
+    usedCost,
+    tokenLimitReached: budget?.monthlyTokenLimit === undefined ? false : usedTokens >= budget.monthlyTokenLimit,
+    costLimitReached: budget?.monthlyCostLimit === undefined ? false : usedCost >= budget.monthlyCostLimit
+  };
+  const withTokenBudget =
+    budget?.monthlyTokenLimit === undefined
+      ? metric
+      : {
+          ...metric,
+          monthlyTokenLimit: budget.monthlyTokenLimit,
+          remainingTokens: Math.max(budget.monthlyTokenLimit - usedTokens, 0),
+          tokenUsageRatio: usedTokens / budget.monthlyTokenLimit
+        };
+  const withCostBudget =
+    budget?.monthlyCostLimit === undefined
+      ? withTokenBudget
+      : {
+          ...withTokenBudget,
+          monthlyCostLimit: budget.monthlyCostLimit,
+          remainingCost: Math.max(budget.monthlyCostLimit - usedCost, 0),
+          costUsageRatio: usedCost / budget.monthlyCostLimit
+        };
+  return budget?.currency === undefined ? withCostBudget : { ...withCostBudget, currency: budget.currency };
+};
+
 export const createDashboardQueryService = (
   analytics: AnalyticsRepository,
-  clock: Clock
+  clock: Clock,
+  clients?: ClientRegistry
 ): DashboardQueryService => ({
   getView: async (query) => {
     const usage = await analytics.listUsage();
@@ -179,6 +248,19 @@ export const createDashboardQueryService = (
       byCapability: toMetrics(groupBy(records, signalsByActivityId, (record) => record.capability)),
       byProvider: toMetrics(groupBy(records, signalsByActivityId, (record) => record.provider)),
       byModel: toMetrics(groupBy(records, signalsByActivityId, (record) => record.model))
+    });
+  },
+  getClientBudgetView: async (query) => {
+    const usage = await analytics.listUsage();
+    if (!usage.ok) return usage;
+    const now = query?.now ?? clock.now();
+    const records = filterByPeriod(usage.value, "month", now);
+    const clientIds = collectClientIds(records, clients);
+    return ok({
+      period: "month",
+      clients: clientIds.map((clientId) =>
+        createClientBudgetMetric(clientId, records.filter((record) => record.client === clientId), clients)
+      )
     });
   }
 });

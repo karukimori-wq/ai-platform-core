@@ -166,3 +166,9 @@
 - Retry policy for provider chat execution
 - Fallback provider policy for failed provider execution
 - SDK exposure for Gateway resilience policy types
+
+## v0.1.19 OpenAI-Compatible Provider
+
+- OpenAI-compatible chat completions adapter
+- Fetch injection for testable provider calls
+- SDK exposure for provider adapter factory

@@ -128,3 +128,9 @@
 - Dashboard budget status values: ok, warning, exceeded
 - 80 percent warning threshold for token and cost budget usage
 - Dashboard tests for warning and exceeded states
+
+## v0.1.12 Dashboard Budget Alerts
+
+- Dashboard client budget alert query
+- Warning and exceeded client filtering
+- SDK exposure for budget alert view

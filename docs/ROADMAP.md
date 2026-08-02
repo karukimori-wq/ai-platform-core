@@ -202,3 +202,8 @@
 - Today, month, year, and all-period usage total filters
 - Current-month default usage totals
 - SDK exposure for HTTP usage period values
+
+## v0.1.25 HTTP Usage Breakdowns
+
+- Capability, workflow, provider, and model usage breakdowns
+- Aggregate-only client-scoped reporting for application dashboards

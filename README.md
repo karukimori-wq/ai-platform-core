@@ -75,6 +75,8 @@ provider with a `SecretReader`, store the key in `runtime.secrets` or an
 environment-backed reader, and route application requests through the Gateway so
 client usage, tokens, cost, and monthly limits are recorded centrally.
 
+For application API server wiring, see [docs/API_SERVER.md](docs/API_SERVER.md).
+
 ## Roadmap
 
 The first stable core should be grown in this order:

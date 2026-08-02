@@ -34,10 +34,10 @@ Application-specific business logic belongs in separate repositories.
 | Package | Role |
 | --- | --- |
 | `@ai-platform-core/kernel` | Result, errors, logger, clock, UUID, config, DI, value objects |
-| `@ai-platform-core/client` | Client manifest registry and capability access validation |
+| `@ai-platform-core/client` | Client manifest registry, provider/model defaults, and capability access validation |
 | `@ai-platform-core/activity` | AI Activity contract, lifecycle, outcome, feedback |
 | `@ai-platform-core/provider` | Provider interface, registry, echo provider for tests |
-| `@ai-platform-core/gateway` | Single AI entrypoint, provider routing, allowed knowledge lookup, usage, outcome, and feedback recording |
+| `@ai-platform-core/gateway` | Single AI entrypoint, provider/model routing, allowed knowledge lookup, usage, outcome, and feedback recording |
 | `@ai-platform-core/analytics` | Usage, outcome, and feedback records with summary APIs |
 | `@ai-platform-core/dashboard` | Dashboard-ready usage, outcome, feedback, and ROI metrics by period and dimension |
 | `@ai-platform-core/event` | Domain events, event bus, dispatcher, memory event store |

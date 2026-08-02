@@ -43,6 +43,11 @@ export interface GatewayKnowledgeContext {
   readonly metadata: Readonly<Record<string, unknown>>;
 }
 
+export interface GatewayRoute {
+  readonly providerId: string;
+  readonly model: string;
+}
+
 export const createAllowAllAuthenticator = (): GatewayAuthenticator => ({
   authenticate: () => ok(undefined)
 });
@@ -65,6 +70,21 @@ const ensureActivityOwner = async (
 };
 
 const unique = (values: readonly string[]): readonly string[] => [...new Set(values)];
+
+const resolveGatewayRoute = (request: GatewayRequest, clients?: ClientRegistry): Result<GatewayRoute> => {
+  if (clients === undefined) {
+    return ok({
+      providerId: request.activity.provider ?? "echo",
+      model: request.activity.model ?? "default"
+    });
+  }
+  const client = clients.get(request.activity.client);
+  if (!client.ok) return client;
+  return ok({
+    providerId: request.activity.provider ?? client.value.provider ?? "echo",
+    model: request.activity.model ?? client.value.defaultModel ?? "default"
+  });
+};
 
 const searchKnowledge = async (
   request: GatewayRequest,
@@ -118,21 +138,21 @@ export const createAIGateway = (
       const allowed = clients.canUseCapability(request.activity.client, request.activity.capability);
       if (!allowed.ok) return allowed;
     }
+    const route = resolveGatewayRoute(request, clients);
+    if (!route.ok) return route;
+    const provider = providers.get(route.value.providerId);
+    if (!provider.ok) return provider;
 
     const created = await activityRuntime.create(request.activity);
     if (!created.ok) return created;
     await activityRuntime.transition(created.value.id.value, "running");
 
-    const providerId = request.activity.provider ?? "echo";
-    const model = request.activity.model ?? "default";
-    const provider = providers.get(providerId);
-    if (!provider.ok) return provider;
     const knowledgeContext = await searchKnowledge(request, clients, knowledge);
     if (!knowledgeContext.ok) return knowledgeContext;
 
     const startedAt = clock.now().getTime();
     const response = await provider.value.chat({
-      model,
+      model: route.value.model,
       messages: request.messages,
       input: request.activity.input,
       metadata: {
@@ -144,7 +164,7 @@ export const createAIGateway = (
     });
     if (!response.ok) {
       await activityRuntime.transition(created.value.id.value, "failed");
-      logger.error("AI provider execution failed.", { activityId: created.value.id.value, provider: providerId });
+      logger.error("AI provider execution failed.", { activityId: created.value.id.value, provider: route.value.providerId });
       return response;
     }
     if (request.activity.budget?.maxTokens !== undefined && response.value.tokens.total > request.activity.budget.maxTokens) {
@@ -159,7 +179,7 @@ export const createAIGateway = (
     const result: ActivityResult = {
       activityId: created.value.id.value,
       output: response.value.output,
-      provider: providerId,
+      provider: route.value.providerId,
       model: response.value.model,
       tokens: response.value.tokens,
       cost: response.value.cost,

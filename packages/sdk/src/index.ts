@@ -70,6 +70,8 @@ export {
   type GatewayFeedbackRequest,
   type GatewayOutcomeRequest,
   type GatewayRequest,
+  type GatewayResiliencePolicy,
+  type GatewayRetryPolicy,
   createAIGateway,
   createAllowAllAuthenticator
 } from "@ai-platform-core/gateway";

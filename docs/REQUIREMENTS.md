@@ -142,6 +142,7 @@ Gateway must reject a request when:
 - the requested capability is not declared by the client manifest
 - the provider response exceeds the Activity token budget
 - the provider response exceeds the Activity cost budget
+- the authenticated client does not own the Activity being updated with outcome or feedback
 
 ## Activity Events
 
@@ -201,6 +202,7 @@ Initial metrics:
 | Testability | Each package must be testable independently. |
 | Type safety | Strict TypeScript is required. `any` is prohibited. |
 | Observability | Gateway must record provider, model, tokens, cost, latency, client, capability, and workflow. |
+| Client boundary | Gateway must validate Activity ownership before recording outcome or feedback. |
 
 ## Not Included In MVP
 

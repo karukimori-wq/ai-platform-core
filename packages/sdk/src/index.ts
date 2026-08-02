@@ -79,6 +79,7 @@ export {
   type GatewayHttpHandlerOptions,
   type GatewayRunHttpBody,
   type PlatformHttpHandlerOptions,
+  type UsageHttpPeriod,
   createGatewayHttpHandler,
   createPlatformHttpHandler
 } from "@ai-platform-core/http";

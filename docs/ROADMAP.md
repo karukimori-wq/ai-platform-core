@@ -207,3 +207,8 @@
 
 - Capability, workflow, provider, and model usage breakdowns
 - Aggregate-only client-scoped reporting for application dashboards
+
+## v0.1.26 Stored Analytics Repository
+
+- Storage-backed Analytics repository for durable usage records
+- SDK factory for wiring persistent application storage

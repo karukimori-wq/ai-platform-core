@@ -139,3 +139,8 @@
 
 - Exceeded budget alerts before warning alerts
 - Deterministic clientId ordering within the same status
+
+## v0.1.14 Dashboard Alert Reasons
+
+- Token and cost alert reason values
+- SDK exposure for budget alert reason types

@@ -42,6 +42,7 @@ export {
 } from "@ai-platform-core/client";
 export {
   type ClientBudgetAlert,
+  type ClientBudgetAlertSummary,
   type ClientBudgetAlertView,
   type ClientBudgetAlertReason,
   type ClientBudgetMetric,

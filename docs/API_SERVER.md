@@ -8,8 +8,8 @@ through the Gateway so usage is recorded by client.
 
 ```ts
 import {
-  createGatewayHttpHandler,
   createOpenAICompatibleProvider,
+  createPlatformHttpHandler,
   createPlatform,
   createSecretReader
 } from "@ai-platform-core/sdk";
@@ -39,7 +39,12 @@ runtime.clients.register({
   }
 });
 
-export const handleGatewayRequest = createGatewayHttpHandler(runtime);
+export const handlePlatformRequest = createPlatformHttpHandler(runtime, {
+  authorizeUsageRequest: async (request, clientId) => {
+    const session = await readSession(request);
+    return session.clientId === clientId;
+  }
+});
 ```
 
 ## Request Shape
@@ -83,6 +88,17 @@ After the request succeeds, usage can be read from analytics:
 ```ts
 const usage = await runtime.analytics.listUsage();
 ```
+
+Applications can also expose the built-in usage endpoint:
+
+```http
+GET /v1/analytics/usage?client=fortune_teller_a
+```
+
+The usage endpoint is disabled unless `authorizeUsageRequest` is configured.
+The callback must bind the request to a trusted server-side session or token and
+return true only when that identity can read the requested `client`. The endpoint
+returns scoped totals, not raw usage records.
 
 The usage record includes:
 

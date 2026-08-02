@@ -60,8 +60,15 @@ export interface ClientBudgetAlert extends ClientBudgetMetric {
   readonly reasons: readonly ClientBudgetAlertReason[];
 }
 
+export interface ClientBudgetAlertSummary {
+  readonly total: number;
+  readonly warning: number;
+  readonly exceeded: number;
+}
+
 export interface ClientBudgetAlertView {
   readonly period: "month";
+  readonly summary: ClientBudgetAlertSummary;
   readonly clients: readonly ClientBudgetAlert[];
 }
 
@@ -262,6 +269,12 @@ const createBudgetAlert = (client: ClientBudgetMetric): ClientBudgetAlert => ({
   reasons: createBudgetAlertReasons(client)
 });
 
+const createBudgetAlertSummary = (alerts: readonly ClientBudgetAlert[]): ClientBudgetAlertSummary => ({
+  total: alerts.length,
+  warning: alerts.filter((alert) => alert.status === "warning").length,
+  exceeded: alerts.filter((alert) => alert.status === "exceeded").length
+});
+
 export const createDashboardQueryService = (
   analytics: AnalyticsRepository,
   clock: Clock,
@@ -310,11 +323,13 @@ export const createDashboardQueryService = (
     getClientBudgetAlerts: async (query) => {
       const budgetView = await service.getClientBudgetView(query);
       if (!budgetView.ok) return budgetView;
+      const alerts = [...budgetView.value.clients.filter((client) => client.status !== "ok")]
+        .sort(compareBudgetAlert)
+        .map(createBudgetAlert);
       return ok({
         period: "month",
-        clients: [...budgetView.value.clients.filter((client) => client.status !== "ok")]
-          .sort(compareBudgetAlert)
-          .map(createBudgetAlert)
+        summary: createBudgetAlertSummary(alerts),
+        clients: alerts
       });
     }
   };

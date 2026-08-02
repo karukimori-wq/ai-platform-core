@@ -277,5 +277,7 @@ describe("dashboard query service", () => {
     expect(alerts.ok).toBe(true);
     if (!alerts.ok) return;
     expect(alerts.value.clients.map((client) => client.clientId)).toEqual(["exceeded-client", "warning-client"]);
+    expect(alerts.value.clients.find((client) => client.clientId === "exceeded-client")?.reasons).toEqual(["cost-limit"]);
+    expect(alerts.value.clients.find((client) => client.clientId === "warning-client")?.reasons).toEqual(["token-warning"]);
   });
 });

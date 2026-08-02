@@ -176,3 +176,8 @@
 
 - Added capability, workflow, provider, and model breakdowns to HTTP usage totals.
 - Kept usage endpoint responses aggregate-only for client-scoped reporting.
+
+## 0.1.26
+
+- Added storage-backed Analytics repository factory for durable usage records.
+- Exposed stored Analytics repository creation through the SDK.

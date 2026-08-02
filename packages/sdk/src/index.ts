@@ -78,7 +78,9 @@ export {
 export {
   type GatewayHttpHandlerOptions,
   type GatewayRunHttpBody,
-  createGatewayHttpHandler
+  type PlatformHttpHandlerOptions,
+  createGatewayHttpHandler,
+  createPlatformHttpHandler
 } from "@ai-platform-core/http";
 export {
   DateRange,

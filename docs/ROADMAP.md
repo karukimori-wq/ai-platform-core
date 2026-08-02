@@ -144,3 +144,8 @@
 
 - Token and cost alert reason values
 - SDK exposure for budget alert reason types
+
+## v0.1.15 Dashboard Alert Summary
+
+- Total, warning, and exceeded alert counts
+- SDK exposure for budget alert summary type

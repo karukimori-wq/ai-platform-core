@@ -54,9 +54,15 @@ export interface ClientBudgetView {
   readonly clients: readonly ClientBudgetMetric[];
 }
 
+export type ClientBudgetAlertReason = "token-limit" | "cost-limit" | "token-warning" | "cost-warning";
+
+export interface ClientBudgetAlert extends ClientBudgetMetric {
+  readonly reasons: readonly ClientBudgetAlertReason[];
+}
+
 export interface ClientBudgetAlertView {
   readonly period: "month";
-  readonly clients: readonly ClientBudgetMetric[];
+  readonly clients: readonly ClientBudgetAlert[];
 }
 
 export interface DashboardQueryService {
@@ -240,6 +246,22 @@ const budgetStatusPriority: Readonly<Record<ClientBudgetMetric["status"], number
 const compareBudgetAlert = (left: ClientBudgetMetric, right: ClientBudgetMetric): number =>
   budgetStatusPriority[left.status] - budgetStatusPriority[right.status] || left.clientId.localeCompare(right.clientId);
 
+const createBudgetAlertReasons = (client: ClientBudgetMetric): readonly ClientBudgetAlertReason[] => [
+  ...(client.tokenLimitReached ? ["token-limit" as const] : []),
+  ...(client.costLimitReached ? ["cost-limit" as const] : []),
+  ...(client.tokenLimitReached || client.tokenUsageRatio === undefined || client.tokenUsageRatio < 0.8
+    ? []
+    : ["token-warning" as const]),
+  ...(client.costLimitReached || client.costUsageRatio === undefined || client.costUsageRatio < 0.8
+    ? []
+    : ["cost-warning" as const])
+];
+
+const createBudgetAlert = (client: ClientBudgetMetric): ClientBudgetAlert => ({
+  ...client,
+  reasons: createBudgetAlertReasons(client)
+});
+
 export const createDashboardQueryService = (
   analytics: AnalyticsRepository,
   clock: Clock,
@@ -290,7 +312,9 @@ export const createDashboardQueryService = (
       if (!budgetView.ok) return budgetView;
       return ok({
         period: "month",
-        clients: [...budgetView.value.clients.filter((client) => client.status !== "ok")].sort(compareBudgetAlert)
+        clients: [...budgetView.value.clients.filter((client) => client.status !== "ok")]
+          .sort(compareBudgetAlert)
+          .map(createBudgetAlert)
       });
     }
   };

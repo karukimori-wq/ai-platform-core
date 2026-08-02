@@ -22,6 +22,12 @@ export interface GatewayRunHttpBody {
 
 export type UsageHttpPeriod = "today" | "month" | "year" | "all";
 
+interface UsageHttpBreakdownItem {
+  readonly usageCount: number;
+  readonly totalTokens: number;
+  readonly totalCost: number;
+}
+
 const jsonHeaders = { "content-type": "application/json" };
 
 const jsonResponse = (status: number, body: unknown): Response =>
@@ -163,6 +169,22 @@ const filterByPeriod = <T extends { readonly occurredAt: Date }>(
   return records.filter((record) => record.occurredAt.getTime() >= start.getTime() && record.occurredAt.getTime() <= now.getTime());
 };
 
+const addBreakdownRecord = (
+  source: Readonly<Record<string, UsageHttpBreakdownItem>>,
+  key: string,
+  record: { readonly totalTokens: number; readonly costAmount: number }
+): Readonly<Record<string, UsageHttpBreakdownItem>> => {
+  const current = source[key] ?? { usageCount: 0, totalTokens: 0, totalCost: 0 };
+  return {
+    ...source,
+    [key]: {
+      usageCount: current.usageCount + 1,
+      totalTokens: current.totalTokens + record.totalTokens,
+      totalCost: current.totalCost + record.costAmount
+    }
+  };
+};
+
 const listUsage = async (
   runtime: PlatformRuntime,
   request: Request,
@@ -200,7 +222,13 @@ const listUsage = async (
       period,
       usageCount: records.length,
       totalTokens: records.reduce((sum, record) => sum + record.totalTokens, 0),
-      totalCost: records.reduce((sum, record) => sum + record.costAmount, 0)
+      totalCost: records.reduce((sum, record) => sum + record.costAmount, 0),
+      byCapability: records.reduce((acc, record) => addBreakdownRecord(acc, record.capability, record), {}),
+      byWorkflow: records.reduce((acc, record) => (
+        record.workflow === undefined ? acc : addBreakdownRecord(acc, record.workflow, record)
+      ), {}),
+      byProvider: records.reduce((acc, record) => addBreakdownRecord(acc, record.provider, record), {}),
+      byModel: records.reduce((acc, record) => addBreakdownRecord(acc, record.model, record), {})
     }
   });
 };

@@ -135,3 +135,9 @@
 - Added Gateway retry policy for provider chat execution.
 - Added Gateway fallback provider policy for failed provider execution.
 - Exposed Gateway resilience policy types through the SDK.
+
+## 0.1.19
+
+- Added OpenAI-compatible chat provider adapter.
+- Added fetch-injected provider tests without external network calls.
+- Exposed OpenAI-compatible provider factory through the SDK.

@@ -155,6 +155,8 @@ Gateway must resolve provider and model in this order:
 2. `ClientManifest.provider` / `ClientManifest.defaultModel`
 3. platform fallback provider `echo` and model `default`
 
+Gateway may retry provider execution and fall back to configured replacement providers without changing the ActivityRequest contract.
+
 ## Activity Events
 
 Activity lifecycle changes must be representable as DomainEvents.
@@ -235,6 +237,7 @@ Initial dashboard queries:
 | Client boundary | Gateway must validate Activity ownership before recording outcome or feedback. |
 | Knowledge boundary | Gateway must not attach Knowledge records outside the client manifest allowlist. |
 | Budget boundary | Gateway must enforce both per-Activity budget and Client Manifest monthly budget. |
+| Provider resilience | Gateway retry and fallback behavior must be configurable without changing client request contracts. |
 
 ## Not Included In MVP
 

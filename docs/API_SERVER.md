@@ -100,6 +100,49 @@ The callback must bind the request to a trusted server-side session or token and
 return true only when that identity can read the requested `client`. The endpoint
 returns scoped totals, not raw usage records.
 
+Example response:
+
+```json
+{
+  "ok": true,
+  "summary": {
+    "client": "fortune_teller_a",
+    "period": "month",
+    "usageCount": 12,
+    "totalTokens": 18400,
+    "totalCost": 0,
+    "byCapability": {
+      "report.generate": {
+        "usageCount": 12,
+        "totalTokens": 18400,
+        "totalCost": 0
+      }
+    },
+    "byWorkflow": {
+      "numerology": {
+        "usageCount": 8,
+        "totalTokens": 12600,
+        "totalCost": 0
+      }
+    },
+    "byProvider": {
+      "openai": {
+        "usageCount": 12,
+        "totalTokens": 18400,
+        "totalCost": 0
+      }
+    },
+    "byModel": {
+      "gpt-4.1-mini": {
+        "usageCount": 12,
+        "totalTokens": 18400,
+        "totalCost": 0
+      }
+    }
+  }
+}
+```
+
 Supported `period` values are `today`, `month`, `year`, and `all`. When omitted,
 the endpoint uses `month`.
 

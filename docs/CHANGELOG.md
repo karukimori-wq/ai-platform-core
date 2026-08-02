@@ -87,3 +87,10 @@
 - Added remaining token and cost metrics.
 - Added budget usage ratio and limit reached flags.
 - Exposed budget dashboard data through runtime and SDK.
+
+## 0.1.11
+
+- Added Dashboard budget status values for client budget metrics.
+- Added warning status at 80 percent token or cost usage.
+- Added exceeded status when token or cost budget limit is reached.
+- Added Dashboard tests for budget status calculation.

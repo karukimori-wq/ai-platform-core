@@ -76,6 +76,11 @@ export {
   createAllowAllAuthenticator
 } from "@ai-platform-core/gateway";
 export {
+  type GatewayHttpHandlerOptions,
+  type GatewayRunHttpBody,
+  createGatewayHttpHandler
+} from "@ai-platform-core/http";
+export {
   DateRange,
   Email,
   Money,

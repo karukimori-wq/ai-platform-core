@@ -101,3 +101,9 @@
 - Added alert filtering for warning and exceeded client budget status.
 - Exposed client budget alert view through the SDK.
 - Added Dashboard tests for budget alert filtering.
+
+## 0.1.13
+
+- Added deterministic Dashboard budget alert ordering.
+- Prioritized exceeded budget alerts before warning alerts.
+- Added clientId ordering for alerts with the same status.

@@ -165,3 +165,9 @@
 - Added platform HTTP handler routing for Gateway runs and analytics usage reads.
 - Added client-scoped usage total endpoint for application API servers.
 - Documented application API server integration and usage lookup.
+
+## 0.1.24
+
+- Added period filters to HTTP usage totals.
+- Defaulted usage total queries to the current month.
+- Exposed HTTP usage period type through the SDK.

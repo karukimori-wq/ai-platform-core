@@ -8,6 +8,12 @@ export interface GatewayHttpHandlerOptions {
   readonly route?: string;
 }
 
+export interface PlatformHttpHandlerOptions {
+  readonly gatewayRunRoute?: string;
+  readonly analyticsUsageRoute?: string;
+  readonly authorizeUsageRequest?: (request: Request, clientId: string) => Promise<boolean> | boolean;
+}
+
 export interface GatewayRunHttpBody {
   readonly auth: GatewayAuthContext;
   readonly activity: ActivityRequest;
@@ -129,6 +135,46 @@ const runGateway = async (runtime: PlatformRuntime, request: GatewayRequest): Pr
   return result.ok ? jsonResponse(200, { ok: true, result: result.value }) : errorResponse(400, result.error);
 };
 
+const readSearchString = (url: URL, key: string): string | undefined => url.searchParams.get(key) ?? undefined;
+
+const listUsage = async (
+  runtime: PlatformRuntime,
+  request: Request,
+  url: URL,
+  authorize: PlatformHttpHandlerOptions["authorizeUsageRequest"]
+): Promise<Response> => {
+  if (authorize === undefined) {
+    return errorResponse(404, platformError("HTTP_NOT_FOUND", `Route '${url.pathname}' was not found.`));
+  }
+  const client = readSearchString(url, "client");
+  if (client === undefined) {
+    return errorResponse(400, platformError("HTTP_INVALID_QUERY", "Query parameter 'client' is required."));
+  }
+  if (!await authorize(request, client)) {
+    return errorResponse(403, platformError("HTTP_FORBIDDEN", "Client usage queries must be scoped to the caller."));
+  }
+  const usage = await runtime.analytics.listUsage();
+  if (!usage.ok) return errorResponse(400, usage.error);
+  const capability = readSearchString(url, "capability");
+  const provider = readSearchString(url, "provider");
+  const model = readSearchString(url, "model");
+  const records = usage.value.filter((record) =>
+    record.client === client &&
+    (capability === undefined || record.capability === capability) &&
+    (provider === undefined || record.provider === provider) &&
+    (model === undefined || record.model === model)
+  );
+  return jsonResponse(200, {
+    ok: true,
+    summary: {
+      client,
+      usageCount: records.length,
+      totalTokens: records.reduce((sum, record) => sum + record.totalTokens, 0),
+      totalCost: records.reduce((sum, record) => sum + record.costAmount, 0)
+    }
+  });
+};
+
 export const createGatewayHttpHandler = (
   runtime: PlatformRuntime,
   options: GatewayHttpHandlerOptions = {}
@@ -146,5 +192,25 @@ export const createGatewayHttpHandler = (
     const parsed = parseGatewayRunBody(await request.json().catch(() => undefined));
     if ("code" in parsed) return errorResponse(400, parsed);
     return runGateway(runtime, parsed);
+  };
+};
+
+export const createPlatformHttpHandler = (
+  runtime: PlatformRuntime,
+  options: PlatformHttpHandlerOptions = {}
+): ((request: Request) => Promise<Response>) => {
+  const gatewayRunRoute = options.gatewayRunRoute ?? "/v1/gateway/run";
+  const analyticsUsageRoute = options.analyticsUsageRoute ?? "/v1/analytics/usage";
+  return async (request) => {
+    const url = new URL(request.url);
+    if (url.pathname === gatewayRunRoute) {
+      return createGatewayHttpHandler(runtime, { route: gatewayRunRoute })(request);
+    }
+    if (url.pathname === analyticsUsageRoute) {
+      return request.method === "GET"
+        ? listUsage(runtime, request, url, options.authorizeUsageRequest)
+        : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only GET is supported."));
+    }
+    return errorResponse(404, platformError("HTTP_NOT_FOUND", `Route '${url.pathname}' was not found.`));
   };
 };

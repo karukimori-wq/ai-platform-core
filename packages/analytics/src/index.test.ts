@@ -1,1 +1,27 @@
-aW1wb3J0IHsgZGVzY3JpYmUsIGV4cGVjdCwgaXQgfSBmcm9tICJ2aXRlc3QiOwppbXBvcnQgeyBjcmVhdGVNZW1vcnlBbmFseXRpY3NSZXBvc2l0b3J5IH0gZnJvbSAiLi9pbmRleCI7CgpkZXNjcmliZSgiYW5hbHl0aWNzIHJlcG9zaXRvcnkiLCAoKSA9PiB7CiAgaXQoInN1bW1hcml6ZXMgdXNhZ2UiLCBhc3luYyAoKSA9PiB7CiAgICBjb25zdCBhbmFseXRpY3MgPSBjcmVhdGVNZW1vcnlBbmFseXRpY3NSZXBvc2l0b3J5KCk7CiAgICBhd2FpdCBhbmFseXRpY3MucmVjb3JkVXNhZ2UoewogICAgICBhY3Rpdml0eUlkOiAiYWN0aXZpdHktMSIsCiAgICAgIGNsaWVudDogImNsaWVudC1hIiwKICAgICAgY2FwYWJpbGl0eTogIlNOUy5HZW5lcmF0ZSIsCiAgICAgIHByb3ZpZGVyOiAiZWNobyIsCiAgICAgIG1vZGVsOiAidGVzdCIsCiAgICAgIGlucHV0VG9rZW5zOiAxLAogICAgICBvdXRwdXRUb2tlbnM6IDIsCiAgICAgIHRvdGFsVG9rZW5zOiAzLAogICAgICBjb3N0QW1vdW50OiAwLjAxLAogICAgICBjb3N0Q3VycmVuY3k6ICJVU0QiLAogICAgICBsYXRlbmN5TXM6IDEwLAogICAgICBvY2N1cnJlZEF0OiBuZXcgRGF0ZSgpCiAgICB9KTsKICAgIGNvbnN0IHN1bW1hcnkgPSBhd2FpdCBhbmFseXRpY3Muc3VtbWFyaXplKCk7CiAgICBleHBlY3Qoc3VtbWFyeS5vaykudG9CZSh0cnVlKTsKICAgIGlmICghc3VtbWFyeS5vaykgcmV0dXJuOwogICAgZXhwZWN0KHN1bW1hcnkudmFsdWUudG90YWxUb2tlbnMpLnRvQmUoMyk7CiAgICBleHBlY3Qoc3VtbWFyeS52YWx1ZS5ieUNhcGFiaWxpdHlbIlNOUy5HZW5lcmF0ZSJdKS50b0JlKDEpOwogIH0pOwp9KTsK
+import { describe, expect, it } from "vitest";
+import { createMemoryAnalyticsRepository } from "./index";
+
+describe("analytics repository", () => {
+  it("summarizes usage", async () => {
+    const analytics = createMemoryAnalyticsRepository();
+    await analytics.recordUsage({
+      activityId: "activity-1",
+      client: "client-a",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 1,
+      outputTokens: 2,
+      totalTokens: 3,
+      costAmount: 0.01,
+      costCurrency: "USD",
+      latencyMs: 10,
+      occurredAt: new Date()
+    });
+    const summary = await analytics.summarize();
+    expect(summary.ok).toBe(true);
+    if (!summary.ok) return;
+    expect(summary.value.totalTokens).toBe(3);
+    expect(summary.value.byCapability["SNS.Generate"]).toBe(1);
+  });
+});

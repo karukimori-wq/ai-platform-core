@@ -1,1 +1,79 @@
-aW1wb3J0IHsgdHlwZSBSZXN1bHQsIHR5cGUgVVVJRCwgb2sgfSBmcm9tICJAYWktcGxhdGZvcm0tY29yZS9rZXJuZWwiOwoKZXhwb3J0IGludGVyZmFjZSBEb21haW5FdmVudDxUUGF5bG9hZCBleHRlbmRzIFJlYWRvbmx5PFJlY29yZDxzdHJpbmcsIHVua25vd24+PiA9IFJlYWRvbmx5PFJlY29yZDxzdHJpbmcsIHVua25vd24+Pj4gewogIHJlYWRvbmx5IGlkOiBVVUlEOwogIHJlYWRvbmx5IHR5cGU6IHN0cmluZzsKICByZWFkb25seSBhZ2dyZWdhdGVJZDogVVVJRDsKICByZWFkb25seSB2ZXJzaW9uOiBudW1iZXI7CiAgcmVhZG9ubHkgb2NjdXJyZWRBdDogRGF0ZTsKICByZWFkb25seSBwYXlsb2FkOiBUUGF5bG9hZDsKICByZWFkb25seSBtZXRhZGF0YTogUmVhZG9ubHk8UmVjb3JkPHN0cmluZywgdW5rbm93bj4+Owp9CgpleHBvcnQgaW50ZXJmYWNlIEV2ZW50U3RvcmUgewogIHJlYWRvbmx5IGFwcGVuZDogKGV2ZW50czogcmVhZG9ubHkgRG9tYWluRXZlbnRbXSkgPT4gUHJvbWlzZTxSZXN1bHQ8dm9pZD4+OwogIHJlYWRvbmx5IGxvYWQ6IChhZ2dyZWdhdGVJZDogVVVJRCkgPT4gUHJvbWlzZTxSZXN1bHQ8cmVhZG9ubHkgRG9tYWluRXZlbnRbXT4+OwogIHJlYWRvbmx5IGFsbDogKCkgPT4gUHJvbWlzZTxSZXN1bHQ8cmVhZG9ubHkgRG9tYWluRXZlbnRbXT4+Owp9CgpleHBvcnQgaW50ZXJmYWNlIEV2ZW50U3Vic2NyaWJlciB7CiAgcmVhZG9ubHkgZXZlbnRUeXBlOiBzdHJpbmc7CiAgcmVhZG9ubHkgaGFuZGxlOiAoZXZlbnQ6IERvbWFpbkV2ZW50KSA9PiBQcm9taXNlPFJlc3VsdDx2b2lkPj47Cn0KCmV4cG9ydCBpbnRlcmZhY2UgRXZlbnRCdXMgewogIHJlYWRvbmx5IHB1Ymxpc2g6IChldmVudDogRG9tYWluRXZlbnQpID0+IFByb21pc2U8UmVzdWx0PHZvaWQ+PjsKICByZWFkb25seSBzdWJzY3JpYmU6IChzdWJzY3JpYmVyOiBFdmVudFN1YnNjcmliZXIpID0+IFJlc3VsdDx2b2lkPjsKfQoKZXhwb3J0IGNvbnN0IGNyZWF0ZU1lbW9yeUV2ZW50U3RvcmUgPSAoKTogRXZlbnRTdG9yZSA9PiB7CiAgY29uc3QgZXZlbnRzOiBEb21haW5FdmVudFtdID0gW107CiAgcmV0dXJuIHsKICAgIGFwcGVuZDogYXN5bmMgKG5ld0V2ZW50cykgPT4gewogICAgICBldmVudHMucHVzaCguLi5uZXdFdmVudHMpOwogICAgICByZXR1cm4gb2sodW5kZWZpbmVkKTsKICAgIH0sCiAgICBsb2FkOiBhc3luYyAoYWdncmVnYXRlSWQpID0+CiAgICAgIG9rKGV2ZW50cy5maWx0ZXIoKGV2ZW50KSA9PiBldmVudC5hZ2dyZWdhdGVJZC5lcXVhbHMoYWdncmVnYXRlSWQpKSksCiAgICBhbGw6IGFzeW5jICgpID0+IG9rKFsuLi5ldmVudHNdKQogIH07Cn07CgpleHBvcnQgY29uc3QgY3JlYXRlRXZlbnRCdXMgPSAoKTogRXZlbnRCdXMgPT4gewogIGNvbnN0IHN1YnNjcmliZXJzOiBFdmVudFN1YnNjcmliZXJbXSA9IFtdOwogIHJldHVybiB7CiAgICBwdWJsaXNoOiBhc3luYyAoZXZlbnQpID0+IHsKICAgICAgY29uc3QgdGFyZ2V0cyA9IHN1YnNjcmliZXJzLmZpbHRlcigKICAgICAgICAoc3Vic2NyaWJlcikgPT4gc3Vic2NyaWJlci5ldmVudFR5cGUgPT09IGV2ZW50LnR5cGUgfHwgc3Vic2NyaWJlci5ldmVudFR5cGUgPT09ICIqIgogICAgICApOwogICAgICBmb3IgKGNvbnN0IHN1YnNjcmliZXIgb2YgdGFyZ2V0cykgewogICAgICAgIGNvbnN0IHJlc3VsdCA9IGF3YWl0IHN1YnNjcmliZXIuaGFuZGxlKGV2ZW50KTsKICAgICAgICBpZiAoIXJlc3VsdC5vaykgcmV0dXJuIHJlc3VsdDsKICAgICAgfQogICAgICByZXR1cm4gb2sodW5kZWZpbmVkKTsKICAgIH0sCiAgICBzdWJzY3JpYmU6IChzdWJzY3JpYmVyKSA9PiB7CiAgICAgIHN1YnNjcmliZXJzLnB1c2goc3Vic2NyaWJlcik7CiAgICAgIHJldHVybiBvayh1bmRlZmluZWQpOwogICAgfQogIH07Cn07CgpleHBvcnQgaW50ZXJmYWNlIEV2ZW50RGlzcGF0Y2hlciB7CiAgcmVhZG9ubHkgZGlzcGF0Y2g6IChldmVudHM6IHJlYWRvbmx5IERvbWFpbkV2ZW50W10pID0+IFByb21pc2U8UmVzdWx0PHZvaWQ+PjsKfQoKZXhwb3J0IGNvbnN0IGNyZWF0ZUV2ZW50RGlzcGF0Y2hlciA9ICgKICBzdG9yZTogRXZlbnRTdG9yZSwKICBidXM6IEV2ZW50QnVzCik6IEV2ZW50RGlzcGF0Y2hlciA9PiAoewogIGRpc3BhdGNoOiBhc3luYyAoZXZlbnRzKSA9PiB7CiAgICBjb25zdCBzdG9yZWQgPSBhd2FpdCBzdG9yZS5hcHBlbmQoZXZlbnRzKTsKICAgIGlmICghc3RvcmVkLm9rKSByZXR1cm4gc3RvcmVkOwogICAgZm9yIChjb25zdCBldmVudCBvZiBldmVudHMpIHsKICAgICAgY29uc3QgcHVibGlzaGVkID0gYXdhaXQgYnVzLnB1Ymxpc2goZXZlbnQpOwogICAgICBpZiAoIXB1Ymxpc2hlZC5vaykgcmV0dXJuIHB1Ymxpc2hlZDsKICAgIH0KICAgIHJldHVybiBvayh1bmRlZmluZWQpOwogIH0KfSk7Cg==
+import { type Result, type UUID, ok } from "@ai-platform-core/kernel";
+
+export interface DomainEvent<TPayload extends Readonly<Record<string, unknown>> = Readonly<Record<string, unknown>>> {
+  readonly id: UUID;
+  readonly type: string;
+  readonly aggregateId: UUID;
+  readonly version: number;
+  readonly occurredAt: Date;
+  readonly payload: TPayload;
+  readonly metadata: Readonly<Record<string, unknown>>;
+}
+
+export interface EventStore {
+  readonly append: (events: readonly DomainEvent[]) => Promise<Result<void>>;
+  readonly load: (aggregateId: UUID) => Promise<Result<readonly DomainEvent[]>>;
+  readonly all: () => Promise<Result<readonly DomainEvent[]>>;
+}
+
+export interface EventSubscriber {
+  readonly eventType: string;
+  readonly handle: (event: DomainEvent) => Promise<Result<void>>;
+}
+
+export interface EventBus {
+  readonly publish: (event: DomainEvent) => Promise<Result<void>>;
+  readonly subscribe: (subscriber: EventSubscriber) => Result<void>;
+}
+
+export const createMemoryEventStore = (): EventStore => {
+  const events: DomainEvent[] = [];
+  return {
+    append: async (newEvents) => {
+      events.push(...newEvents);
+      return ok(undefined);
+    },
+    load: async (aggregateId) =>
+      ok(events.filter((event) => event.aggregateId.equals(aggregateId))),
+    all: async () => ok([...events])
+  };
+};
+
+export const createEventBus = (): EventBus => {
+  const subscribers: EventSubscriber[] = [];
+  return {
+    publish: async (event) => {
+      const targets = subscribers.filter(
+        (subscriber) => subscriber.eventType === event.type || subscriber.eventType === "*"
+      );
+      for (const subscriber of targets) {
+        const result = await subscriber.handle(event);
+        if (!result.ok) return result;
+      }
+      return ok(undefined);
+    },
+    subscribe: (subscriber) => {
+      subscribers.push(subscriber);
+      return ok(undefined);
+    }
+  };
+};
+
+export interface EventDispatcher {
+  readonly dispatch: (events: readonly DomainEvent[]) => Promise<Result<void>>;
+}
+
+export const createEventDispatcher = (
+  store: EventStore,
+  bus: EventBus
+): EventDispatcher => ({
+  dispatch: async (events) => {
+    const stored = await store.append(events);
+    if (!stored.ok) return stored;
+    for (const event of events) {
+      const published = await bus.publish(event);
+      if (!published.ok) return published;
+    }
+    return ok(undefined);
+  }
+});

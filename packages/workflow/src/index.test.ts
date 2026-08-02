@@ -1,1 +1,14 @@
-aW1wb3J0IHsgZGVzY3JpYmUsIGV4cGVjdCwgaXQgfSBmcm9tICJ2aXRlc3QiOwppbXBvcnQgeyBvayB9IGZyb20gIkBhaS1wbGF0Zm9ybS1jb3JlL2tlcm5lbCI7CmltcG9ydCB7IGNyZWF0ZUNhcGFiaWxpdHlSZWdpc3RyeSwgY3JlYXRlQ2FwYWJpbGl0eVJ1bnRpbWUsIGNyZWF0ZVBlcm1pc3Npb25DaGVja2VyIH0gZnJvbSAiQGFpLXBsYXRmb3JtLWNvcmUvY2FwYWJpbGl0eSI7CmltcG9ydCB7IGNyZWF0ZVdvcmtmbG93UnVudGltZSB9IGZyb20gIi4vaW5kZXguanMiOwoKZGVzY3JpYmUoIndvcmtmbG93IiwgKCkgPT4gewogIGl0KCJydW5zIGNhcGFiaWxpdHkgc3RlcHMiLCBhc3luYyAoKSA9PiB7CiAgICBjb25zdCByZWdpc3RyeSA9IGNyZWF0ZUNhcGFiaWxpdHlSZWdpc3RyeSgpOwogICAgcmVnaXN0cnkucmVnaXN0ZXIoeyBpZDogIlRleHQuVXBwZXJjYXNlIiwgbmFtZTogIlVwcGVyY2FzZSIsIGRlc2NyaXB0aW9uOiAiVXBwZXJjYXNlIHRleHQiLCBwZXJtaXNzaW9uOiAidGV4dC51cHBlcmNhc2UiLCBpbnB1dDogInN0cmluZyIsIG91dHB1dDogInN0cmluZyIsIGV4ZWN1dGU6IGFzeW5jIChpbnB1dDogc3RyaW5nKSA9PiBvayhpbnB1dC50b1VwcGVyQ2FzZSgpKSB9KTsKICAgIGNvbnN0IHJ1bnRpbWUgPSBjcmVhdGVXb3JrZmxvd1J1bnRpbWUoY3JlYXRlQ2FwYWJpbGl0eVJ1bnRpbWUocmVnaXN0cnksIGNyZWF0ZVBlcm1pc3Npb25DaGVja2VyKCkpKTsKICAgIGNvbnN0IHJlc3VsdCA9IGF3YWl0IHJ1bnRpbWUuc3RhcnQoeyBpZDogIndmIiwgbmFtZTogIldvcmtmbG93Iiwgc3RlcHM6IFt7IGlkOiAic3RlcC0xIiwgY2FwYWJpbGl0eUlkOiAiVGV4dC5VcHBlcmNhc2UiLCBpbnB1dDogKHN0YXRlKSA9PiBTdHJpbmcoc3RhdGVbInRleHQiXSksIG91dHB1dEtleTogInVwcGVyIiB9XSB9LCB7IHRleHQ6ICJjb3JlIiB9LCB7IGFjdG9ySWQ6ICJ1c2VyIiwgcGVybWlzc2lvbnM6IFsidGV4dC51cHBlcmNhc2UiXSwgbWV0YWRhdGE6IHt9IH0pOwogICAgZXhwZWN0KHJlc3VsdC5vayAmJiByZXN1bHQudmFsdWUuc3RhdGVbInVwcGVyIl0pLnRvQmUoIkNPUkUiKTsKICB9KTsKfSk7Cg==
+import { describe, expect, it } from "vitest";
+import { ok } from "@ai-platform-core/kernel";
+import { createCapabilityRegistry, createCapabilityRuntime, createPermissionChecker } from "@ai-platform-core/capability";
+import { createWorkflowRuntime } from "./index.js";
+
+describe("workflow", () => {
+  it("runs capability steps", async () => {
+    const registry = createCapabilityRegistry();
+    registry.register({ id: "Text.Uppercase", name: "Uppercase", description: "Uppercase text", permission: "text.uppercase", input: "string", output: "string", execute: async (input: string) => ok(input.toUpperCase()) });
+    const runtime = createWorkflowRuntime(createCapabilityRuntime(registry, createPermissionChecker()));
+    const result = await runtime.start({ id: "wf", name: "Workflow", steps: [{ id: "step-1", capabilityId: "Text.Uppercase", input: (state) => String(state["text"]), outputKey: "upper" }] }, { text: "core" }, { actorId: "user", permissions: ["text.uppercase"], metadata: {} });
+    expect(result.ok && result.value.state["upper"]).toBe("CORE");
+  });
+});

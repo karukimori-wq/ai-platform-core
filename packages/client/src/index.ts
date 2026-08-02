@@ -1,1 +1,90 @@
-aW1wb3J0IHsgdHlwZSBSZXN1bHQsIGVyciwgb2ssIHBsYXRmb3JtRXJyb3IgfSBmcm9tICJAYWktcGxhdGZvcm0tY29yZS9rZXJuZWwiOwoKZXhwb3J0IHR5cGUgQ2xpZW50VHlwZSA9CiAgfCAid2ViIgogIHwgImxpbmVfYm90IgogIHwgImRpc2NvcmRfYm90IgogIHwgInNsYWNrX2JvdCIKICB8ICJnbWFpbF9hc3Npc3RhbnQiCiAgfCAic25zX2JvdCIKICB8ICJjbGkiCiAgfCAiYXBpIgogIHwgImFpX2VtcGxveWVlIgogIHwgIm90aGVyIjsKCmV4cG9ydCBpbnRlcmZhY2UgQ2xpZW50QnVkZ2V0UG9saWN5IHsKICByZWFkb25seSBtb250aGx5VG9rZW5MaW1pdD86IG51bWJlcjsKICByZWFkb25seSBtb250aGx5Q29zdExpbWl0PzogbnVtYmVyOwogIHJlYWRvbmx5IGN1cnJlbmN5Pzogc3RyaW5nOwp9CgpleHBvcnQgaW50ZXJmYWNlIENsaWVudE1hbmlmZXN0IHsKICByZWFkb25seSBpZDogc3RyaW5nOwogIHJlYWRvbmx5IG5hbWU6IHN0cmluZzsKICByZWFkb25seSB0eXBlOiBDbGllbnRUeXBlOwogIHJlYWRvbmx5IHZlcnNpb246IHN0cmluZzsKICByZWFkb25seSBwcm92aWRlcj86IHN0cmluZzsKICByZWFkb25seSBkZWZhdWx0TW9kZWw/OiBzdHJpbmc7CiAgcmVhZG9ubHkgY2FwYWJpbGl0aWVzOiByZWFkb25seSBzdHJpbmdbXTsKICByZWFkb25seSBrbm93bGVkZ2U6IHJlYWRvbmx5IHN0cmluZ1tdOwogIHJlYWRvbmx5IGFuYWx5dGljczogYm9vbGVhbjsKICByZWFkb25seSBidWRnZXQ/OiBDbGllbnRCdWRnZXRQb2xpY3k7CiAgcmVhZG9ubHkgbWV0YWRhdGE/OiBSZWFkb25seTxSZWNvcmQ8c3RyaW5nLCB1bmtub3duPj47Cn0KCmV4cG9ydCBpbnRlcmZhY2UgQ2xpZW50UmVnaXN0cnkgewogIHJlYWRvbmx5IHJlZ2lzdGVyOiAobWFuaWZlc3Q6IENsaWVudE1hbmlmZXN0KSA9PiBSZXN1bHQ8dm9pZD47CiAgcmVhZG9ubHkgZ2V0OiAoaWQ6IHN0cmluZykgPT4gUmVzdWx0PENsaWVudE1hbmlmZXN0PjsKICByZWFkb25seSBsaXN0OiAoKSA9PiByZWFkb25seSBDbGllbnRNYW5pZmVzdFtdOwogIHJlYWRvbmx5IGNhblVzZUNhcGFiaWxpdHk6IChjbGllbnRJZDogc3RyaW5nLCBjYXBhYmlsaXR5SWQ6IHN0cmluZykgPT4gUmVzdWx0PHZvaWQ+Owp9CgpleHBvcnQgY29uc3QgdmFsaWRhdGVDbGllbnRNYW5pZmVzdCA9IChtYW5pZmVzdDogQ2xpZW50TWFuaWZlc3QpOiBSZXN1bHQ8dm9pZD4gPT4gewogIGlmIChtYW5pZmVzdC5pZC50cmltKCkubGVuZ3RoID09PSAwKSB7CiAgICByZXR1cm4gZXJyKHBsYXRmb3JtRXJyb3IoIkNMSUVOVF9NQU5JRkVTVF9JTlZBTElEIiwgIkNsaWVudCBpZCBpcyByZXF1aXJlZC4iKSk7CiAgfQogIGlmIChtYW5pZmVzdC5uYW1lLnRyaW0oKS5sZW5ndGggPT09IDApIHsKICAgIHJldHVybiBlcnIocGxhdGZvcm1FcnJvcigiQ0xJRU5UX01BTklGRVNUX0lOVkFMSUQiLCAiQ2xpZW50IG5hbWUgaXMgcmVxdWlyZWQuIikpOwogIH0KICBpZiAobWFuaWZlc3QudmVyc2lvbi50cmltKCkubGVuZ3RoID09PSAwKSB7CiAgICByZXR1cm4gZXJyKHBsYXRmb3JtRXJyb3IoIkNMSUVOVF9NQU5JRkVTVF9JTlZBTElEIiwgIkNsaWVudCB2ZXJzaW9uIGlzIHJlcXVpcmVkLiIpKTsKICB9CiAgaWYgKG1hbmlmZXN0LnByb3ZpZGVyICE9PSB1bmRlZmluZWQgJiYgbWFuaWZlc3QucHJvdmlkZXIudHJpbSgpLmxlbmd0aCA9PT0gMCkgewogICAgcmV0dXJuIGVycihwbGF0Zm9ybUVycm9yKCJDTElFTlRfTUFOSUZFU1RfSU5WQUxJRCIsICJDbGllbnQgcHJvdmlkZXIgbXVzdCBub3QgYmUgZW1wdHkgd2hlbiBwcm92aWRlZC4iKSk7CiAgfQogIGlmIChtYW5pZmVzdC5kZWZhdWx0TW9kZWwgIT09IHVuZGVmaW5lZCAmJiBtYW5pZmVzdC5kZWZhdWx0TW9kZWwudHJpbSgpLmxlbmd0aCA9PT0gMCkgewogICAgcmV0dXJuIGVycihwbGF0Zm9ybUVycm9yKCJDTElFTlRfTUFOSUZFU1RfSU5WQUxJRCIsICJDbGllbnQgZGVmYXVsdCBtb2RlbCBtdXN0IG5vdCBiZSBlbXB0eSB3aGVuIHByb3ZpZGVkLiIpKTsKICB9CiAgaWYgKG1hbmlmZXN0LmNhcGFiaWxpdGllcy5sZW5ndGggPT09IDApIHsKICAgIHJldHVybiBlcnIocGxhdGZvcm1FcnJvcigiQ0xJRU5UX01BTklGRVNUX0lOVkFMSUQiLCAiQ2xpZW50IG11c3QgZGVjbGFyZSBhdCBsZWFzdCBvbmUgY2FwYWJpbGl0eS4iKSk7CiAgfQogIHJldHVybiBvayh1bmRlZmluZWQpOwp9OwoKZXhwb3J0IGNvbnN0IGNyZWF0ZUNsaWVudFJlZ2lzdHJ5ID0gKCk6IENsaWVudFJlZ2lzdHJ5ID0+IHsKICBjb25zdCBjbGllbnRzID0gbmV3IE1hcDxzdHJpbmcsIENsaWVudE1hbmlmZXN0PigpOwogIHJldHVybiB7CiAgICByZWdpc3RlcjogKG1hbmlmZXN0KSA9PiB7CiAgICAgIGNvbnN0IHZhbGlkID0gdmFsaWRhdGVDbGllbnRNYW5pZmVzdChtYW5pZmVzdCk7CiAgICAgIGlmICghdmFsaWQub2spIHJldHVybiB2YWxpZDsKICAgICAgY2xpZW50cy5zZXQobWFuaWZlc3QuaWQsIG1hbmlmZXN0KTsKICAgICAgcmV0dXJuIG9rKHVuZGVmaW5lZCk7CiAgICB9LAogICAgZ2V0OiAoaWQpID0+IHsKICAgICAgY29uc3QgY2xpZW50ID0gY2xpZW50cy5nZXQoaWQpOwogICAgICByZXR1cm4gY2xpZW50ID09PSB1bmRlZmluZWQKICAgICAgICA/IGVycihwbGF0Zm9ybUVycm9yKCJDTElFTlRfTk9UX0ZPVU5EIiwgYENsaWVudCAnJHtpZH0nIHdhcyBub3QgcmVnaXN0ZXJlZC5gKSkKICAgICAgICA6IG9rKGNsaWVudCk7CiAgICB9LAogICAgbGlzdDogKCkgPT4gWy4uLmNsaWVudHMudmFsdWVzKCldLAogICAgY2FuVXNlQ2FwYWJpbGl0eTogKGNsaWVudElkLCBjYXBhYmlsaXR5SWQpID0+IHsKICAgICAgY29uc3QgY2xpZW50ID0gY2xpZW50cy5nZXQoY2xpZW50SWQpOwogICAgICBpZiAoY2xpZW50ID09PSB1bmRlZmluZWQpIHsKICAgICAgICByZXR1cm4gZXJyKHBsYXRmb3JtRXJyb3IoIkNMSUVOVF9OT1RfRk9VTkQiLCBgQ2xpZW50ICcke2NsaWVudElkfScgd2FzIG5vdCByZWdpc3RlcmVkLmApKTsKICAgICAgfQogICAgICByZXR1cm4gY2xpZW50LmNhcGFiaWxpdGllcy5pbmNsdWRlcyhjYXBhYmlsaXR5SWQpCiAgICAgICAgPyBvayh1bmRlZmluZWQpCiAgICAgICAgOiBlcnIocGxhdGZvcm1FcnJvcigiQ0xJRU5UX0NBUEFCSUxJVFlfTk9UX0FMTE9XRUQiLCBgQ2xpZW50ICcke2NsaWVudElkfScgY2Fubm90IHVzZSAnJHtjYXBhYmlsaXR5SWR9Jy5gKSk7CiAgICB9CiAgfTsKfTsK
+import { type Result, err, ok, platformError } from "@ai-platform-core/kernel";
+
+export type ClientType =
+  | "web"
+  | "line_bot"
+  | "discord_bot"
+  | "slack_bot"
+  | "gmail_assistant"
+  | "sns_bot"
+  | "cli"
+  | "api"
+  | "ai_employee"
+  | "other";
+
+export interface ClientBudgetPolicy {
+  readonly monthlyTokenLimit?: number;
+  readonly monthlyCostLimit?: number;
+  readonly currency?: string;
+}
+
+export interface ClientManifest {
+  readonly id: string;
+  readonly name: string;
+  readonly type: ClientType;
+  readonly version: string;
+  readonly provider?: string;
+  readonly defaultModel?: string;
+  readonly capabilities: readonly string[];
+  readonly knowledge: readonly string[];
+  readonly analytics: boolean;
+  readonly budget?: ClientBudgetPolicy;
+  readonly metadata?: Readonly<Record<string, unknown>>;
+}
+
+export interface ClientRegistry {
+  readonly register: (manifest: ClientManifest) => Result<void>;
+  readonly get: (id: string) => Result<ClientManifest>;
+  readonly list: () => readonly ClientManifest[];
+  readonly canUseCapability: (clientId: string, capabilityId: string) => Result<void>;
+}
+
+export const validateClientManifest = (manifest: ClientManifest): Result<void> => {
+  if (manifest.id.trim().length === 0) {
+    return err(platformError("CLIENT_MANIFEST_INVALID", "Client id is required."));
+  }
+  if (manifest.name.trim().length === 0) {
+    return err(platformError("CLIENT_MANIFEST_INVALID", "Client name is required."));
+  }
+  if (manifest.version.trim().length === 0) {
+    return err(platformError("CLIENT_MANIFEST_INVALID", "Client version is required."));
+  }
+  if (manifest.provider !== undefined && manifest.provider.trim().length === 0) {
+    return err(platformError("CLIENT_MANIFEST_INVALID", "Client provider must not be empty when provided."));
+  }
+  if (manifest.defaultModel !== undefined && manifest.defaultModel.trim().length === 0) {
+    return err(platformError("CLIENT_MANIFEST_INVALID", "Client default model must not be empty when provided."));
+  }
+  if (manifest.capabilities.length === 0) {
+    return err(platformError("CLIENT_MANIFEST_INVALID", "Client must declare at least one capability."));
+  }
+  return ok(undefined);
+};
+
+export const createClientRegistry = (): ClientRegistry => {
+  const clients = new Map<string, ClientManifest>();
+  return {
+    register: (manifest) => {
+      const valid = validateClientManifest(manifest);
+      if (!valid.ok) return valid;
+      clients.set(manifest.id, manifest);
+      return ok(undefined);
+    },
+    get: (id) => {
+      const client = clients.get(id);
+      return client === undefined
+        ? err(platformError("CLIENT_NOT_FOUND", `Client '${id}' was not registered.`))
+        : ok(client);
+    },
+    list: () => [...clients.values()],
+    canUseCapability: (clientId, capabilityId) => {
+      const client = clients.get(clientId);
+      if (client === undefined) {
+        return err(platformError("CLIENT_NOT_FOUND", `Client '${clientId}' was not registered.`));
+      }
+      return client.capabilities.includes(capabilityId)
+        ? ok(undefined)
+        : err(platformError("CLIENT_CAPABILITY_NOT_ALLOWED", `Client '${clientId}' cannot use '${capabilityId}'.`));
+    }
+  };
+};

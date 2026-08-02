@@ -1,1 +1,160 @@
-aW1wb3J0IHR5cGUgeyBDb3N0VXNhZ2UsIFRva2VuVXNhZ2UgfSBmcm9tICJAYWktcGxhdGZvcm0tY29yZS9hY3Rpdml0eSI7CmltcG9ydCB7IHR5cGUgUmVzdWx0LCBlcnIsIG9rLCBwbGF0Zm9ybUVycm9yIH0gZnJvbSAiQGFpLXBsYXRmb3JtLWNvcmUva2VybmVsIjsKCmV4cG9ydCBpbnRlcmZhY2UgQUlNZXNzYWdlIHsKICByZWFkb25seSByb2xlOiAic3lzdGVtIiB8ICJ1c2VyIiB8ICJhc3Npc3RhbnQiIHwgInRvb2wiOwogIHJlYWRvbmx5IGNvbnRlbnQ6IHN0cmluZzsKfQoKZXhwb3J0IGludGVyZmFjZSBBSVByb3ZpZGVyUmVxdWVzdCB7CiAgcmVhZG9ubHkgbW9kZWw6IHN0cmluZzsKICByZWFkb25seSBtZXNzYWdlczogcmVhZG9ubHkgQUlNZXNzYWdlW107CiAgcmVhZG9ubHkgaW5wdXQ/OiBSZWFkb25seTxSZWNvcmQ8c3RyaW5nLCB1bmtub3duPj47CiAgcmVhZG9ubHkgbWV0YWRhdGE/OiBSZWFkb25seTxSZWNvcmQ8c3RyaW5nLCB1bmtub3duPj47Cn0KCmV4cG9ydCBpbnRlcmZhY2UgQUlQcm92aWRlclJlc3BvbnNlIHsKICByZWFkb25seSBvdXRwdXQ6IFJlYWRvbmx5PFJlY29yZDxzdHJpbmcsIHVua25vd24+PjsKICByZWFkb25seSB0ZXh0Pzogc3RyaW5nOwogIHJlYWRvbmx5IG1vZGVsOiBzdHJpbmc7CiAgcmVhZG9ubHkgdG9rZW5zOiBUb2tlblVzYWdlOwogIHJlYWRvbmx5IGNvc3Q6IENvc3RVc2FnZTsKICByZWFkb25seSBrbm93bGVkZ2VVc2VkOiByZWFkb25seSBzdHJpbmdbXTsKfQoKZXhwb3J0IGludGVyZmFjZSBBSVByb3ZpZGVyIHsKICByZWFkb25seSBpZDogc3RyaW5nOwogIHJlYWRvbmx5IGNoYXQ6IChyZXF1ZXN0OiBBSVByb3ZpZGVyUmVxdWVzdCkgPT4gUHJvbWlzZTxSZXN1bHQ8QUlQcm92aWRlclJlc3BvbnNlPj47CiAgcmVhZG9ubHkgaW1hZ2U/OiAocmVxdWVzdDogQUlQcm92aWRlclJlcXVlc3QpID0+IFByb21pc2U8UmVzdWx0PEFJUHJvdmlkZXJSZXNwb25zZT4+OwogIHJlYWRvbmx5IGVtYmVkZGluZz86IChyZXF1ZXN0OiBBSVByb3ZpZGVyUmVxdWVzdCkgPT4gUHJvbWlzZTxSZXN1bHQ8QUlQcm92aWRlclJlc3BvbnNlPj47CiAgcmVhZG9ubHkgc3BlZWNoPzogKHJlcXVlc3Q6IEFJUHJvdmlkZXJSZXF1ZXN0KSA9PiBQcm9taXNlPFJlc3VsdDxBSVByb3ZpZGVyUmVzcG9uc2U+PjsKICByZWFkb25seSB0dHM/OiAocmVxdWVzdDogQUlQcm92aWRlclJlcXVlc3QpID0+IFByb21pc2U8UmVzdWx0PEFJUHJvdmlkZXJSZXNwb25zZT4+OwogIHJlYWRvbmx5IG1vZGVyYXRpb24/OiAocmVxdWVzdDogQUlQcm92aWRlclJlcXVlc3QpID0+IFByb21pc2U8UmVzdWx0PEFJUHJvdmlkZXJSZXNwb25zZT4+Owp9CgpleHBvcnQgaW50ZXJmYWNlIE9wZW5BSUNvbXBhdGlibGVQcm92aWRlckNvbmZpZyB7CiAgcmVhZG9ubHkgaWQ/OiBzdHJpbmc7CiAgcmVhZG9ubHkgYmFzZVVybD86IHN0cmluZzsKICByZWFkb25seSBhcGlLZXk6IHN0cmluZzsKICByZWFkb25seSBvcmdhbml6YXRpb24/OiBzdHJpbmc7CiAgcmVhZG9ubHkgZGVmYXVsdEhlYWRlcnM/OiBSZWFkb25seTxSZWNvcmQ8c3RyaW5nLCBzdHJpbmc+PjsKICByZWFkb25seSBmZXRjaD86IHR5cGVvZiBmZXRjaDsKfQoKaW50ZXJmYWNlIE9wZW5BSUNoYXRDb21wbGV0aW9uQ2hvaWNlIHsKICByZWFkb25seSBtZXNzYWdlPzogewogICAgcmVhZG9ubHkgY29udGVudD86IHVua25vd247CiAgfTsKfQoKaW50ZXJmYWNlIE9wZW5BSUNoYXRDb21wbGV0aW9uVXNhZ2UgewogIHJlYWRvbmx5IHByb21wdF90b2tlbnM/OiB1bmtub3duOwogIHJlYWRvbmx5IGNvbXBsZXRpb25fdG9rZW5zPzogdW5rbm93bjsKICByZWFkb25seSB0b3RhbF90b2tlbnM/OiB1bmtub3duOwp9CgppbnRlcmZhY2UgT3BlbkFJQ2hhdENvbXBsZXRpb25SZXNwb25zZSB7CiAgcmVhZG9ubHkgbW9kZWw/OiB1bmtub3duOwogIHJlYWRvbmx5IGNob2ljZXM/OiB1bmtub3duOwogIHJlYWRvbmx5IHVzYWdlPzogdW5rbm93bjsKfQoKZXhwb3J0IGludGVyZmFjZSBQcm92aWRlclJlZ2lzdHJ5IHsKICByZWFkb25seSByZWdpc3RlcjogKHByb3ZpZGVyOiBBSVByb3ZpZGVyKSA9PiBSZXN1bHQ8dm9pZD47CiAgcmVhZG9ubHkgZ2V0OiAoaWQ6IHN0cmluZykgPT4gUmVzdWx0PEFJUHJvdmlkZXI+OwogIHJlYWRvbmx5IGxpc3Q6ICgpID0+IHJlYWRvbmx5IEFJUHJvdmlkZXJbXTsKfQoKZXhwb3J0IGNvbnN0IGNyZWF0ZVByb3ZpZGVyUmVnaXN0cnkgPSAoKTogUHJvdmlkZXJSZWdpc3RyeSA9PiB7CiAgY29uc3QgcHJvdmlkZXJzID0gbmV3IE1hcDxzdHJpbmcsIEFJUHJvdmlkZXI+KCk7CiAgcmV0dXJuIHsKICAgIHJlZ2lzdGVyOiAocHJvdmlkZXIpID0+IHsKICAgICAgcHJvdmlkZXJzLnNldChwcm92aWRlci5pZCwgcHJvdmlkZXIpOwogICAgICByZXR1cm4gb2sodW5kZWZpbmVkKTsKICAgIH0sCiAgICBnZXQ6IChpZCkgPT4gewogICAgICBjb25zdCBwcm92aWRlciA9IHByb3ZpZGVycy5nZXQoaWQpOwogICAgICByZXR1cm4gcHJvdmlkZXIgPT09IHVuZGVmaW5lZAogICAgICAgID8gZXJyKHBsYXRmb3JtRXJyb3IoIlBST1ZJREVSX05PVF9GT1VORCIsIGBQcm92aWRlciAnJHtpZH0nIHdhcyBub3QgcmVnaXN0ZXJlZC5gKSkKICAgICAgICA6IG9rKHByb3ZpZGVyKTsKICAgIH0sCiAgICBsaXN0OiAoKSA9PiBbLi4ucHJvdmlkZXJzLnZhbHVlcygpXQogIH07Cn07CgpleHBvcnQgY29uc3QgY3JlYXRlRWNob1Byb3ZpZGVyID0gKGlkID0gImVjaG8iKTogQUlQcm92aWRlciA9PiAoewogIGlkLAogIGNoYXQ6IGFzeW5jIChyZXF1ZXN0KSA9PiB7CiAgICBjb25zdCB0ZXh0ID0gcmVxdWVzdC5tZXNzYWdlcy5tYXAoKG1lc3NhZ2UpID0+IG1lc3NhZ2UuY29udGVudCkuam9pbigiXG4iKTsKICAgIHJldHVybiBvayh7CiAgICAgIG91dHB1dDogeyB0ZXh0LCBpbnB1dDogcmVxdWVzdC5pbnB1dCA/PyB7fSB9LAogICAgICB0ZXh0LAogICAgICBtb2RlbDogcmVxdWVzdC5tb2RlbCwKICAgICAgdG9rZW5zOiB7IGlucHV0OiB0ZXh0Lmxlbmd0aCwgb3V0cHV0OiB0ZXh0Lmxlbmd0aCwgdG90YWw6IHRleHQubGVuZ3RoICogMiB9LAogICAgICBjb3N0OiB7IGFtb3VudDogMCwgY3VycmVuY3k6ICJVU0QiIH0sCiAgICAgIGtub3dsZWRnZVVzZWQ6IFtdCiAgICB9KTsKICB9Cn0pOwoKY29uc3QgcGFyc2VOdW1iZXIgPSAodmFsdWU6IHVua25vd24pOiBudW1iZXIgPT4gKHR5cGVvZiB2YWx1ZSA9PT0gIm51bWJlciIgJiYgTnVtYmVyLmlzRmluaXRlKHZhbHVlKSA/IHZhbHVlIDogMCk7Cgpjb25zdCBwYXJzZUNob2ljZXMgPSAodmFsdWU6IHVua25vd24pOiByZWFkb25seSBPcGVuQUlDaGF0Q29tcGxldGlvbkNob2ljZVtdID0+CiAgQXJyYXkuaXNBcnJheSh2YWx1ZSkgPyB2YWx1ZS5maWx0ZXIoKGl0ZW0pOiBpdGVtIGlzIE9wZW5BSUNoYXRDb21wbGV0aW9uQ2hvaWNlID0+IHR5cGVvZiBpdGVtID09PSAib2JqZWN0IiAmJiBpdGVtICE9PSBudWxsKSA6IFtdOwoKY29uc3QgcGFyc2VVc2FnZSA9ICh2YWx1ZTogdW5rbm93bik6IE9wZW5BSUNoYXRDb21wbGV0aW9uVXNhZ2UgPT4KICB0eXBlb2YgdmFsdWUgPT09ICJvYmplY3QiICYmIHZhbHVlICE9PSBudWxsID8gdmFsdWUgOiB7fTsKCmNvbnN0IHBhcnNlQ2hhdENvbXBsZXRpb24gPSAodmFsdWU6IHVua25vd24pOiBSZXN1bHQ8T3BlbkFJQ2hhdENvbXBsZXRpb25SZXNwb25zZT4gPT4KICB0eXBlb2YgdmFsdWUgPT09ICJvYmplY3QiICYmIHZhbHVlICE9PSBudWxsCiAgICA/IG9rKHZhbHVlKQogICAgOiBlcnIocGxhdGZvcm1FcnJvcigiUFJPVklERVJfSU5WQUxJRF9SRVNQT05TRSIsICJQcm92aWRlciByZXNwb25zZSB3YXMgbm90IGEgSlNPTiBvYmplY3QuIikpOwoKY29uc3QgcmVhZFJlc3BvbnNlVGV4dCA9IChyZXNwb25zZTogT3BlbkFJQ2hhdENvbXBsZXRpb25SZXNwb25zZSk6IHN0cmluZyA9PiB7CiAgY29uc3QgZmlyc3RDaG9pY2UgPSBwYXJzZUNob2ljZXMocmVzcG9uc2UuY2hvaWNlcylbMF07CiAgY29uc3QgY29udGVudCA9IGZpcnN0Q2hvaWNlPy5tZXNzYWdlPy5jb250ZW50OwogIHJldHVybiB0eXBlb2YgY29udGVudCA9PT0gInN0cmluZyIgPyBjb250ZW50IDogIiI7Cn07CgpleHBvcnQgY29uc3QgY3JlYXRlT3BlbkFJQ29tcGF0aWJsZVByb3ZpZGVyID0gKGNvbmZpZzogT3BlbkFJQ29tcGF0aWJsZVByb3ZpZGVyQ29uZmlnKTogQUlQcm92aWRlciA9PiB7CiAgY29uc3QgYmFzZVVybCA9IGNvbmZpZy5iYXNlVXJsID8/ICJodHRwczovL2FwaS5vcGVuYWkuY29tL3YxIjsKICBjb25zdCBmZXRjaEltcGwgPSBjb25maWcuZmV0Y2ggPz8gZmV0Y2g7CiAgcmV0dXJuIHsKICAgIGlkOiBjb25maWcuaWQgPz8gIm9wZW5haSIsCiAgICBjaGF0OiBhc3luYyAocmVxdWVzdCkgPT4gewogICAgICBjb25zdCByZXNwb25zZSA9IGF3YWl0IGZldGNoSW1wbChgJHtiYXNlVXJsfS9jaGF0L2NvbXBsZXRpb25zYCwgewogICAgICAgIG1ldGhvZDogIlBPU1QiLAogICAgICAgIGhlYWRlcnM6IHsKICAgICAgICAgICJjb250ZW50LXR5cGUiOiAiYXBwbGljYXRpb24vanNvbiIsCiAgICAgICAgICBhdXRob3JpemF0aW9uOiBgQmVhcmVyICR7Y29uZmlnLmFwaUtleX1gLAogICAgICAgICAgLi4uY29uZmlnLmRlZmF1bHRIZWFkZXJzLAogICAgICAgICAgLi4uKGNvbmZpZy5vcmdhbml6YXRpb24gPT09IHVuZGVmaW5lZCA/IHt9IDogeyAib3BlbmFpLW9yZ2FuaXphdGlvbiI6IGNvbmZpZy5vcmdhbml6YXRpb24gfSkKICAgICAgICB9LAogICAgICAgIGJvZHk6IEpTT04uc3RyaW5naWZ5KHsKICAgICAgICAgIG1vZGVsOiByZXF1ZXN0Lm1vZGVsLAogICAgICAgICAgbWVzc2FnZXM6IHJlcXVlc3QubWVzc2FnZXMKICAgICAgICB9KQogICAgICB9KTsKICAgICAgaWYgKCFyZXNwb25zZS5vaykgewogICAgICAgIHJldHVybiBlcnIocGxhdGZvcm1FcnJvcigiUFJPVklERVJfSFRUUF9FUlJPUiIsIGBQcm92aWRlciByZXR1cm5lZCBIVFRQICR7U3RyaW5nKHJlc3BvbnNlLnN0YXR1cyl9LmApKTsKICAgICAgfQogICAgICBjb25zdCBwYXJzZWQgPSBwYXJzZUNoYXRDb21wbGV0aW9uKGF3YWl0IHJlc3BvbnNlLmpzb24oKSk7CiAgICAgIGlmICghcGFyc2VkLm9rKSByZXR1cm4gcGFyc2VkOwogICAgICBjb25zdCB1c2FnZSA9IHBhcnNlVXNhZ2UocGFyc2VkLnZhbHVlLnVzYWdlKTsKICAgICAgY29uc3QgdGV4dCA9IHJlYWRSZXNwb25zZVRleHQocGFyc2VkLnZhbHVlKTsKICAgICAgY29uc3QgdG9rZW5zOiBUb2tlblVzYWdlID0gewogICAgICAgIGlucHV0OiBwYXJzZU51bWJlcih1c2FnZS5wcm9tcHRfdG9rZW5zKSwKICAgICAgICBvdXRwdXQ6IHBhcnNlTnVtYmVyKHVzYWdlLmNvbXBsZXRpb25fdG9rZW5zKSwKICAgICAgICB0b3RhbDogcGFyc2VOdW1iZXIodXNhZ2UudG90YWxfdG9rZW5zKQogICAgICB9OwogICAgICByZXR1cm4gb2soewogICAgICAgIG91dHB1dDogeyB0ZXh0IH0sCiAgICAgICAgdGV4dCwKICAgICAgICBtb2RlbDogdHlwZW9mIHBhcnNlZC52YWx1ZS5tb2RlbCA9PT0gInN0cmluZyIgPyBwYXJzZWQudmFsdWUubW9kZWwgOiByZXF1ZXN0Lm1vZGVsLAogICAgICAgIHRva2VucywKICAgICAgICBjb3N0OiB7IGFtb3VudDogMCwgY3VycmVuY3k6ICJVU0QiIH0sCiAgICAgICAga25vd2xlZGdlVXNlZDogW10KICAgICAgfSk7CiAgICB9CiAgfTsKfTsK
+import type { CostUsage, TokenUsage } from "@ai-platform-core/activity";
+import { type Result, err, ok, platformError } from "@ai-platform-core/kernel";
+
+export interface AIMessage {
+  readonly role: "system" | "user" | "assistant" | "tool";
+  readonly content: string;
+}
+
+export interface AIProviderRequest {
+  readonly model: string;
+  readonly messages: readonly AIMessage[];
+  readonly input?: Readonly<Record<string, unknown>>;
+  readonly metadata?: Readonly<Record<string, unknown>>;
+}
+
+export interface AIProviderResponse {
+  readonly output: Readonly<Record<string, unknown>>;
+  readonly text?: string;
+  readonly model: string;
+  readonly tokens: TokenUsage;
+  readonly cost: CostUsage;
+  readonly knowledgeUsed: readonly string[];
+}
+
+export interface AIProvider {
+  readonly id: string;
+  readonly chat: (request: AIProviderRequest) => Promise<Result<AIProviderResponse>>;
+  readonly image?: (request: AIProviderRequest) => Promise<Result<AIProviderResponse>>;
+  readonly embedding?: (request: AIProviderRequest) => Promise<Result<AIProviderResponse>>;
+  readonly speech?: (request: AIProviderRequest) => Promise<Result<AIProviderResponse>>;
+  readonly tts?: (request: AIProviderRequest) => Promise<Result<AIProviderResponse>>;
+  readonly moderation?: (request: AIProviderRequest) => Promise<Result<AIProviderResponse>>;
+}
+
+export interface OpenAICompatibleProviderConfig {
+  readonly id?: string;
+  readonly baseUrl?: string;
+  readonly apiKey: string;
+  readonly organization?: string;
+  readonly defaultHeaders?: Readonly<Record<string, string>>;
+  readonly fetch?: typeof fetch;
+}
+
+interface OpenAIChatCompletionChoice {
+  readonly message?: {
+    readonly content?: unknown;
+  };
+}
+
+interface OpenAIChatCompletionUsage {
+  readonly prompt_tokens?: unknown;
+  readonly completion_tokens?: unknown;
+  readonly total_tokens?: unknown;
+}
+
+interface OpenAIChatCompletionResponse {
+  readonly model?: unknown;
+  readonly choices?: unknown;
+  readonly usage?: unknown;
+}
+
+export interface ProviderRegistry {
+  readonly register: (provider: AIProvider) => Result<void>;
+  readonly get: (id: string) => Result<AIProvider>;
+  readonly list: () => readonly AIProvider[];
+}
+
+export const createProviderRegistry = (): ProviderRegistry => {
+  const providers = new Map<string, AIProvider>();
+  return {
+    register: (provider) => {
+      providers.set(provider.id, provider);
+      return ok(undefined);
+    },
+    get: (id) => {
+      const provider = providers.get(id);
+      return provider === undefined
+        ? err(platformError("PROVIDER_NOT_FOUND", `Provider '${id}' was not registered.`))
+        : ok(provider);
+    },
+    list: () => [...providers.values()]
+  };
+};
+
+export const createEchoProvider = (id = "echo"): AIProvider => ({
+  id,
+  chat: async (request) => {
+    const text = request.messages.map((message) => message.content).join("\n");
+    return ok({
+      output: { text, input: request.input ?? {} },
+      text,
+      model: request.model,
+      tokens: { input: text.length, output: text.length, total: text.length * 2 },
+      cost: { amount: 0, currency: "USD" },
+      knowledgeUsed: []
+    });
+  }
+});
+
+const parseNumber = (value: unknown): number => (typeof value === "number" && Number.isFinite(value) ? value : 0);
+
+const parseChoices = (value: unknown): readonly OpenAIChatCompletionChoice[] =>
+  Array.isArray(value) ? value.filter((item): item is OpenAIChatCompletionChoice => typeof item === "object" && item !== null) : [];
+
+const parseUsage = (value: unknown): OpenAIChatCompletionUsage =>
+  typeof value === "object" && value !== null ? value : {};
+
+const parseChatCompletion = (value: unknown): Result<OpenAIChatCompletionResponse> =>
+  typeof value === "object" && value !== null
+    ? ok(value)
+    : err(platformError("PROVIDER_INVALID_RESPONSE", "Provider response was not a JSON object."));
+
+const readResponseText = (response: OpenAIChatCompletionResponse): string => {
+  const firstChoice = parseChoices(response.choices)[0];
+  const content = firstChoice?.message?.content;
+  return typeof content === "string" ? content : "";
+};
+
+export const createOpenAICompatibleProvider = (config: OpenAICompatibleProviderConfig): AIProvider => {
+  const baseUrl = config.baseUrl ?? "https://api.openai.com/v1";
+  const fetchImpl = config.fetch ?? fetch;
+  return {
+    id: config.id ?? "openai",
+    chat: async (request) => {
+      const response = await fetchImpl(`${baseUrl}/chat/completions`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${config.apiKey}`,
+          ...config.defaultHeaders,
+          ...(config.organization === undefined ? {} : { "openai-organization": config.organization })
+        },
+        body: JSON.stringify({
+          model: request.model,
+          messages: request.messages
+        })
+      });
+      if (!response.ok) {
+        return err(platformError("PROVIDER_HTTP_ERROR", `Provider returned HTTP ${String(response.status)}.`));
+      }
+      const parsed = parseChatCompletion(await response.json());
+      if (!parsed.ok) return parsed;
+      const usage = parseUsage(parsed.value.usage);
+      const text = readResponseText(parsed.value);
+      const tokens: TokenUsage = {
+        input: parseNumber(usage.prompt_tokens),
+        output: parseNumber(usage.completion_tokens),
+        total: parseNumber(usage.total_tokens)
+      };
+      return ok({
+        output: { text },
+        text,
+        model: typeof parsed.value.model === "string" ? parsed.value.model : request.model,
+        tokens,
+        cost: { amount: 0, currency: "USD" },
+        knowledgeUsed: []
+      });
+    }
+  };
+};

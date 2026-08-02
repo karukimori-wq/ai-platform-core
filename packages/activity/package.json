@@ -1,1 +1,21 @@
-ewogICJuYW1lIjogIkBhaS1wbGF0Zm9ybS1jb3JlL2FjdGl2aXR5IiwKICAidmVyc2lvbiI6ICIwLjEuMCIsCiAgInR5cGUiOiAibW9kdWxlIiwKICAicHJpdmF0ZSI6IHRydWUsCiAgIm1haW4iOiAiLi9kaXN0L2luZGV4LmpzIiwKICAidHlwZXMiOiAiLi9kaXN0L2luZGV4LmQudHMiLAogICJleHBvcnRzIjogewogICAgIi4iOiAiLi9kaXN0L2luZGV4LmpzIgogIH0sCiAgInNjcmlwdHMiOiB7CiAgICAiYnVpbGQiOiAidHNjIC1wIHRzY29uZmlnLmpzb24iLAogICAgImxpbnQiOiAiZXNsaW50IHNyYyIsCiAgICAidGVzdCI6ICJ2aXRlc3QgcnVuIC0tcGFzc1dpdGhOb1Rlc3RzIiwKICAgICJ0ZXN0OmNvdmVyYWdlIjogInZpdGVzdCBydW4gLS1jb3ZlcmFnZSAtLXBhc3NXaXRoTm9UZXN0cyIKICB9LAogICJkZXBlbmRlbmNpZXMiOiB7CiAgICAiQGFpLXBsYXRmb3JtLWNvcmUvZXZlbnQiOiAid29ya3NwYWNlOioiLAogICAgIkBhaS1wbGF0Zm9ybS1jb3JlL2tlcm5lbCI6ICJ3b3Jrc3BhY2U6KiIKICB9Cn0K
+{
+  "name": "@ai-platform-core/activity",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint src",
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage --passWithNoTests"
+  },
+  "dependencies": {
+    "@ai-platform-core/event": "workspace:*",
+    "@ai-platform-core/kernel": "workspace:*"
+  }
+}

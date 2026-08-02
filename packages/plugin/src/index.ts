@@ -1,1 +1,47 @@
-aW1wb3J0IHsgdHlwZSBSZXN1bHQsIGVyciwgb2ssIHBsYXRmb3JtRXJyb3IgfSBmcm9tICJAYWktcGxhdGZvcm0tY29yZS9rZXJuZWwiOwoKZXhwb3J0IGludGVyZmFjZSBQbHVnaW5NYW5pZmVzdCB7CiAgcmVhZG9ubHkgaWQ6IHN0cmluZzsKICByZWFkb25seSBuYW1lOiBzdHJpbmc7CiAgcmVhZG9ubHkgdmVyc2lvbjogc3RyaW5nOwogIHJlYWRvbmx5IGNhcGFiaWxpdGllczogcmVhZG9ubHkgc3RyaW5nW107Cn0KCmV4cG9ydCBpbnRlcmZhY2UgUGx1Z2luU3RhdGUgewogIHJlYWRvbmx5IG1hbmlmZXN0OiBQbHVnaW5NYW5pZmVzdDsKICByZWFkb25seSBlbmFibGVkOiBib29sZWFuOwp9CgpleHBvcnQgaW50ZXJmYWNlIFBsdWdpblJ1bnRpbWUgewogIHJlYWRvbmx5IGluc3RhbGw6IChtYW5pZmVzdDogUGx1Z2luTWFuaWZlc3QpID0+IFJlc3VsdDx2b2lkPjsKICByZWFkb25seSBlbmFibGU6IChpZDogc3RyaW5nKSA9PiBSZXN1bHQ8dm9pZD47CiAgcmVhZG9ubHkgZGlzYWJsZTogKGlkOiBzdHJpbmcpID0+IFJlc3VsdDx2b2lkPjsKICByZWFkb25seSByZW1vdmU6IChpZDogc3RyaW5nKSA9PiBSZXN1bHQ8dm9pZD47CiAgcmVhZG9ubHkgbGlzdDogKCkgPT4gcmVhZG9ubHkgUGx1Z2luU3RhdGVbXTsKfQoKZXhwb3J0IGNvbnN0IGNyZWF0ZVBsdWdpblJ1bnRpbWUgPSAoKTogUGx1Z2luUnVudGltZSA9PiB7CiAgY29uc3QgcGx1Z2lucyA9IG5ldyBNYXA8c3RyaW5nLCBQbHVnaW5TdGF0ZT4oKTsKICByZXR1cm4gewogICAgaW5zdGFsbDogKG1hbmlmZXN0KSA9PiB7CiAgICAgIHBsdWdpbnMuc2V0KG1hbmlmZXN0LmlkLCB7IG1hbmlmZXN0LCBlbmFibGVkOiBmYWxzZSB9KTsKICAgICAgcmV0dXJuIG9rKHVuZGVmaW5lZCk7CiAgICB9LAogICAgZW5hYmxlOiAoaWQpID0+IHVwZGF0ZVBsdWdpbihwbHVnaW5zLCBpZCwgdHJ1ZSksCiAgICBkaXNhYmxlOiAoaWQpID0+IHVwZGF0ZVBsdWdpbihwbHVnaW5zLCBpZCwgZmFsc2UpLAogICAgcmVtb3ZlOiAoaWQpID0+IHsKICAgICAgcGx1Z2lucy5kZWxldGUoaWQpOwogICAgICByZXR1cm4gb2sodW5kZWZpbmVkKTsKICAgIH0sCiAgICBsaXN0OiAoKSA9PiBbLi4ucGx1Z2lucy52YWx1ZXMoKV0KICB9Owp9OwoKY29uc3QgdXBkYXRlUGx1Z2luID0gKHBsdWdpbnM6IE1hcDxzdHJpbmcsIFBsdWdpblN0YXRlPiwgaWQ6IHN0cmluZywgZW5hYmxlZDogYm9vbGVhbik6IFJlc3VsdDx2b2lkPiA9PiB7CiAgY29uc3QgcGx1Z2luID0gcGx1Z2lucy5nZXQoaWQpOwogIGlmIChwbHVnaW4gPT09IHVuZGVmaW5lZCkgewogICAgcmV0dXJuIGVycihwbGF0Zm9ybUVycm9yKCJQTFVHSU5fTk9UX0ZPVU5EIiwgYFBsdWdpbiAnJHtpZH0nIHdhcyBub3QgaW5zdGFsbGVkLmApKTsKICB9CiAgcGx1Z2lucy5zZXQoaWQsIHsgLi4ucGx1Z2luLCBlbmFibGVkIH0pOwogIHJldHVybiBvayh1bmRlZmluZWQpOwp9Owo=
+import { type Result, err, ok, platformError } from "@ai-platform-core/kernel";
+
+export interface PluginManifest {
+  readonly id: string;
+  readonly name: string;
+  readonly version: string;
+  readonly capabilities: readonly string[];
+}
+
+export interface PluginState {
+  readonly manifest: PluginManifest;
+  readonly enabled: boolean;
+}
+
+export interface PluginRuntime {
+  readonly install: (manifest: PluginManifest) => Result<void>;
+  readonly enable: (id: string) => Result<void>;
+  readonly disable: (id: string) => Result<void>;
+  readonly remove: (id: string) => Result<void>;
+  readonly list: () => readonly PluginState[];
+}
+
+export const createPluginRuntime = (): PluginRuntime => {
+  const plugins = new Map<string, PluginState>();
+  return {
+    install: (manifest) => {
+      plugins.set(manifest.id, { manifest, enabled: false });
+      return ok(undefined);
+    },
+    enable: (id) => updatePlugin(plugins, id, true),
+    disable: (id) => updatePlugin(plugins, id, false),
+    remove: (id) => {
+      plugins.delete(id);
+      return ok(undefined);
+    },
+    list: () => [...plugins.values()]
+  };
+};
+
+const updatePlugin = (plugins: Map<string, PluginState>, id: string, enabled: boolean): Result<void> => {
+  const plugin = plugins.get(id);
+  if (plugin === undefined) {
+    return err(platformError("PLUGIN_NOT_FOUND", `Plugin '${id}' was not installed.`));
+  }
+  plugins.set(id, { ...plugin, enabled });
+  return ok(undefined);
+};

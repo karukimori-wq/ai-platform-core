@@ -1,1 +1,33 @@
-ewogICJuYW1lIjogIkBhaS1wbGF0Zm9ybS1jb3JlL3J1bnRpbWUiLAogICJ2ZXJzaW9uIjogIjAuMS4wIiwKICAidHlwZSI6ICJtb2R1bGUiLAogICJwcml2YXRlIjogdHJ1ZSwKICAibWFpbiI6ICIuL2Rpc3QvaW5kZXguanMiLAogICJ0eXBlcyI6ICIuL2Rpc3QvaW5kZXguZC50cyIsCiAgImV4cG9ydHMiOiB7CiAgICAiLiI6ICIuL2Rpc3QvaW5kZXguanMiCiAgfSwKICAic2NyaXB0cyI6IHsKICAgICJidWlsZCI6ICJ0c2MgLXAgdHNjb25maWcuanNvbiIsCiAgICAibGludCI6ICJlc2xpbnQgc3JjIiwKICAgICJ0ZXN0IjogInZpdGVzdCBydW4gLS1wYXNzV2l0aE5vVGVzdHMiLAogICAgInRlc3Q6Y292ZXJhZ2UiOiAidml0ZXN0IHJ1biAtLWNvdmVyYWdlIC0tcGFzc1dpdGhOb1Rlc3RzIgogIH0sCiAgImRlcGVuZGVuY2llcyI6IHsKICAgICJAYWktcGxhdGZvcm0tY29yZS9hY3Rpdml0eSI6ICJ3b3Jrc3BhY2U6KiIsCiAgICAiQGFpLXBsYXRmb3JtLWNvcmUvYW5hbHl0aWNzIjogIndvcmtzcGFjZToqIiwKICAgICJAYWktcGxhdGZvcm0tY29yZS9jYXBhYmlsaXR5IjogIndvcmtzcGFjZToqIiwKICAgICJAYWktcGxhdGZvcm0tY29yZS9jbGllbnQiOiAid29ya3NwYWNlOioiLAogICAgIkBhaS1wbGF0Zm9ybS1jb3JlL2Rhc2hib2FyZCI6ICJ3b3Jrc3BhY2U6KiIsCiAgICAiQGFpLXBsYXRmb3JtLWNvcmUvZXZlbnQiOiAid29ya3NwYWNlOioiLAogICAgIkBhaS1wbGF0Zm9ybS1jb3JlL2dhdGV3YXkiOiAid29ya3NwYWNlOioiLAogICAgIkBhaS1wbGF0Zm9ybS1jb3JlL2tub3dsZWRnZSI6ICJ3b3Jrc3BhY2U6KiIsCiAgICAiQGFpLXBsYXRmb3JtLWNvcmUva2VybmVsIjogIndvcmtzcGFjZToqIiwKICAgICJAYWktcGxhdGZvcm0tY29yZS9wbHVnaW4iOiAid29ya3NwYWNlOioiLAogICAgIkBhaS1wbGF0Zm9ybS1jb3JlL3Byb3ZpZGVyIjogIndvcmtzcGFjZToqIiwKICAgICJAYWktcGxhdGZvcm0tY29yZS9zZWNyZXRzIjogIndvcmtzcGFjZToqIiwKICAgICJAYWktcGxhdGZvcm0tY29yZS9zdG9yYWdlIjogIndvcmtzcGFjZToqIiwKICAgICJAYWktcGxhdGZvcm0tY29yZS93b3JrZmxvdyI6ICJ3b3Jrc3BhY2U6KiIKICB9Cn0K
+{
+  "name": "@ai-platform-core/runtime",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint src",
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage --passWithNoTests"
+  },
+  "dependencies": {
+    "@ai-platform-core/activity": "workspace:*",
+    "@ai-platform-core/analytics": "workspace:*",
+    "@ai-platform-core/capability": "workspace:*",
+    "@ai-platform-core/client": "workspace:*",
+    "@ai-platform-core/dashboard": "workspace:*",
+    "@ai-platform-core/event": "workspace:*",
+    "@ai-platform-core/gateway": "workspace:*",
+    "@ai-platform-core/knowledge": "workspace:*",
+    "@ai-platform-core/kernel": "workspace:*",
+    "@ai-platform-core/plugin": "workspace:*",
+    "@ai-platform-core/provider": "workspace:*",
+    "@ai-platform-core/secrets": "workspace:*",
+    "@ai-platform-core/storage": "workspace:*",
+    "@ai-platform-core/workflow": "workspace:*"
+  }
+}

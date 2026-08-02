@@ -1,1 +1,343 @@
-aW1wb3J0IHR5cGUgeyBBY3Rpdml0eUZlZWRiYWNrLCBBY3Rpdml0eU91dGNvbWUsIEFjdGl2aXR5UmVxdWVzdCwgQWN0aXZpdHlSZXN1bHQsIEFjdGl2aXR5UnVudGltZSB9IGZyb20gIkBhaS1wbGF0Zm9ybS1jb3JlL2FjdGl2aXR5IjsKaW1wb3J0IHR5cGUgeyBBbmFseXRpY3NSZXBvc2l0b3J5IH0gZnJvbSAiQGFpLXBsYXRmb3JtLWNvcmUvYW5hbHl0aWNzIjsKaW1wb3J0IHsgY3JlYXRlVXNhZ2VSZWNvcmQgfSBmcm9tICJAYWktcGxhdGZvcm0tY29yZS9hbmFseXRpY3MiOwppbXBvcnQgdHlwZSB7IENsaWVudEJ1ZGdldFBvbGljeSwgQ2xpZW50UmVnaXN0cnkgfSBmcm9tICJAYWktcGxhdGZvcm0tY29yZS9jbGllbnQiOwppbXBvcnQgdHlwZSB7IEtub3dsZWRnZVJlcG9zaXRvcnksIEtub3dsZWRnZVNlYXJjaFJlc3VsdCB9IGZyb20gIkBhaS1wbGF0Zm9ybS1jb3JlL2tub3dsZWRnZSI7CmltcG9ydCB0eXBlIHsgQ2xvY2ssIExvZ2dlciwgUmVzdWx0IH0gZnJvbSAiQGFpLXBsYXRmb3JtLWNvcmUva2VybmVsIjsKaW1wb3J0IHsgZXJyLCBvaywgcGxhdGZvcm1FcnJvciB9IGZyb20gIkBhaS1wbGF0Zm9ybS1jb3JlL2tlcm5lbCI7CmltcG9ydCB0eXBlIHsgQUlNZXNzYWdlLCBBSVByb3ZpZGVyUmVxdWVzdCwgQUlQcm92aWRlclJlc3BvbnNlLCBQcm92aWRlclJlZ2lzdHJ5IH0gZnJvbSAiQGFpLXBsYXRmb3JtLWNvcmUvcHJvdmlkZXIiOwoKZXhwb3J0IGludGVyZmFjZSBHYXRld2F5QXV0aENvbnRleHQgewogIHJlYWRvbmx5IGNsaWVudElkOiBzdHJpbmc7CiAgcmVhZG9ubHkgcGVybWlzc2lvbnM6IHJlYWRvbmx5IHN0cmluZ1tdOwp9CgpleHBvcnQgaW50ZXJmYWNlIEdhdGV3YXlSZXF1ZXN0IHsKICByZWFkb25seSBhdXRoOiBHYXRld2F5QXV0aENvbnRleHQ7CiAgcmVhZG9ubHkgYWN0aXZpdHk6IEFjdGl2aXR5UmVxdWVzdDsKICByZWFkb25seSBtZXNzYWdlczogcmVhZG9ubHkgQUlNZXNzYWdlW107Cn0KCmV4cG9ydCBpbnRlcmZhY2UgR2F0ZXdheU91dGNvbWVSZXF1ZXN0IHsKICByZWFkb25seSBhdXRoOiBHYXRld2F5QXV0aENvbnRleHQ7CiAgcmVhZG9ubHkgb3V0Y29tZTogQWN0aXZpdHlPdXRjb21lOwp9CgpleHBvcnQgaW50ZXJmYWNlIEdhdGV3YXlGZWVkYmFja1JlcXVlc3QgewogIHJlYWRvbmx5IGF1dGg6IEdhdGV3YXlBdXRoQ29udGV4dDsKICByZWFkb25seSBmZWVkYmFjazogQWN0aXZpdHlGZWVkYmFjazsKfQoKZXhwb3J0IGludGVyZmFjZSBHYXRld2F5QXV0aGVudGljYXRvciB7CiAgcmVhZG9ubHkgYXV0aGVudGljYXRlOiAoY29udGV4dDogR2F0ZXdheUF1dGhDb250ZXh0KSA9PiBSZXN1bHQ8dm9pZD47Cn0KCmV4cG9ydCBpbnRlcmZhY2UgQUlHYXRld2F5IHsKICByZWFkb25seSBydW46IChyZXF1ZXN0OiBHYXRld2F5UmVxdWVzdCkgPT4gUHJvbWlzZTxSZXN1bHQ8QWN0aXZpdHlSZXN1bHQ+PjsKICByZWFkb25seSByZWNvcmRPdXRjb21lOiAocmVxdWVzdDogR2F0ZXdheU91dGNvbWVSZXF1ZXN0KSA9PiBQcm9taXNlPFJlc3VsdDx2b2lkPj47CiAgcmVhZG9ubHkgcmVjb3JkRmVlZGJhY2s6IChyZXF1ZXN0OiBHYXRld2F5RmVlZGJhY2tSZXF1ZXN0KSA9PiBQcm9taXNlPFJlc3VsdDx2b2lkPj47Cn0KCmV4cG9ydCBpbnRlcmZhY2UgR2F0ZXdheUtub3dsZWRnZUNvbnRleHQgewogIHJlYWRvbmx5IHVzZWRJZHM6IHJlYWRvbmx5IHN0cmluZ1tdOwogIHJlYWRvbmx5IG1ldGFkYXRhOiBSZWFkb25seTxSZWNvcmQ8c3RyaW5nLCB1bmtub3duPj47Cn0KCmV4cG9ydCBpbnRlcmZhY2UgR2F0ZXdheVJvdXRlIHsKICByZWFkb25seSBwcm92aWRlcklkOiBzdHJpbmc7CiAgcmVhZG9ubHkgbW9kZWw6IHN0cmluZzsKfQoKZXhwb3J0IGludGVyZmFjZSBHYXRld2F5UmV0cnlQb2xpY3kgewogIHJlYWRvbmx5IG1heEF0dGVtcHRzOiBudW1iZXI7Cn0KCmV4cG9ydCBpbnRlcmZhY2UgR2F0ZXdheVJlc2lsaWVuY2VQb2xpY3kgewogIHJlYWRvbmx5IHJldHJ5PzogR2F0ZXdheVJldHJ5UG9saWN5OwogIHJlYWRvbmx5IGZhbGxiYWNrUHJvdmlkZXJzPzogcmVhZG9ubHkgc3RyaW5nW107Cn0KCmludGVyZmFjZSBHYXRld2F5UHJvdmlkZXJFeGVjdXRpb24gewogIHJlYWRvbmx5IHByb3ZpZGVySWQ6IHN0cmluZzsKICByZWFkb25seSByZXNwb25zZTogQUlQcm92aWRlclJlc3BvbnNlOwp9CgppbnRlcmZhY2UgR2F0ZXdheUJ1ZGdldFVzYWdlIHsKICByZWFkb25seSB0b2tlbnM6IG51bWJlcjsKICByZWFkb25seSBjb3N0OiBudW1iZXI7Cn0KCmV4cG9ydCBjb25zdCBjcmVhdGVBbGxvd0FsbEF1dGhlbnRpY2F0b3IgPSAoKTogR2F0ZXdheUF1dGhlbnRpY2F0b3IgPT4gKHsKICBhdXRoZW50aWNhdGU6ICgpID0+IG9rKHVuZGVmaW5lZCkKfSk7Cgpjb25zdCBhdXRoZW50aWNhdGVHYXRld2F5UmVxdWVzdCA9ICgKICBhdXRoZW50aWNhdG9yOiBHYXRld2F5QXV0aGVudGljYXRvciwKICBhdXRoOiBHYXRld2F5QXV0aENvbnRleHQKKTogUmVzdWx0PHZvaWQ+ID0+IGF1dGhlbnRpY2F0b3IuYXV0aGVudGljYXRlKGF1dGgpOwoKY29uc3QgZW5zdXJlQWN0aXZpdHlPd25lciA9IGFzeW5jICgKICBhY3Rpdml0eVJ1bnRpbWU6IEFjdGl2aXR5UnVudGltZSwKICBhY3Rpdml0eUlkOiBzdHJpbmcsCiAgY2xpZW50SWQ6IHN0cmluZwopOiBQcm9taXNlPFJlc3VsdDx2b2lkPj4gPT4gewogIGNvbnN0IGFjdGl2aXR5ID0gYXdhaXQgYWN0aXZpdHlSdW50aW1lLmdldChhY3Rpdml0eUlkKTsKICBpZiAoIWFjdGl2aXR5Lm9rKSByZXR1cm4gYWN0aXZpdHk7CiAgcmV0dXJuIGFjdGl2aXR5LnZhbHVlLnJlcXVlc3QuY2xpZW50ID09PSBjbGllbnRJZAogICAgPyBvayh1bmRlZmluZWQpCiAgICA6IGVycihwbGF0Zm9ybUVycm9yKCJHQVRFV0FZX0NMSUVOVF9NSVNNQVRDSCIsICJBdXRoZW50aWNhdGVkIGNsaWVudCBtdXN0IG1hdGNoIHRoZSBBY3Rpdml0eSBvd25lci4iKSk7Cn07Cgpjb25zdCB1bmlxdWUgPSAodmFsdWVzOiByZWFkb25seSBzdHJpbmdbXSk6IHJlYWRvbmx5IHN0cmluZ1tdID0+IFsuLi5uZXcgU2V0KHZhbHVlcyldOwoKY29uc3QgaXNTYW1lTW9udGggPSAobGVmdDogRGF0ZSwgcmlnaHQ6IERhdGUpOiBib29sZWFuID0+CiAgbGVmdC5nZXRVVENGdWxsWWVhcigpID09PSByaWdodC5nZXRVVENGdWxsWWVhcigpICYmIGxlZnQuZ2V0VVRDTW9udGgoKSA9PT0gcmlnaHQuZ2V0VVRDTW9udGgoKTsKCmNvbnN0IHJlYWRDbGllbnRCdWRnZXQgPSAocmVxdWVzdDogR2F0ZXdheVJlcXVlc3QsIGNsaWVudHM/OiBDbGllbnRSZWdpc3RyeSk6IFJlc3VsdDxDbGllbnRCdWRnZXRQb2xpY3kgfCB1bmRlZmluZWQ+ID0+IHsKICBpZiAoY2xpZW50cyA9PT0gdW5kZWZpbmVkKSByZXR1cm4gb2sodW5kZWZpbmVkKTsKICBjb25zdCBjbGllbnQgPSBjbGllbnRzLmdldChyZXF1ZXN0LmFjdGl2aXR5LmNsaWVudCk7CiAgcmV0dXJuIGNsaWVudC5vayA/IG9rKGNsaWVudC52YWx1ZS5idWRnZXQpIDogY2xpZW50Owp9OwoKY29uc3QgcmVhZE1vbnRobHlVc2FnZSA9IGFzeW5jICgKICBhbmFseXRpY3M6IEFuYWx5dGljc1JlcG9zaXRvcnksCiAgY2xpZW50SWQ6IHN0cmluZywKICBub3c6IERhdGUKKTogUHJvbWlzZTxSZXN1bHQ8R2F0ZXdheUJ1ZGdldFVzYWdlPj4gPT4gewogIGNvbnN0IHJlY29yZHMgPSBhd2FpdCBhbmFseXRpY3MubGlzdFVzYWdlKCk7CiAgaWYgKCFyZWNvcmRzLm9rKSByZXR1cm4gcmVjb3JkczsKICBjb25zdCBtb250aGx5UmVjb3JkcyA9IHJlY29yZHMudmFsdWUuZmlsdGVyKChyZWNvcmQpID0+IHJlY29yZC5jbGllbnQgPT09IGNsaWVudElkICYmIGlzU2FtZU1vbnRoKHJlY29yZC5vY2N1cnJlZEF0LCBub3cpKTsKICByZXR1cm4gb2soewogICAgdG9rZW5zOiBtb250aGx5UmVjb3Jkcy5yZWR1Y2UoKHN1bSwgcmVjb3JkKSA9PiBzdW0gKyByZWNvcmQudG90YWxUb2tlbnMsIDApLAogICAgY29zdDogbW9udGhseVJlY29yZHMucmVkdWNlKChzdW0sIHJlY29yZCkgPT4gc3VtICsgcmVjb3JkLmNvc3RBbW91bnQsIDApCiAgfSk7Cn07Cgpjb25zdCBlbnN1cmVNb250aGx5QnVkZ2V0ID0gKAogIGJ1ZGdldDogQ2xpZW50QnVkZ2V0UG9saWN5IHwgdW5kZWZpbmVkLAogIHVzYWdlOiBHYXRld2F5QnVkZ2V0VXNhZ2UKKTogUmVzdWx0PHZvaWQ+ID0+IHsKICBpZiAoYnVkZ2V0Py5tb250aGx5VG9rZW5MaW1pdCAhPT0gdW5kZWZpbmVkICYmIHVzYWdlLnRva2VucyA+IGJ1ZGdldC5tb250aGx5VG9rZW5MaW1pdCkgewogICAgcmV0dXJuIGVycihwbGF0Zm9ybUVycm9yKCJHQVRFV0FZX0NMSUVOVF9UT0tFTl9CVURHRVRfRVhDRUVERUQiLCAiQ2xpZW50IG1vbnRobHkgdG9rZW4gYnVkZ2V0IHdvdWxkIGJlIGV4Y2VlZGVkLiIpKTsKICB9CiAgaWYgKGJ1ZGdldD8ubW9udGhseUNvc3RMaW1pdCAhPT0gdW5kZWZpbmVkICYmIHVzYWdlLmNvc3QgPiBidWRnZXQubW9udGhseUNvc3RMaW1pdCkgewogICAgcmV0dXJuIGVycihwbGF0Zm9ybUVycm9yKCJHQVRFV0FZX0NMSUVOVF9DT1NUX0JVREdFVF9FWENFRURFRCIsICJDbGllbnQgbW9udGhseSBjb3N0IGJ1ZGdldCB3b3VsZCBiZSBleGNlZWRlZC4iKSk7CiAgfQogIHJldHVybiBvayh1bmRlZmluZWQpOwp9OwoKY29uc3QgZW5zdXJlTW9udGhseUJ1ZGdldEF2YWlsYWJsZSA9ICgKICBidWRnZXQ6IENsaWVudEJ1ZGdldFBvbGljeSB8IHVuZGVmaW5lZCwKICB1c2FnZTogR2F0ZXdheUJ1ZGdldFVzYWdlCik6IFJlc3VsdDx2b2lkPiA9PiB7CiAgaWYgKGJ1ZGdldD8ubW9udGhseVRva2VuTGltaXQgIT09IHVuZGVmaW5lZCAmJiB1c2FnZS50b2tlbnMgPj0gYnVkZ2V0Lm1vbnRobHlUb2tlbkxpbWl0KSB7CiAgICByZXR1cm4gZXJyKHBsYXRmb3JtRXJyb3IoIkdBVEVXQVlfQ0xJRU5UX1RPS0VOX0JVREdFVF9FWENFRURFRCIsICJDbGllbnQgbW9udGhseSB0b2tlbiBidWRnZXQgaGFzIGJlZW4gcmVhY2hlZC4iKSk7CiAgfQogIGlmIChidWRnZXQ/Lm1vbnRobHlDb3N0TGltaXQgIT09IHVuZGVmaW5lZCAmJiB1c2FnZS5jb3N0ID49IGJ1ZGdldC5tb250aGx5Q29zdExpbWl0KSB7CiAgICByZXR1cm4gZXJyKHBsYXRmb3JtRXJyb3IoIkdBVEVXQVlfQ0xJRU5UX0NPU1RfQlVER0VUX0VYQ0VFREVEIiwgIkNsaWVudCBtb250aGx5IGNvc3QgYnVkZ2V0IGhhcyBiZWVuIHJlYWNoZWQuIikpOwogIH0KICByZXR1cm4gb2sodW5kZWZpbmVkKTsKfTsKCmNvbnN0IHJlc29sdmVHYXRld2F5Um91dGUgPSAocmVxdWVzdDogR2F0ZXdheVJlcXVlc3QsIGNsaWVudHM/OiBDbGllbnRSZWdpc3RyeSk6IFJlc3VsdDxHYXRld2F5Um91dGU+ID0+IHsKICBpZiAoY2xpZW50cyA9PT0gdW5kZWZpbmVkKSB7CiAgICByZXR1cm4gb2soewogICAgICBwcm92aWRlcklkOiByZXF1ZXN0LmFjdGl2aXR5LnByb3ZpZGVyID8/ICJlY2hvIiwKICAgICAgbW9kZWw6IHJlcXVlc3QuYWN0aXZpdHkubW9kZWwgPz8gImRlZmF1bHQiCiAgICB9KTsKICB9CiAgY29uc3QgY2xpZW50ID0gY2xpZW50cy5nZXQocmVxdWVzdC5hY3Rpdml0eS5jbGllbnQpOwogIGlmICghY2xpZW50Lm9rKSByZXR1cm4gY2xpZW50OwogIHJldHVybiBvayh7CiAgICBwcm92aWRlcklkOiByZXF1ZXN0LmFjdGl2aXR5LnByb3ZpZGVyID8/IGNsaWVudC52YWx1ZS5wcm92aWRlciA/PyAiZWNobyIsCiAgICBtb2RlbDogcmVxdWVzdC5hY3Rpdml0eS5tb2RlbCA/PyBjbGllbnQudmFsdWUuZGVmYXVsdE1vZGVsID8/ICJkZWZhdWx0IgogIH0pOwp9OwoKY29uc3Qgc2VhcmNoS25vd2xlZGdlID0gYXN5bmMgKAogIHJlcXVlc3Q6IEdhdGV3YXlSZXF1ZXN0LAogIGNsaWVudHM/OiBDbGllbnRSZWdpc3RyeSwKICBrbm93bGVkZ2U/OiBLbm93bGVkZ2VSZXBvc2l0b3J5Cik6IFByb21pc2U8UmVzdWx0PEdhdGV3YXlLbm93bGVkZ2VDb250ZXh0Pj4gPT4gewogIGlmIChrbm93bGVkZ2UgPT09IHVuZGVmaW5lZCkgcmV0dXJuIG9rKHsgdXNlZElkczogW10sIG1ldGFkYXRhOiB7fSB9KTsKICBjb25zdCBzZWFyY2hlZCA9IGF3YWl0IGtub3dsZWRnZS5zZWFyY2gocmVxdWVzdC5hY3Rpdml0eS5nb2FsKTsKICBpZiAoIXNlYXJjaGVkLm9rKSByZXR1cm4gc2VhcmNoZWQ7CiAgY29uc3QgYWxsb3dlZEtub3dsZWRnZUlkcyA9IGNsaWVudHM/LmdldChyZXF1ZXN0LmFjdGl2aXR5LmNsaWVudCk7CiAgaWYgKGFsbG93ZWRLbm93bGVkZ2VJZHMgIT09IHVuZGVmaW5lZCAmJiAhYWxsb3dlZEtub3dsZWRnZUlkcy5vaykgcmV0dXJuIGFsbG93ZWRLbm93bGVkZ2VJZHM7CiAgY29uc3QgZmlsdGVyZWQgPSBmaWx0ZXJLbm93bGVkZ2VSZXN1bHRzKHNlYXJjaGVkLnZhbHVlLCBhbGxvd2VkS25vd2xlZGdlSWRzPy52YWx1ZS5rbm93bGVkZ2UpOwogIHJldHVybiBvayh7CiAgICB1c2VkSWRzOiBmaWx0ZXJlZC5tYXAoKHJlc3VsdCkgPT4gcmVzdWx0Lmtub3dsZWRnZS5pZCksCiAgICBtZXRhZGF0YTogewogICAgICBrbm93bGVkZ2VVc2VkOiBmaWx0ZXJlZC5tYXAoKHJlc3VsdCkgPT4gKHsKICAgICAgICBpZDogcmVzdWx0Lmtub3dsZWRnZS5pZCwKICAgICAgICBjb25maWRlbmNlOiByZXN1bHQua25vd2xlZGdlLmNvbmZpZGVuY2UsCiAgICAgICAgc2NvcmU6IHJlc3VsdC5zY29yZSwKICAgICAgICByZWZlcmVuY2VzOiByZXN1bHQua25vd2xlZGdlLnJlZmVyZW5jZXMubWFwKChyZWZlcmVuY2UpID0+IHJlZmVyZW5jZS5pZCkKICAgICAgfSkpCiAgICB9CiAgfSk7Cn07Cgpjb25zdCBmaWx0ZXJLbm93bGVkZ2VSZXN1bHRzID0gKAogIHJlc3VsdHM6IHJlYWRvbmx5IEtub3dsZWRnZVNlYXJjaFJlc3VsdFtdLAogIGFsbG93ZWRJZHM/OiByZWFkb25seSBzdHJpbmdbXQopOiByZWFkb25seSBLbm93bGVkZ2VTZWFyY2hSZXN1bHRbXSA9PiB7CiAgaWYgKGFsbG93ZWRJZHMgPT09IHVuZGVmaW5lZCkgcmV0dXJuIHJlc3VsdHM7CiAgcmV0dXJuIHJlc3VsdHMuZmlsdGVyKChyZXN1bHQpID0+IGFsbG93ZWRJZHMuaW5jbHVkZXMocmVzdWx0Lmtub3dsZWRnZS5pZCkpOwp9OwoKY29uc3Qgbm9ybWFsaXplQXR0ZW1wdENvdW50ID0gKHBvbGljeT86IEdhdGV3YXlSZXRyeVBvbGljeSk6IG51bWJlciA9PiBNYXRoLm1heCgxLCBwb2xpY3k/Lm1heEF0dGVtcHRzID8/IDEpOwoKY29uc3QgcmVzb2x2ZVByb3ZpZGVyT3JkZXIgPSAoCiAgcm91dGU6IEdhdGV3YXlSb3V0ZSwKICBwb2xpY3k/OiBHYXRld2F5UmVzaWxpZW5jZVBvbGljeQopOiByZWFkb25seSBzdHJpbmdbXSA9PiB1bmlxdWUoW3JvdXRlLnByb3ZpZGVySWQsIC4uLnBvbGljeT8uZmFsbGJhY2tQcm92aWRlcnMgPz8gW11dKTsKCmNvbnN0IGV4ZWN1dGVQcm92aWRlcldpdGhSZXRyeSA9IGFzeW5jICgKICBwcm92aWRlcnM6IFByb3ZpZGVyUmVnaXN0cnksCiAgcHJvdmlkZXJJZDogc3RyaW5nLAogIHJlcXVlc3Q6IEFJUHJvdmlkZXJSZXF1ZXN0LAogIGF0dGVtcHRzOiBudW1iZXIsCiAgbG9nZ2VyOiBMb2dnZXIsCiAgYWN0aXZpdHlJZDogc3RyaW5nCik6IFByb21pc2U8UmVzdWx0PEdhdGV3YXlQcm92aWRlckV4ZWN1dGlvbj4+ID0+IHsKICBjb25zdCBwcm92aWRlciA9IHByb3ZpZGVycy5nZXQocHJvdmlkZXJJZCk7CiAgaWYgKCFwcm92aWRlci5vaykgcmV0dXJuIGVycihwcm92aWRlci5lcnJvcik7CiAgbGV0IGxhc3RGYWlsdXJlOiBSZXN1bHQ8R2F0ZXdheVByb3ZpZGVyRXhlY3V0aW9uPiB8IHVuZGVmaW5lZDsKICBmb3IgKGxldCBhdHRlbXB0ID0gMTsgYXR0ZW1wdCA8PSBhdHRlbXB0czsgYXR0ZW1wdCArPSAxKSB7CiAgICBjb25zdCByZXNwb25zZSA9IGF3YWl0IHByb3ZpZGVyLnZhbHVlLmNoYXQocmVxdWVzdCk7CiAgICBpZiAocmVzcG9uc2Uub2spIHJldHVybiBvayh7IHByb3ZpZGVySWQsIHJlc3BvbnNlOiByZXNwb25zZS52YWx1ZSB9KTsKICAgIGxhc3RGYWlsdXJlID0gZXJyKHJlc3BvbnNlLmVycm9yKTsKICAgIGxvZ2dlci53YXJuKCJBSSBwcm92aWRlciBleGVjdXRpb24gYXR0ZW1wdCBmYWlsZWQuIiwgeyBhY3Rpdml0eUlkLCBwcm92aWRlcjogcHJvdmlkZXJJZCwgYXR0ZW1wdCB9KTsKICB9CiAgcmV0dXJuIGxhc3RGYWlsdXJlID8/IGVycihwbGF0Zm9ybUVycm9yKCJHQVRFV0FZX1BST1ZJREVSX1JFVFJZX0ZBSUxFRCIsICJBSSBwcm92aWRlciBleGVjdXRpb24gZmFpbGVkLiIpKTsKfTsKCmNvbnN0IGV4ZWN1dGVQcm92aWRlcldpdGhSZXNpbGllbmNlID0gYXN5bmMgKAogIHByb3ZpZGVyczogUHJvdmlkZXJSZWdpc3RyeSwKICByb3V0ZTogR2F0ZXdheVJvdXRlLAogIHJlcXVlc3Q6IEFJUHJvdmlkZXJSZXF1ZXN0LAogIGxvZ2dlcjogTG9nZ2VyLAogIGFjdGl2aXR5SWQ6IHN0cmluZywKICBwb2xpY3k/OiBHYXRld2F5UmVzaWxpZW5jZVBvbGljeQopOiBQcm9taXNlPFJlc3VsdDxHYXRld2F5UHJvdmlkZXJFeGVjdXRpb24+PiA9PiB7CiAgbGV0IGxhc3RGYWlsdXJlOiBSZXN1bHQ8R2F0ZXdheVByb3ZpZGVyRXhlY3V0aW9uPiB8IHVuZGVmaW5lZDsKICBjb25zdCBhdHRlbXB0cyA9IG5vcm1hbGl6ZUF0dGVtcHRDb3VudChwb2xpY3k/LnJldHJ5KTsKICBmb3IgKGNvbnN0IHByb3ZpZGVySWQgb2YgcmVzb2x2ZVByb3ZpZGVyT3JkZXIocm91dGUsIHBvbGljeSkpIHsKICAgIGNvbnN0IHJlc3BvbnNlID0gYXdhaXQgZXhlY3V0ZVByb3ZpZGVyV2l0aFJldHJ5KHByb3ZpZGVycywgcHJvdmlkZXJJZCwgcmVxdWVzdCwgYXR0ZW1wdHMsIGxvZ2dlciwgYWN0aXZpdHlJZCk7CiAgICBpZiAocmVzcG9uc2Uub2spIHJldHVybiByZXNwb25zZTsKICAgIGxhc3RGYWlsdXJlID0gcmVzcG9uc2U7CiAgICBsb2dnZXIud2FybigiQUkgcHJvdmlkZXIgZmFsbGJhY2sgY2FuZGlkYXRlIGZhaWxlZC4iLCB7IGFjdGl2aXR5SWQsIHByb3ZpZGVyOiBwcm92aWRlcklkIH0pOwogIH0KICByZXR1cm4gbGFzdEZhaWx1cmUgPz8gZXJyKHBsYXRmb3JtRXJyb3IoIkdBVEVXQVlfUFJPVklERVJfTk9UX0FWQUlMQUJMRSIsICJObyBBSSBwcm92aWRlciB3YXMgYXZhaWxhYmxlLiIpKTsKfTsKCmV4cG9ydCBjb25zdCBjcmVhdGVBSUdhdGV3YXkgPSAoCiAgYWN0aXZpdHlSdW50aW1lOiBBY3Rpdml0eVJ1bnRpbWUsCiAgcHJvdmlkZXJzOiBQcm92aWRlclJlZ2lzdHJ5LAogIGFuYWx5dGljczogQW5hbHl0aWNzUmVwb3NpdG9yeSwKICBhdXRoZW50aWNhdG9yOiBHYXRld2F5QXV0aGVudGljYXRvciwKICBjbG9jazogQ2xvY2ssCiAgbG9nZ2VyOiBMb2dnZXIsCiAgY2xpZW50cz86IENsaWVudFJlZ2lzdHJ5LAogIGtub3dsZWRnZT86IEtub3dsZWRnZVJlcG9zaXRvcnksCiAgcmVzaWxpZW5jZT86IEdhdGV3YXlSZXNpbGllbmNlUG9saWN5Cik6IEFJR2F0ZXdheSA9PiAoewogIHJ1bjogYXN5bmMgKHJlcXVlc3QpID0+IHsKICAgIGNvbnN0IGF1dGhlbnRpY2F0ZWQgPSBhdXRoZW50aWNhdGVHYXRld2F5UmVxdWVzdChhdXRoZW50aWNhdG9yLCByZXF1ZXN0LmF1dGgpOwogICAgaWYgKCFhdXRoZW50aWNhdGVkLm9rKSByZXR1cm4gYXV0aGVudGljYXRlZDsKICAgIGlmIChyZXF1ZXN0LmF1dGguY2xpZW50SWQgIT09IHJlcXVlc3QuYWN0aXZpdHkuY2xpZW50KSB7CiAgICAgIHJldHVybiBlcnIocGxhdGZvcm1FcnJvcigiR0FURVdBWV9DTElFTlRfTUlTTUFUQ0giLCAiQXV0aGVudGljYXRlZCBjbGllbnQgbXVzdCBtYXRjaCBBY3Rpdml0eVJlcXVlc3QgY2xpZW50LiIpKTsKICAgIH0KICAgIGlmIChjbGllbnRzICE9PSB1bmRlZmluZWQpIHsKICAgICAgY29uc3QgYWxsb3dlZCA9IGNsaWVudHMuY2FuVXNlQ2FwYWJpbGl0eShyZXF1ZXN0LmFjdGl2aXR5LmNsaWVudCwgcmVxdWVzdC5hY3Rpdml0eS5jYXBhYmlsaXR5KTsKICAgICAgaWYgKCFhbGxvd2VkLm9rKSByZXR1cm4gYWxsb3dlZDsKICAgIH0KICAgIGNvbnN0IHJvdXRlID0gcmVzb2x2ZUdhdGV3YXlSb3V0ZShyZXF1ZXN0LCBjbGllbnRzKTsKICAgIGlmICghcm91dGUub2spIHJldHVybiByb3V0ZTsKICAgIGNvbnN0IGNsaWVudEJ1ZGdldCA9IHJlYWRDbGllbnRCdWRnZXQocmVxdWVzdCwgY2xpZW50cyk7CiAgICBpZiAoIWNsaWVudEJ1ZGdldC5vaykgcmV0dXJuIGNsaWVudEJ1ZGdldDsKICAgIGNvbnN0IG1vbnRobHlVc2FnZSA9IGF3YWl0IHJlYWRNb250aGx5VXNhZ2UoYW5hbHl0aWNzLCByZXF1ZXN0LmFjdGl2aXR5LmNsaWVudCwgY2xvY2subm93KCkpOwogICAgaWYgKCFtb250aGx5VXNhZ2Uub2spIHJldHVybiBtb250aGx5VXNhZ2U7CiAgICBjb25zdCBleGlzdGluZ0J1ZGdldCA9IGVuc3VyZU1vbnRobHlCdWRnZXRBdmFpbGFibGUoY2xpZW50QnVkZ2V0LnZhbHVlLCBtb250aGx5VXNhZ2UudmFsdWUpOwogICAgaWYgKCFleGlzdGluZ0J1ZGdldC5vaykgcmV0dXJuIGV4aXN0aW5nQnVkZ2V0OwoKICAgIGNvbnN0IGNyZWF0ZWQgPSBhd2FpdCBhY3Rpdml0eVJ1bnRpbWUuY3JlYXRlKHJlcXVlc3QuYWN0aXZpdHkpOwogICAgaWYgKCFjcmVhdGVkLm9rKSByZXR1cm4gY3JlYXRlZDsKICAgIGF3YWl0IGFjdGl2aXR5UnVudGltZS50cmFuc2l0aW9uKGNyZWF0ZWQudmFsdWUuaWQudmFsdWUsICJydW5uaW5nIik7CgogICAgY29uc3Qga25vd2xlZGdlQ29udGV4dCA9IGF3YWl0IHNlYXJjaEtub3dsZWRnZShyZXF1ZXN0LCBjbGllbnRzLCBrbm93bGVkZ2UpOwogICAgaWYgKCFrbm93bGVkZ2VDb250ZXh0Lm9rKSByZXR1cm4ga25vd2xlZGdlQ29udGV4dDsKCiAgICBjb25zdCBzdGFydGVkQXQgPSBjbG9jay5ub3coKS5nZXRUaW1lKCk7CiAgICBjb25zdCByZXNwb25zZSA9IGF3YWl0IGV4ZWN1dGVQcm92aWRlcldpdGhSZXNpbGllbmNlKHByb3ZpZGVycywgcm91dGUudmFsdWUsIHsKICAgICAgbW9kZWw6IHJvdXRlLnZhbHVlLm1vZGVsLAogICAgICBtZXNzYWdlczogcmVxdWVzdC5tZXNzYWdlcywKICAgICAgaW5wdXQ6IHJlcXVlc3QuYWN0aXZpdHkuaW5wdXQsCiAgICAgIG1ldGFkYXRhOiB7CiAgICAgICAgYWN0aXZpdHlJZDogY3JlYXRlZC52YWx1ZS5pZC52YWx1ZSwKICAgICAgICBjYXBhYmlsaXR5OiByZXF1ZXN0LmFjdGl2aXR5LmNhcGFiaWxpdHksCiAgICAgICAgd29ya2Zsb3c6IHJlcXVlc3QuYWN0aXZpdHkud29ya2Zsb3csCiAgICAgICAgLi4ua25vd2xlZGdlQ29udGV4dC52YWx1ZS5tZXRhZGF0YQogICAgICB9CiAgICB9LCBsb2dnZXIsIGNyZWF0ZWQudmFsdWUuaWQudmFsdWUsIHJlc2lsaWVuY2UpOwogICAgaWYgKCFyZXNwb25zZS5vaykgewogICAgICBhd2FpdCBhY3Rpdml0eVJ1bnRpbWUudHJhbnNpdGlvbihjcmVhdGVkLnZhbHVlLmlkLnZhbHVlLCAiZmFpbGVkIik7CiAgICAgIGxvZ2dlci5lcnJvcigiQUkgcHJvdmlkZXIgZXhlY3V0aW9uIGZhaWxlZC4iLCB7IGFjdGl2aXR5SWQ6IGNyZWF0ZWQudmFsdWUuaWQudmFsdWUsIHByb3ZpZGVyOiByb3V0ZS52YWx1ZS5wcm92aWRlcklkIH0pOwogICAgICByZXR1cm4gcmVzcG9uc2U7CiAgICB9CiAgICBpZiAocmVxdWVzdC5hY3Rpdml0eS5idWRnZXQ/Lm1heFRva2VucyAhPT0gdW5kZWZpbmVkICYmIHJlc3BvbnNlLnZhbHVlLnJlc3BvbnNlLnRva2Vucy50b3RhbCA+IHJlcXVlc3QuYWN0aXZpdHkuYnVkZ2V0Lm1heFRva2VucykgewogICAgICBhd2FpdCBhY3Rpdml0eVJ1bnRpbWUudHJhbnNpdGlvbihjcmVhdGVkLnZhbHVlLmlkLnZhbHVlLCAiZmFpbGVkIik7CiAgICAgIHJldHVybiBlcnIocGxhdGZvcm1FcnJvcigiR0FURVdBWV9UT0tFTl9CVURHRVRfRVhDRUVERUQiLCAiUHJvdmlkZXIgcmVzcG9uc2UgZXhjZWVkZWQgdGhlIEFjdGl2aXR5IHRva2VuIGJ1ZGdldC4iKSk7CiAgICB9CiAgICBpZiAocmVxdWVzdC5hY3Rpdml0eS5idWRnZXQ/Lm1heENvc3QgIT09IHVuZGVmaW5lZCAmJiByZXNwb25zZS52YWx1ZS5yZXNwb25zZS5jb3N0LmFtb3VudCA+IHJlcXVlc3QuYWN0aXZpdHkuYnVkZ2V0Lm1heENvc3QpIHsKICAgICAgYXdhaXQgYWN0aXZpdHlSdW50aW1lLnRyYW5zaXRpb24oY3JlYXRlZC52YWx1ZS5pZC52YWx1ZSwgImZhaWxlZCIpOwogICAgICByZXR1cm4gZXJyKHBsYXRmb3JtRXJyb3IoIkdBVEVXQVlfQ09TVF9CVURHRVRfRVhDRUVERUQiLCAiUHJvdmlkZXIgcmVzcG9uc2UgZXhjZWVkZWQgdGhlIEFjdGl2aXR5IGNvc3QgYnVkZ2V0LiIpKTsKICAgIH0KICAgIGNvbnN0IHByb2plY3RlZEJ1ZGdldCA9IGVuc3VyZU1vbnRobHlCdWRnZXQoY2xpZW50QnVkZ2V0LnZhbHVlLCB7CiAgICAgIHRva2VuczogbW9udGhseVVzYWdlLnZhbHVlLnRva2VucyArIHJlc3BvbnNlLnZhbHVlLnJlc3BvbnNlLnRva2Vucy50b3RhbCwKICAgICAgY29zdDogbW9udGhseVVzYWdlLnZhbHVlLmNvc3QgKyByZXNwb25zZS52YWx1ZS5yZXNwb25zZS5jb3N0LmFtb3VudAogICAgfSk7CiAgICBpZiAoIXByb2plY3RlZEJ1ZGdldC5vaykgewogICAgICBhd2FpdCBhY3Rpdml0eVJ1bnRpbWUudHJhbnNpdGlvbihjcmVhdGVkLnZhbHVlLmlkLnZhbHVlLCAiZmFpbGVkIik7CiAgICAgIHJldHVybiBwcm9qZWN0ZWRCdWRnZXQ7CiAgICB9CgogICAgY29uc3QgcmVzdWx0OiBBY3Rpdml0eVJlc3VsdCA9IHsKICAgICAgYWN0aXZpdHlJZDogY3JlYXRlZC52YWx1ZS5pZC52YWx1ZSwKICAgICAgb3V0cHV0OiByZXNwb25zZS52YWx1ZS5yZXNwb25zZS5vdXRwdXQsCiAgICAgIHByb3ZpZGVyOiByZXNwb25zZS52YWx1ZS5wcm92aWRlcklkLAogICAgICBtb2RlbDogcmVzcG9uc2UudmFsdWUucmVzcG9uc2UubW9kZWwsCiAgICAgIHRva2VuczogcmVzcG9uc2UudmFsdWUucmVzcG9uc2UudG9rZW5zLAogICAgICBjb3N0OiByZXNwb25zZS52YWx1ZS5yZXNwb25zZS5jb3N0LAogICAgICBsYXRlbmN5TXM6IGNsb2NrLm5vdygpLmdldFRpbWUoKSAtIHN0YXJ0ZWRBdCwKICAgICAga25vd2xlZGdlVXNlZDogdW5pcXVlKFsuLi5rbm93bGVkZ2VDb250ZXh0LnZhbHVlLnVzZWRJZHMsIC4uLnJlc3BvbnNlLnZhbHVlLnJlc3BvbnNlLmtub3dsZWRnZVVzZWRdKQogICAgfTsKICAgIGNvbnN0IGNvbXBsZXRlZCA9IGF3YWl0IGFjdGl2aXR5UnVudGltZS5jb21wbGV0ZShyZXN1bHQpOwogICAgaWYgKCFjb21wbGV0ZWQub2spIHJldHVybiBjb21wbGV0ZWQ7CgogICAgY29uc3QgcmVjb3JkZWQgPSBhd2FpdCBhbmFseXRpY3MucmVjb3JkVXNhZ2UoY3JlYXRlVXNhZ2VSZWNvcmQoY29tcGxldGVkLnZhbHVlLCByZXN1bHQsIGNsb2NrLm5vdygpKSk7CiAgICBpZiAoIXJlY29yZGVkLm9rKSByZXR1cm4gcmVjb3JkZWQ7CiAgICByZXR1cm4gb2socmVzdWx0KTsKICB9LAogIHJlY29yZE91dGNvbWU6IGFzeW5jIChyZXF1ZXN0KSA9PiB7CiAgICBjb25zdCBhdXRoZW50aWNhdGVkID0gYXV0aGVudGljYXRlR2F0ZXdheVJlcXVlc3QoYXV0aGVudGljYXRvciwgcmVxdWVzdC5hdXRoKTsKICAgIGlmICghYXV0aGVudGljYXRlZC5vaykgcmV0dXJuIGF1dGhlbnRpY2F0ZWQ7CiAgICBjb25zdCBvd25lciA9IGF3YWl0IGVuc3VyZUFjdGl2aXR5T3duZXIoYWN0aXZpdHlSdW50aW1lLCByZXF1ZXN0Lm91dGNvbWUuYWN0aXZpdHlJZCwgcmVxdWVzdC5hdXRoLmNsaWVudElkKTsKICAgIGlmICghb3duZXIub2spIHJldHVybiBvd25lcjsKICAgIGNvbnN0IHJlY29yZGVkQWN0aXZpdHkgPSBhd2FpdCBhY3Rpdml0eVJ1bnRpbWUucmVjb3JkT3V0Y29tZShyZXF1ZXN0Lm91dGNvbWUpOwogICAgaWYgKCFyZWNvcmRlZEFjdGl2aXR5Lm9rKSByZXR1cm4gcmVjb3JkZWRBY3Rpdml0eTsKICAgIGNvbnN0IHJlY29yZGVkQW5hbHl0aWNzID0gYXdhaXQgYW5hbHl0aWNzLnJlY29yZE91dGNvbWUocmVxdWVzdC5vdXRjb21lKTsKICAgIHJldHVybiByZWNvcmRlZEFuYWx5dGljcy5vayA/IG9rKHVuZGVmaW5lZCkgOiByZWNvcmRlZEFuYWx5dGljczsKICB9LAogIHJlY29yZEZlZWRiYWNrOiBhc3luYyAocmVxdWVzdCkgPT4gewogICAgY29uc3QgYXV0aGVudGljYXRlZCA9IGF1dGhlbnRpY2F0ZUdhdGV3YXlSZXF1ZXN0KGF1dGhlbnRpY2F0b3IsIHJlcXVlc3QuYXV0aCk7CiAgICBpZiAoIWF1dGhlbnRpY2F0ZWQub2spIHJldHVybiBhdXRoZW50aWNhdGVkOwogICAgY29uc3Qgb3duZXIgPSBhd2FpdCBlbnN1cmVBY3Rpdml0eU93bmVyKGFjdGl2aXR5UnVudGltZSwgcmVxdWVzdC5mZWVkYmFjay5hY3Rpdml0eUlkLCByZXF1ZXN0LmF1dGguY2xpZW50SWQpOwogICAgaWYgKCFvd25lci5vaykgcmV0dXJuIG93bmVyOwogICAgY29uc3QgcmVjb3JkZWRBY3Rpdml0eSA9IGF3YWl0IGFjdGl2aXR5UnVudGltZS5yZWNvcmRGZWVkYmFjayhyZXF1ZXN0LmZlZWRiYWNrKTsKICAgIGlmICghcmVjb3JkZWRBY3Rpdml0eS5vaykgcmV0dXJuIHJlY29yZGVkQWN0aXZpdHk7CiAgICBjb25zdCByZWNvcmRlZEFuYWx5dGljcyA9IGF3YWl0IGFuYWx5dGljcy5yZWNvcmRGZWVkYmFjayhyZXF1ZXN0LmZlZWRiYWNrKTsKICAgIHJldHVybiByZWNvcmRlZEFuYWx5dGljcy5vayA/IG9rKHVuZGVmaW5lZCkgOiByZWNvcmRlZEFuYWx5dGljczsKICB9Cn0pOwo=
+import type { ActivityFeedback, ActivityOutcome, ActivityRequest, ActivityResult, ActivityRuntime } from "@ai-platform-core/activity";
+import type { AnalyticsRepository } from "@ai-platform-core/analytics";
+import { createUsageRecord } from "@ai-platform-core/analytics";
+import type { ClientBudgetPolicy, ClientRegistry } from "@ai-platform-core/client";
+import type { KnowledgeRepository, KnowledgeSearchResult } from "@ai-platform-core/knowledge";
+import type { Clock, Logger, Result } from "@ai-platform-core/kernel";
+import { err, ok, platformError } from "@ai-platform-core/kernel";
+import type { AIMessage, AIProviderRequest, AIProviderResponse, ProviderRegistry } from "@ai-platform-core/provider";
+
+export interface GatewayAuthContext {
+  readonly clientId: string;
+  readonly permissions: readonly string[];
+}
+
+export interface GatewayRequest {
+  readonly auth: GatewayAuthContext;
+  readonly activity: ActivityRequest;
+  readonly messages: readonly AIMessage[];
+}
+
+export interface GatewayOutcomeRequest {
+  readonly auth: GatewayAuthContext;
+  readonly outcome: ActivityOutcome;
+}
+
+export interface GatewayFeedbackRequest {
+  readonly auth: GatewayAuthContext;
+  readonly feedback: ActivityFeedback;
+}
+
+export interface GatewayAuthenticator {
+  readonly authenticate: (context: GatewayAuthContext) => Result<void>;
+}
+
+export interface AIGateway {
+  readonly run: (request: GatewayRequest) => Promise<Result<ActivityResult>>;
+  readonly recordOutcome: (request: GatewayOutcomeRequest) => Promise<Result<void>>;
+  readonly recordFeedback: (request: GatewayFeedbackRequest) => Promise<Result<void>>;
+}
+
+export interface GatewayKnowledgeContext {
+  readonly usedIds: readonly string[];
+  readonly metadata: Readonly<Record<string, unknown>>;
+}
+
+export interface GatewayRoute {
+  readonly providerId: string;
+  readonly model: string;
+}
+
+export interface GatewayRetryPolicy {
+  readonly maxAttempts: number;
+}
+
+export interface GatewayResiliencePolicy {
+  readonly retry?: GatewayRetryPolicy;
+  readonly fallbackProviders?: readonly string[];
+}
+
+interface GatewayProviderExecution {
+  readonly providerId: string;
+  readonly response: AIProviderResponse;
+}
+
+interface GatewayBudgetUsage {
+  readonly tokens: number;
+  readonly cost: number;
+}
+
+export const createAllowAllAuthenticator = (): GatewayAuthenticator => ({
+  authenticate: () => ok(undefined)
+});
+
+const authenticateGatewayRequest = (
+  authenticator: GatewayAuthenticator,
+  auth: GatewayAuthContext
+): Result<void> => authenticator.authenticate(auth);
+
+const ensureActivityOwner = async (
+  activityRuntime: ActivityRuntime,
+  activityId: string,
+  clientId: string
+): Promise<Result<void>> => {
+  const activity = await activityRuntime.get(activityId);
+  if (!activity.ok) return activity;
+  return activity.value.request.client === clientId
+    ? ok(undefined)
+    : err(platformError("GATEWAY_CLIENT_MISMATCH", "Authenticated client must match the Activity owner."));
+};
+
+const unique = (values: readonly string[]): readonly string[] => [...new Set(values)];
+
+const isSameMonth = (left: Date, right: Date): boolean =>
+  left.getUTCFullYear() === right.getUTCFullYear() && left.getUTCMonth() === right.getUTCMonth();
+
+const readClientBudget = (request: GatewayRequest, clients?: ClientRegistry): Result<ClientBudgetPolicy | undefined> => {
+  if (clients === undefined) return ok(undefined);
+  const client = clients.get(request.activity.client);
+  return client.ok ? ok(client.value.budget) : client;
+};
+
+const readMonthlyUsage = async (
+  analytics: AnalyticsRepository,
+  clientId: string,
+  now: Date
+): Promise<Result<GatewayBudgetUsage>> => {
+  const records = await analytics.listUsage();
+  if (!records.ok) return records;
+  const monthlyRecords = records.value.filter((record) => record.client === clientId && isSameMonth(record.occurredAt, now));
+  return ok({
+    tokens: monthlyRecords.reduce((sum, record) => sum + record.totalTokens, 0),
+    cost: monthlyRecords.reduce((sum, record) => sum + record.costAmount, 0)
+  });
+};
+
+const ensureMonthlyBudget = (
+  budget: ClientBudgetPolicy | undefined,
+  usage: GatewayBudgetUsage
+): Result<void> => {
+  if (budget?.monthlyTokenLimit !== undefined && usage.tokens > budget.monthlyTokenLimit) {
+    return err(platformError("GATEWAY_CLIENT_TOKEN_BUDGET_EXCEEDED", "Client monthly token budget would be exceeded."));
+  }
+  if (budget?.monthlyCostLimit !== undefined && usage.cost > budget.monthlyCostLimit) {
+    return err(platformError("GATEWAY_CLIENT_COST_BUDGET_EXCEEDED", "Client monthly cost budget would be exceeded."));
+  }
+  return ok(undefined);
+};
+
+const ensureMonthlyBudgetAvailable = (
+  budget: ClientBudgetPolicy | undefined,
+  usage: GatewayBudgetUsage
+): Result<void> => {
+  if (budget?.monthlyTokenLimit !== undefined && usage.tokens >= budget.monthlyTokenLimit) {
+    return err(platformError("GATEWAY_CLIENT_TOKEN_BUDGET_EXCEEDED", "Client monthly token budget has been reached."));
+  }
+  if (budget?.monthlyCostLimit !== undefined && usage.cost >= budget.monthlyCostLimit) {
+    return err(platformError("GATEWAY_CLIENT_COST_BUDGET_EXCEEDED", "Client monthly cost budget has been reached."));
+  }
+  return ok(undefined);
+};
+
+const resolveGatewayRoute = (request: GatewayRequest, clients?: ClientRegistry): Result<GatewayRoute> => {
+  if (clients === undefined) {
+    return ok({
+      providerId: request.activity.provider ?? "echo",
+      model: request.activity.model ?? "default"
+    });
+  }
+  const client = clients.get(request.activity.client);
+  if (!client.ok) return client;
+  return ok({
+    providerId: request.activity.provider ?? client.value.provider ?? "echo",
+    model: request.activity.model ?? client.value.defaultModel ?? "default"
+  });
+};
+
+const searchKnowledge = async (
+  request: GatewayRequest,
+  clients?: ClientRegistry,
+  knowledge?: KnowledgeRepository
+): Promise<Result<GatewayKnowledgeContext>> => {
+  if (knowledge === undefined) return ok({ usedIds: [], metadata: {} });
+  const searched = await knowledge.search(request.activity.goal);
+  if (!searched.ok) return searched;
+  const allowedKnowledgeIds = clients?.get(request.activity.client);
+  if (allowedKnowledgeIds !== undefined && !allowedKnowledgeIds.ok) return allowedKnowledgeIds;
+  const filtered = filterKnowledgeResults(searched.value, allowedKnowledgeIds?.value.knowledge);
+  return ok({
+    usedIds: filtered.map((result) => result.knowledge.id),
+    metadata: {
+      knowledgeUsed: filtered.map((result) => ({
+        id: result.knowledge.id,
+        confidence: result.knowledge.confidence,
+        score: result.score,
+        references: result.knowledge.references.map((reference) => reference.id)
+      }))
+    }
+  });
+};
+
+const filterKnowledgeResults = (
+  results: readonly KnowledgeSearchResult[],
+  allowedIds?: readonly string[]
+): readonly KnowledgeSearchResult[] => {
+  if (allowedIds === undefined) return results;
+  return results.filter((result) => allowedIds.includes(result.knowledge.id));
+};
+
+const normalizeAttemptCount = (policy?: GatewayRetryPolicy): number => Math.max(1, policy?.maxAttempts ?? 1);
+
+const resolveProviderOrder = (
+  route: GatewayRoute,
+  policy?: GatewayResiliencePolicy
+): readonly string[] => unique([route.providerId, ...policy?.fallbackProviders ?? []]);
+
+const executeProviderWithRetry = async (
+  providers: ProviderRegistry,
+  providerId: string,
+  request: AIProviderRequest,
+  attempts: number,
+  logger: Logger,
+  activityId: string
+): Promise<Result<GatewayProviderExecution>> => {
+  const provider = providers.get(providerId);
+  if (!provider.ok) return err(provider.error);
+  let lastFailure: Result<GatewayProviderExecution> | undefined;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const response = await provider.value.chat(request);
+    if (response.ok) return ok({ providerId, response: response.value });
+    lastFailure = err(response.error);
+    logger.warn("AI provider execution attempt failed.", { activityId, provider: providerId, attempt });
+  }
+  return lastFailure ?? err(platformError("GATEWAY_PROVIDER_RETRY_FAILED", "AI provider execution failed."));
+};
+
+const executeProviderWithResilience = async (
+  providers: ProviderRegistry,
+  route: GatewayRoute,
+  request: AIProviderRequest,
+  logger: Logger,
+  activityId: string,
+  policy?: GatewayResiliencePolicy
+): Promise<Result<GatewayProviderExecution>> => {
+  let lastFailure: Result<GatewayProviderExecution> | undefined;
+  const attempts = normalizeAttemptCount(policy?.retry);
+  for (const providerId of resolveProviderOrder(route, policy)) {
+    const response = await executeProviderWithRetry(providers, providerId, request, attempts, logger, activityId);
+    if (response.ok) return response;
+    lastFailure = response;
+    logger.warn("AI provider fallback candidate failed.", { activityId, provider: providerId });
+  }
+  return lastFailure ?? err(platformError("GATEWAY_PROVIDER_NOT_AVAILABLE", "No AI provider was available."));
+};
+
+export const createAIGateway = (
+  activityRuntime: ActivityRuntime,
+  providers: ProviderRegistry,
+  analytics: AnalyticsRepository,
+  authenticator: GatewayAuthenticator,
+  clock: Clock,
+  logger: Logger,
+  clients?: ClientRegistry,
+  knowledge?: KnowledgeRepository,
+  resilience?: GatewayResiliencePolicy
+): AIGateway => ({
+  run: async (request) => {
+    const authenticated = authenticateGatewayRequest(authenticator, request.auth);
+    if (!authenticated.ok) return authenticated;
+    if (request.auth.clientId !== request.activity.client) {
+      return err(platformError("GATEWAY_CLIENT_MISMATCH", "Authenticated client must match ActivityRequest client."));
+    }
+    if (clients !== undefined) {
+      const allowed = clients.canUseCapability(request.activity.client, request.activity.capability);
+      if (!allowed.ok) return allowed;
+    }
+    const route = resolveGatewayRoute(request, clients);
+    if (!route.ok) return route;
+    const clientBudget = readClientBudget(request, clients);
+    if (!clientBudget.ok) return clientBudget;
+    const monthlyUsage = await readMonthlyUsage(analytics, request.activity.client, clock.now());
+    if (!monthlyUsage.ok) return monthlyUsage;
+    const existingBudget = ensureMonthlyBudgetAvailable(clientBudget.value, monthlyUsage.value);
+    if (!existingBudget.ok) return existingBudget;
+
+    const created = await activityRuntime.create(request.activity);
+    if (!created.ok) return created;
+    await activityRuntime.transition(created.value.id.value, "running");
+
+    const knowledgeContext = await searchKnowledge(request, clients, knowledge);
+    if (!knowledgeContext.ok) return knowledgeContext;
+
+    const startedAt = clock.now().getTime();
+    const response = await executeProviderWithResilience(providers, route.value, {
+      model: route.value.model,
+      messages: request.messages,
+      input: request.activity.input,
+      metadata: {
+        activityId: created.value.id.value,
+        capability: request.activity.capability,
+        workflow: request.activity.workflow,
+        ...knowledgeContext.value.metadata
+      }
+    }, logger, created.value.id.value, resilience);
+    if (!response.ok) {
+      await activityRuntime.transition(created.value.id.value, "failed");
+      logger.error("AI provider execution failed.", { activityId: created.value.id.value, provider: route.value.providerId });
+      return response;
+    }
+    if (request.activity.budget?.maxTokens !== undefined && response.value.response.tokens.total > request.activity.budget.maxTokens) {
+      await activityRuntime.transition(created.value.id.value, "failed");
+      return err(platformError("GATEWAY_TOKEN_BUDGET_EXCEEDED", "Provider response exceeded the Activity token budget."));
+    }
+    if (request.activity.budget?.maxCost !== undefined && response.value.response.cost.amount > request.activity.budget.maxCost) {
+      await activityRuntime.transition(created.value.id.value, "failed");
+      return err(platformError("GATEWAY_COST_BUDGET_EXCEEDED", "Provider response exceeded the Activity cost budget."));
+    }
+    const projectedBudget = ensureMonthlyBudget(clientBudget.value, {
+      tokens: monthlyUsage.value.tokens + response.value.response.tokens.total,
+      cost: monthlyUsage.value.cost + response.value.response.cost.amount
+    });
+    if (!projectedBudget.ok) {
+      await activityRuntime.transition(created.value.id.value, "failed");
+      return projectedBudget;
+    }
+
+    const result: ActivityResult = {
+      activityId: created.value.id.value,
+      output: response.value.response.output,
+      provider: response.value.providerId,
+      model: response.value.response.model,
+      tokens: response.value.response.tokens,
+      cost: response.value.response.cost,
+      latencyMs: clock.now().getTime() - startedAt,
+      knowledgeUsed: unique([...knowledgeContext.value.usedIds, ...response.value.response.knowledgeUsed])
+    };
+    const completed = await activityRuntime.complete(result);
+    if (!completed.ok) return completed;
+
+    const recorded = await analytics.recordUsage(createUsageRecord(completed.value, result, clock.now()));
+    if (!recorded.ok) return recorded;
+    return ok(result);
+  },
+  recordOutcome: async (request) => {
+    const authenticated = authenticateGatewayRequest(authenticator, request.auth);
+    if (!authenticated.ok) return authenticated;
+    const owner = await ensureActivityOwner(activityRuntime, request.outcome.activityId, request.auth.clientId);
+    if (!owner.ok) return owner;
+    const recordedActivity = await activityRuntime.recordOutcome(request.outcome);
+    if (!recordedActivity.ok) return recordedActivity;
+    const recordedAnalytics = await analytics.recordOutcome(request.outcome);
+    return recordedAnalytics.ok ? ok(undefined) : recordedAnalytics;
+  },
+  recordFeedback: async (request) => {
+    const authenticated = authenticateGatewayRequest(authenticator, request.auth);
+    if (!authenticated.ok) return authenticated;
+    const owner = await ensureActivityOwner(activityRuntime, request.feedback.activityId, request.auth.clientId);
+    if (!owner.ok) return owner;
+    const recordedActivity = await activityRuntime.recordFeedback(request.feedback);
+    if (!recordedActivity.ok) return recordedActivity;
+    const recordedAnalytics = await analytics.recordFeedback(request.feedback);
+    return recordedAnalytics.ok ? ok(undefined) : recordedAnalytics;
+  }
+});

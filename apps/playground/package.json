@@ -1,1 +1,19 @@
-ewogICJuYW1lIjogIkBhaS1wbGF0Zm9ybS1jb3JlL3BsYXlncm91bmQiLAogICJ2ZXJzaW9uIjogIjAuMS4wIiwKICAidHlwZSI6ICJtb2R1bGUiLAogICJwcml2YXRlIjogdHJ1ZSwKICAic2NyaXB0cyI6IHsKICAgICJidWlsZCI6ICJ0c2MgLXAgdHNjb25maWcuanNvbiIsCiAgICAiZGV2IjogInRzeCBzcmMvaW5kZXgudHMiLAogICAgImxpbnQiOiAiZXNsaW50IHNyYyIsCiAgICAidGVzdCI6ICJ2aXRlc3QgcnVuIC0tcGFzc1dpdGhOb1Rlc3RzIiwKICAgICJ0ZXN0OmNvdmVyYWdlIjogInZpdGVzdCBydW4gLS1jb3ZlcmFnZSAtLXBhc3NXaXRoTm9UZXN0cyIKICB9LAogICJkZXBlbmRlbmNpZXMiOiB7CiAgICAiQGFpLXBsYXRmb3JtLWNvcmUvc2RrIjogIndvcmtzcGFjZToqIgogIH0sCiAgImRldkRlcGVuZGVuY2llcyI6IHsKICAgICJ0c3giOiAiXjQuMTkuMiIKICB9Cn0K
+{
+  "name": "@ai-platform-core/playground",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/index.ts",
+    "lint": "eslint src",
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage --passWithNoTests"
+  },
+  "dependencies": {
+    "@ai-platform-core/sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2"
+  }
+}

@@ -1,1 +1,27 @@
-IyBCYXNpYyBDYXBhYmlsaXR5IEV4YW1wbGUKCkFwcGxpY2F0aW9ucyBzaG91bGQgcmVnaXN0ZXIgY2FwYWJpbGl0aWVzIHRocm91Z2ggdGhlIFNESyBib3VuZGFyeS4KCmBgYHRzCmltcG9ydCB7CiAgY3JlYXRlQ2FwYWJpbGl0eVJlZ2lzdHJ5LAogIGNyZWF0ZUNhcGFiaWxpdHlSdW50aW1lLAogIGNyZWF0ZVBlcm1pc3Npb25DaGVja2VyLAogIG9rCn0gZnJvbSAiQGFpLXBsYXRmb3JtLWNvcmUvc2RrIjsKCmNvbnN0IHJlZ2lzdHJ5ID0gY3JlYXRlQ2FwYWJpbGl0eVJlZ2lzdHJ5KCk7CgpyZWdpc3RyeS5yZWdpc3Rlcih7CiAgaWQ6ICJUZXh0LlVwcGVyY2FzZSIsCiAgbmFtZTogIlVwcGVyY2FzZSB0ZXh0IiwKICBkZXNjcmlwdGlvbjogIkNvbnZlcnRzIHRleHQgdG8gdXBwZXJjYXNlLiIsCiAgcGVybWlzc2lvbjogInRleHQudXBwZXJjYXNlIiwKICBpbnB1dDogInN0cmluZyIsCiAgb3V0cHV0OiAic3RyaW5nIiwKICBleGVjdXRlOiBhc3luYyAoaW5wdXQ6IHN0cmluZykgPT4gb2soaW5wdXQudG9VcHBlckNhc2UoKSkKfSk7Cgpjb25zdCBydW50aW1lID0gY3JlYXRlQ2FwYWJpbGl0eVJ1bnRpbWUocmVnaXN0cnksIGNyZWF0ZVBlcm1pc3Npb25DaGVja2VyKCkpOwpgYGAKCg==
+# Basic Capability Example
+
+Applications should register capabilities through the SDK boundary.
+
+```ts
+import {
+  createCapabilityRegistry,
+  createCapabilityRuntime,
+  createPermissionChecker,
+  ok
+} from "@ai-platform-core/sdk";
+
+const registry = createCapabilityRegistry();
+
+registry.register({
+  id: "Text.Uppercase",
+  name: "Uppercase text",
+  description: "Converts text to uppercase.",
+  permission: "text.uppercase",
+  input: "string",
+  output: "string",
+  execute: async (input: string) => ok(input.toUpperCase())
+});
+
+const runtime = createCapabilityRuntime(registry, createPermissionChecker());
+```
+

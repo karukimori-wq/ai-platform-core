@@ -1,1 +1,82 @@
-aW1wb3J0IHR5cGUgeyBDYXBhYmlsaXR5Q29udGV4dCwgQ2FwYWJpbGl0eVJ1bnRpbWUgfSBmcm9tICJAYWktcGxhdGZvcm0tY29yZS9jYXBhYmlsaXR5IjsKaW1wb3J0IHsgdHlwZSBSZXN1bHQsIGVyciwgb2ssIHBsYXRmb3JtRXJyb3IgfSBmcm9tICJAYWktcGxhdGZvcm0tY29yZS9rZXJuZWwiOwoKZXhwb3J0IHR5cGUgQXBwcm92YWxTdGF0dXMgPSAibm90X3JlcXVpcmVkIiB8ICJwZW5kaW5nIiB8ICJhcHByb3ZlZCIgfCAicmVqZWN0ZWQiOwpleHBvcnQgdHlwZSBXb3JrZmxvd1N0YXR1cyA9ICJjcmVhdGVkIiB8ICJydW5uaW5nIiB8ICJ3YWl0aW5nX2FwcHJvdmFsIiB8ICJjb21wbGV0ZWQiIHwgImZhaWxlZCI7CgpleHBvcnQgaW50ZXJmYWNlIFdvcmtmbG93U3RlcDxJID0gdW5rbm93bj4gewogIHJlYWRvbmx5IGlkOiBzdHJpbmc7CiAgcmVhZG9ubHkgY2FwYWJpbGl0eUlkOiBzdHJpbmc7CiAgcmVhZG9ubHkgaW5wdXQ6IChzdGF0ZTogUmVhZG9ubHk8UmVjb3JkPHN0cmluZywgdW5rbm93bj4+KSA9PiBJOwogIHJlYWRvbmx5IG91dHB1dEtleTogc3RyaW5nOwogIHJlYWRvbmx5IHJlcXVpcmVzQXBwcm92YWw/OiBib29sZWFuOwogIHJlYWRvbmx5IHJldHJ5PzogUmVhZG9ubHk8eyBhdHRlbXB0czogbnVtYmVyIH0+OwogIHJlYWRvbmx5IHJvbGxiYWNrQ2FwYWJpbGl0eUlkPzogc3RyaW5nOwogIHJlYWRvbmx5IHRpbWVvdXRNcz86IG51bWJlcjsKfQoKZXhwb3J0IGludGVyZmFjZSBXb3JrZmxvd0RlZmluaXRpb24gewogIHJlYWRvbmx5IGlkOiBzdHJpbmc7CiAgcmVhZG9ubHkgbmFtZTogc3RyaW5nOwogIHJlYWRvbmx5IHN0ZXBzOiByZWFkb25seSBXb3JrZmxvd1N0ZXBbXTsKfQoKZXhwb3J0IGludGVyZmFjZSBXb3JrZmxvd0luc3RhbmNlIHsKICByZWFkb25seSBpZDogc3RyaW5nOwogIHJlYWRvbmx5IGRlZmluaXRpb25JZDogc3RyaW5nOwogIHJlYWRvbmx5IHN0YXR1czogV29ya2Zsb3dTdGF0dXM7CiAgcmVhZG9ubHkgYXBwcm92YWw6IEFwcHJvdmFsU3RhdHVzOwogIHJlYWRvbmx5IHN0YXRlOiBSZWFkb25seTxSZWNvcmQ8c3RyaW5nLCB1bmtub3duPj47CiAgcmVhZG9ubHkgY3VycmVudFN0ZXBJbmRleDogbnVtYmVyOwp9CgpleHBvcnQgaW50ZXJmYWNlIFdvcmtmbG93UnVudGltZSB7CiAgcmVhZG9ubHkgc3RhcnQ6ICgKICAgIGRlZmluaXRpb246IFdvcmtmbG93RGVmaW5pdGlvbiwKICAgIGluaXRpYWxTdGF0ZTogUmVhZG9ubHk8UmVjb3JkPHN0cmluZywgdW5rbm93bj4+LAogICAgY29udGV4dDogQ2FwYWJpbGl0eUNvbnRleHQKICApID0+IFByb21pc2U8UmVzdWx0PFdvcmtmbG93SW5zdGFuY2U+PjsKfQoKZXhwb3J0IGNvbnN0IGNyZWF0ZVdvcmtmbG93UnVudGltZSA9IChjYXBhYmlsaXR5UnVudGltZTogQ2FwYWJpbGl0eVJ1bnRpbWUpOiBXb3JrZmxvd1J1bnRpbWUgPT4gKHsKICBzdGFydDogYXN5bmMgKGRlZmluaXRpb24sIGluaXRpYWxTdGF0ZSwgY29udGV4dCkgPT4gewogICAgbGV0IHN0YXRlID0gaW5pdGlhbFN0YXRlOwogICAgZm9yIChjb25zdCBbaW5kZXgsIHN0ZXBdIG9mIGRlZmluaXRpb24uc3RlcHMuZW50cmllcygpKSB7CiAgICAgIGlmIChzdGVwLnJlcXVpcmVzQXBwcm92YWwgPT09IHRydWUpIHsKICAgICAgICByZXR1cm4gb2soewogICAgICAgICAgaWQ6IGAke2RlZmluaXRpb24uaWR9OiR7U3RyaW5nKERhdGUubm93KCkpfWAsCiAgICAgICAgICBkZWZpbml0aW9uSWQ6IGRlZmluaXRpb24uaWQsCiAgICAgICAgICBzdGF0dXM6ICJ3YWl0aW5nX2FwcHJvdmFsIiwKICAgICAgICAgIGFwcHJvdmFsOiAicGVuZGluZyIsCiAgICAgICAgICBzdGF0ZSwKICAgICAgICAgIGN1cnJlbnRTdGVwSW5kZXg6IGluZGV4CiAgICAgICAgfSk7CiAgICAgIH0KICAgICAgY29uc3QgbWF4QXR0ZW1wdHMgPSBzdGVwLnJldHJ5Py5hdHRlbXB0cyA/PyAxOwogICAgICBsZXQgbGFzdEVycm9yOiBSZXN1bHQ8dW5rbm93bj4gfCB1bmRlZmluZWQ7CiAgICAgIGZvciAobGV0IGF0dGVtcHQgPSAxOyBhdHRlbXB0IDw9IG1heEF0dGVtcHRzOyBhdHRlbXB0ICs9IDEpIHsKICAgICAgICBjb25zdCByZXN1bHQgPSBhd2FpdCBjYXBhYmlsaXR5UnVudGltZS5leGVjdXRlKHN0ZXAuY2FwYWJpbGl0eUlkLCBzdGVwLmlucHV0KHN0YXRlKSwgY29udGV4dCk7CiAgICAgICAgaWYgKHJlc3VsdC5vaykgewogICAgICAgICAgc3RhdGUgPSB7IC4uLnN0YXRlLCBbc3RlcC5vdXRwdXRLZXldOiByZXN1bHQudmFsdWUgfTsKICAgICAgICAgIGxhc3RFcnJvciA9IHVuZGVmaW5lZDsKICAgICAgICAgIGJyZWFrOwogICAgICAgIH0KICAgICAgICBsYXN0RXJyb3IgPSByZXN1bHQ7CiAgICAgIH0KICAgICAgaWYgKGxhc3RFcnJvciAhPT0gdW5kZWZpbmVkICYmICFsYXN0RXJyb3Iub2spIHsKICAgICAgICByZXR1cm4gZXJyKGxhc3RFcnJvci5lcnJvcik7CiAgICAgIH0KICAgIH0KICAgIGlmIChkZWZpbml0aW9uLnN0ZXBzLmxlbmd0aCA9PT0gMCkgewogICAgICByZXR1cm4gZXJyKHBsYXRmb3JtRXJyb3IoIldPUktGTE9XX0VNUFRZIiwgIldvcmtmbG93IGRlZmluaXRpb24gbXVzdCBpbmNsdWRlIGF0IGxlYXN0IG9uZSBzdGVwLiIpKTsKICAgIH0KICAgIHJldHVybiBvayh7CiAgICAgIGlkOiBgJHtkZWZpbml0aW9uLmlkfToke1N0cmluZyhEYXRlLm5vdygpKX1gLAogICAgICBkZWZpbml0aW9uSWQ6IGRlZmluaXRpb24uaWQsCiAgICAgIHN0YXR1czogImNvbXBsZXRlZCIsCiAgICAgIGFwcHJvdmFsOiAibm90X3JlcXVpcmVkIiwKICAgICAgc3RhdGUsCiAgICAgIGN1cnJlbnRTdGVwSW5kZXg6IGRlZmluaXRpb24uc3RlcHMubGVuZ3RoCiAgICB9KTsKICB9Cn0pOwo=
+import type { CapabilityContext, CapabilityRuntime } from "@ai-platform-core/capability";
+import { type Result, err, ok, platformError } from "@ai-platform-core/kernel";
+
+export type ApprovalStatus = "not_required" | "pending" | "approved" | "rejected";
+export type WorkflowStatus = "created" | "running" | "waiting_approval" | "completed" | "failed";
+
+export interface WorkflowStep<I = unknown> {
+  readonly id: string;
+  readonly capabilityId: string;
+  readonly input: (state: Readonly<Record<string, unknown>>) => I;
+  readonly outputKey: string;
+  readonly requiresApproval?: boolean;
+  readonly retry?: Readonly<{ attempts: number }>;
+  readonly rollbackCapabilityId?: string;
+  readonly timeoutMs?: number;
+}
+
+export interface WorkflowDefinition {
+  readonly id: string;
+  readonly name: string;
+  readonly steps: readonly WorkflowStep[];
+}
+
+export interface WorkflowInstance {
+  readonly id: string;
+  readonly definitionId: string;
+  readonly status: WorkflowStatus;
+  readonly approval: ApprovalStatus;
+  readonly state: Readonly<Record<string, unknown>>;
+  readonly currentStepIndex: number;
+}
+
+export interface WorkflowRuntime {
+  readonly start: (
+    definition: WorkflowDefinition,
+    initialState: Readonly<Record<string, unknown>>,
+    context: CapabilityContext
+  ) => Promise<Result<WorkflowInstance>>;
+}
+
+export const createWorkflowRuntime = (capabilityRuntime: CapabilityRuntime): WorkflowRuntime => ({
+  start: async (definition, initialState, context) => {
+    let state = initialState;
+    for (const [index, step] of definition.steps.entries()) {
+      if (step.requiresApproval === true) {
+        return ok({
+          id: `${definition.id}:${String(Date.now())}`,
+          definitionId: definition.id,
+          status: "waiting_approval",
+          approval: "pending",
+          state,
+          currentStepIndex: index
+        });
+      }
+      const maxAttempts = step.retry?.attempts ?? 1;
+      let lastError: Result<unknown> | undefined;
+      for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        const result = await capabilityRuntime.execute(step.capabilityId, step.input(state), context);
+        if (result.ok) {
+          state = { ...state, [step.outputKey]: result.value };
+          lastError = undefined;
+          break;
+        }
+        lastError = result;
+      }
+      if (lastError !== undefined && !lastError.ok) {
+        return err(lastError.error);
+      }
+    }
+    if (definition.steps.length === 0) {
+      return err(platformError("WORKFLOW_EMPTY", "Workflow definition must include at least one step."));
+    }
+    return ok({
+      id: `${definition.id}:${String(Date.now())}`,
+      definitionId: definition.id,
+      status: "completed",
+      approval: "not_required",
+      state,
+      currentStepIndex: definition.steps.length
+    });
+  }
+});

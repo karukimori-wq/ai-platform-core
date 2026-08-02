@@ -1,1 +1,60 @@
-aW1wb3J0IHsgdHlwZSBSZXN1bHQsIGVyciwgb2ssIHBsYXRmb3JtRXJyb3IgfSBmcm9tICJAYWktcGxhdGZvcm0tY29yZS9rZXJuZWwiOwoKZXhwb3J0IGludGVyZmFjZSBTdG9yYWdlUmVjb3JkPFQgZXh0ZW5kcyBSZWFkb25seTxSZWNvcmQ8c3RyaW5nLCB1bmtub3duPj4+IHsKICByZWFkb25seSBpZDogc3RyaW5nOwogIHJlYWRvbmx5IHZhbHVlOiBUOwogIHJlYWRvbmx5IHZlcnNpb246IG51bWJlcjsKICByZWFkb25seSB1cGRhdGVkQXQ6IERhdGU7Cn0KCmV4cG9ydCBpbnRlcmZhY2UgS2V5VmFsdWVTdG9yZTxUIGV4dGVuZHMgUmVhZG9ubHk8UmVjb3JkPHN0cmluZywgdW5rbm93bj4+PiB7CiAgcmVhZG9ubHkgcHV0OiAoaWQ6IHN0cmluZywgdmFsdWU6IFQpID0+IFByb21pc2U8UmVzdWx0PFN0b3JhZ2VSZWNvcmQ8VD4+PjsKICByZWFkb25seSBnZXQ6IChpZDogc3RyaW5nKSA9PiBQcm9taXNlPFJlc3VsdDxTdG9yYWdlUmVjb3JkPFQ+Pj47CiAgcmVhZG9ubHkgbGlzdDogKCkgPT4gUHJvbWlzZTxSZXN1bHQ8cmVhZG9ubHkgU3RvcmFnZVJlY29yZDxUPltdPj47CiAgcmVhZG9ubHkgZGVsZXRlOiAoaWQ6IHN0cmluZykgPT4gUHJvbWlzZTxSZXN1bHQ8dm9pZD4+Owp9CgpleHBvcnQgY29uc3QgY3JlYXRlTWVtb3J5S2V5VmFsdWVTdG9yZSA9IDwKICBUIGV4dGVuZHMgUmVhZG9ubHk8UmVjb3JkPHN0cmluZywgdW5rbm93bj4+Cj4oKTogS2V5VmFsdWVTdG9yZTxUPiA9PiB7CiAgY29uc3QgcmVjb3JkcyA9IG5ldyBNYXA8c3RyaW5nLCBTdG9yYWdlUmVjb3JkPFQ+PigpOwogIHJldHVybiB7CiAgICBwdXQ6IGFzeW5jIChpZCwgdmFsdWUpID0+IHsKICAgICAgY29uc3QgY3VycmVudCA9IHJlY29yZHMuZ2V0KGlkKTsKICAgICAgY29uc3QgcmVjb3JkOiBTdG9yYWdlUmVjb3JkPFQ+ID0gewogICAgICAgIGlkLAogICAgICAgIHZhbHVlLAogICAgICAgIHZlcnNpb246IGN1cnJlbnQgPT09IHVuZGVmaW5lZCA/IDEgOiBjdXJyZW50LnZlcnNpb24gKyAxLAogICAgICAgIHVwZGF0ZWRBdDogbmV3IERhdGUoKQogICAgICB9OwogICAgICByZWNvcmRzLnNldChpZCwgcmVjb3JkKTsKICAgICAgcmV0dXJuIG9rKHJlY29yZCk7CiAgICB9LAogICAgZ2V0OiBhc3luYyAoaWQpID0+IHsKICAgICAgY29uc3QgcmVjb3JkID0gcmVjb3Jkcy5nZXQoaWQpOwogICAgICByZXR1cm4gcmVjb3JkID09PSB1bmRlZmluZWQKICAgICAgICA/IGVycihwbGF0Zm9ybUVycm9yKCJTVE9SQUdFX1JFQ09SRF9OT1RfRk9VTkQiLCBgU3RvcmFnZSByZWNvcmQgJyR7aWR9JyB3YXMgbm90IGZvdW5kLmApKQogICAgICAgIDogb2socmVjb3JkKTsKICAgIH0sCiAgICBsaXN0OiBhc3luYyAoKSA9PiBvayhbLi4ucmVjb3Jkcy52YWx1ZXMoKV0pLAogICAgZGVsZXRlOiBhc3luYyAoaWQpID0+IHsKICAgICAgcmVjb3Jkcy5kZWxldGUoaWQpOwogICAgICByZXR1cm4gb2sodW5kZWZpbmVkKTsKICAgIH0KICB9Owp9OwoKZXhwb3J0IGludGVyZmFjZSBFbnZpcm9ubWVudFJlYWRlciB7CiAgcmVhZG9ubHkgZ2V0OiAoa2V5OiBzdHJpbmcpID0+IFJlc3VsdDxzdHJpbmc+Owp9CgpleHBvcnQgY29uc3QgY3JlYXRlRW52aXJvbm1lbnRSZWFkZXIgPSAoCiAgZW52OiBSZWFkb25seTxSZWNvcmQ8c3RyaW5nLCBzdHJpbmcgfCB1bmRlZmluZWQ+PgopOiBFbnZpcm9ubWVudFJlYWRlciA9PiAoewogIGdldDogKGtleSkgPT4gewogICAgY29uc3QgdmFsdWUgPSBlbnZba2V5XTsKICAgIHJldHVybiB2YWx1ZSA9PT0gdW5kZWZpbmVkCiAgICAgID8gZXJyKHBsYXRmb3JtRXJyb3IoIkVOVklST05NRU5UX1ZBTFVFX05PVF9GT1VORCIsIGBFbnZpcm9ubWVudCB2YWx1ZSAnJHtrZXl9JyB3YXMgbm90IGZvdW5kLmApKQogICAgICA6IG9rKHZhbHVlKTsKICB9Cn0pOwo=
+import { type Result, err, ok, platformError } from "@ai-platform-core/kernel";
+
+export interface StorageRecord<T extends Readonly<Record<string, unknown>>> {
+  readonly id: string;
+  readonly value: T;
+  readonly version: number;
+  readonly updatedAt: Date;
+}
+
+export interface KeyValueStore<T extends Readonly<Record<string, unknown>>> {
+  readonly put: (id: string, value: T) => Promise<Result<StorageRecord<T>>>;
+  readonly get: (id: string) => Promise<Result<StorageRecord<T>>>;
+  readonly list: () => Promise<Result<readonly StorageRecord<T>[]>>;
+  readonly delete: (id: string) => Promise<Result<void>>;
+}
+
+export const createMemoryKeyValueStore = <
+  T extends Readonly<Record<string, unknown>>
+>(): KeyValueStore<T> => {
+  const records = new Map<string, StorageRecord<T>>();
+  return {
+    put: async (id, value) => {
+      const current = records.get(id);
+      const record: StorageRecord<T> = {
+        id,
+        value,
+        version: current === undefined ? 1 : current.version + 1,
+        updatedAt: new Date()
+      };
+      records.set(id, record);
+      return ok(record);
+    },
+    get: async (id) => {
+      const record = records.get(id);
+      return record === undefined
+        ? err(platformError("STORAGE_RECORD_NOT_FOUND", `Storage record '${id}' was not found.`))
+        : ok(record);
+    },
+    list: async () => ok([...records.values()]),
+    delete: async (id) => {
+      records.delete(id);
+      return ok(undefined);
+    }
+  };
+};
+
+export interface EnvironmentReader {
+  readonly get: (key: string) => Result<string>;
+}
+
+export const createEnvironmentReader = (
+  env: Readonly<Record<string, string | undefined>>
+): EnvironmentReader => ({
+  get: (key) => {
+    const value = env[key];
+    return value === undefined
+      ? err(platformError("ENVIRONMENT_VALUE_NOT_FOUND", `Environment value '${key}' was not found.`))
+      : ok(value);
+  }
+});

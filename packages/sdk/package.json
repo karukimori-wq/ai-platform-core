@@ -1,1 +1,34 @@
-ewogICJuYW1lIjogIkBhaS1wbGF0Zm9ybS1jb3JlL3NkayIsCiAgInZlcnNpb24iOiAiMC4xLjAiLAogICJ0eXBlIjogIm1vZHVsZSIsCiAgInByaXZhdGUiOiB0cnVlLAogICJtYWluIjogIi4vZGlzdC9pbmRleC5qcyIsCiAgInR5cGVzIjogIi4vZGlzdC9pbmRleC5kLnRzIiwKICAiZXhwb3J0cyI6IHsKICAgICIuIjogIi4vZGlzdC9pbmRleC5qcyIKICB9LAogICJzY3JpcHRzIjogewogICAgImJ1aWxkIjogInRzYyAtcCB0c2NvbmZpZy5qc29uIiwKICAgICJsaW50IjogImVzbGludCBzcmMiLAogICAgInRlc3QiOiAidml0ZXN0IHJ1biAtLXBhc3NXaXRoTm9UZXN0cyIsCiAgICAidGVzdDpjb3ZlcmFnZSI6ICJ2aXRlc3QgcnVuIC0tY292ZXJhZ2UgLS1wYXNzV2l0aE5vVGVzdHMiCiAgfSwKICAiZGVwZW5kZW5jaWVzIjogewogICAgIkBhaS1wbGF0Zm9ybS1jb3JlL2FjdGl2aXR5IjogIndvcmtzcGFjZToqIiwKICAgICJAYWktcGxhdGZvcm0tY29yZS9hbmFseXRpY3MiOiAid29ya3NwYWNlOioiLAogICAgIkBhaS1wbGF0Zm9ybS1jb3JlL2NhcGFiaWxpdHkiOiAid29ya3NwYWNlOioiLAogICAgIkBhaS1wbGF0Zm9ybS1jb3JlL2NsaWVudCI6ICJ3b3Jrc3BhY2U6KiIsCiAgICAiQGFpLXBsYXRmb3JtLWNvcmUvZGFzaGJvYXJkIjogIndvcmtzcGFjZToqIiwKICAgICJAYWktcGxhdGZvcm0tY29yZS9ldmVudCI6ICJ3b3Jrc3BhY2U6KiIsCiAgICAiQGFpLXBsYXRmb3JtLWNvcmUvZ2F0ZXdheSI6ICJ3b3Jrc3BhY2U6KiIsCiAgICAiQGFpLXBsYXRmb3JtLWNvcmUva2VybmVsIjogIndvcmtzcGFjZToqIiwKICAgICJAYWktcGxhdGZvcm0tY29yZS9rbm93bGVkZ2UiOiAid29ya3NwYWNlOioiLAogICAgIkBhaS1wbGF0Zm9ybS1jb3JlL3BsdWdpbiI6ICJ3b3Jrc3BhY2U6KiIsCiAgICAiQGFpLXBsYXRmb3JtLWNvcmUvcHJvdmlkZXIiOiAid29ya3NwYWNlOioiLAogICAgIkBhaS1wbGF0Zm9ybS1jb3JlL3J1bnRpbWUiOiAid29ya3NwYWNlOioiLAogICAgIkBhaS1wbGF0Zm9ybS1jb3JlL3NlY3JldHMiOiAid29ya3NwYWNlOioiLAogICAgIkBhaS1wbGF0Zm9ybS1jb3JlL3N0b3JhZ2UiOiAid29ya3NwYWNlOioiLAogICAgIkBhaS1wbGF0Zm9ybS1jb3JlL3dvcmtmbG93IjogIndvcmtzcGFjZToqIgogIH0KfQo=
+{
+  "name": "@ai-platform-core/sdk",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint src",
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage --passWithNoTests"
+  },
+  "dependencies": {
+    "@ai-platform-core/activity": "workspace:*",
+    "@ai-platform-core/analytics": "workspace:*",
+    "@ai-platform-core/capability": "workspace:*",
+    "@ai-platform-core/client": "workspace:*",
+    "@ai-platform-core/dashboard": "workspace:*",
+    "@ai-platform-core/event": "workspace:*",
+    "@ai-platform-core/gateway": "workspace:*",
+    "@ai-platform-core/kernel": "workspace:*",
+    "@ai-platform-core/knowledge": "workspace:*",
+    "@ai-platform-core/plugin": "workspace:*",
+    "@ai-platform-core/provider": "workspace:*",
+    "@ai-platform-core/runtime": "workspace:*",
+    "@ai-platform-core/secrets": "workspace:*",
+    "@ai-platform-core/storage": "workspace:*",
+    "@ai-platform-core/workflow": "workspace:*"
+  }
+}

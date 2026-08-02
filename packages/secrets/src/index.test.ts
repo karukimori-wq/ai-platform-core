@@ -1,1 +1,26 @@
-aW1wb3J0IHsgZGVzY3JpYmUsIGV4cGVjdCwgaXQgfSBmcm9tICJ2aXRlc3QiOwppbXBvcnQgeyBjcmVhdGVFbnZpcm9ubWVudFNlY3JldFJlYWRlciwgY3JlYXRlTWVtb3J5U2VjcmV0U3RvcmUsIGNyZWF0ZVNlY3JldFJlYWRlciB9IGZyb20gIi4vaW5kZXgiOwoKZGVzY3JpYmUoInNlY3JldCBzdG9yZXMiLCAoKSA9PiB7CiAgaXQoInN0b3JlcyBhbmQgcmVhZHMgbWVtb3J5IHNlY3JldHMiLCBhc3luYyAoKSA9PiB7CiAgICBjb25zdCBzdG9yZSA9IGNyZWF0ZU1lbW9yeVNlY3JldFN0b3JlKCk7CiAgICBjb25zdCByZWFkZXIgPSBjcmVhdGVTZWNyZXRSZWFkZXIoc3RvcmUpOwoKICAgIGNvbnN0IHNhdmVkID0gYXdhaXQgc3RvcmUuc2V0KCJPUEVOQUlfQVBJX0tFWSIsICJzZWNyZXQtdmFsdWUiKTsKICAgIGNvbnN0IHJlYWQgPSBhd2FpdCByZWFkZXIuZ2V0KCJPUEVOQUlfQVBJX0tFWSIpOwoKICAgIGV4cGVjdChzYXZlZC5vaykudG9CZSh0cnVlKTsKICAgIGV4cGVjdChyZWFkLm9rKS50b0JlKHRydWUpOwogICAgaWYgKCFyZWFkLm9rKSByZXR1cm47CiAgICBleHBlY3QocmVhZC52YWx1ZSkudG9CZSgic2VjcmV0LXZhbHVlIik7CiAgfSk7CgogIGl0KCJyZWFkcyBlbnZpcm9ubWVudCBzZWNyZXRzIiwgYXN5bmMgKCkgPT4gewogICAgY29uc3QgcmVhZGVyID0gY3JlYXRlRW52aXJvbm1lbnRTZWNyZXRSZWFkZXIoeyBPUEVOQUlfQVBJX0tFWTogImVudi1zZWNyZXQiIH0pOwogICAgY29uc3QgcmVhZCA9IGF3YWl0IHJlYWRlci5nZXQoIk9QRU5BSV9BUElfS0VZIik7CgogICAgZXhwZWN0KHJlYWQub2spLnRvQmUodHJ1ZSk7CiAgICBpZiAoIXJlYWQub2spIHJldHVybjsKICAgIGV4cGVjdChyZWFkLnZhbHVlKS50b0JlKCJlbnYtc2VjcmV0Iik7CiAgfSk7Cn0pOwo=
+import { describe, expect, it } from "vitest";
+import { createEnvironmentSecretReader, createMemorySecretStore, createSecretReader } from "./index";
+
+describe("secret stores", () => {
+  it("stores and reads memory secrets", async () => {
+    const store = createMemorySecretStore();
+    const reader = createSecretReader(store);
+
+    const saved = await store.set("OPENAI_API_KEY", "secret-value");
+    const read = await reader.get("OPENAI_API_KEY");
+
+    expect(saved.ok).toBe(true);
+    expect(read.ok).toBe(true);
+    if (!read.ok) return;
+    expect(read.value).toBe("secret-value");
+  });
+
+  it("reads environment secrets", async () => {
+    const reader = createEnvironmentSecretReader({ OPENAI_API_KEY: "env-secret" });
+    const read = await reader.get("OPENAI_API_KEY");
+
+    expect(read.ok).toBe(true);
+    if (!read.ok) return;
+    expect(read.value).toBe("env-secret");
+  });
+});

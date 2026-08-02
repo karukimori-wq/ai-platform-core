@@ -1,1 +1,2 @@
-aW1wb3J0IHsgZGVmaW5lQ29uZmlnIH0gZnJvbSAidml0ZXN0L2NvbmZpZyI7CmV4cG9ydCBkZWZhdWx0IGRlZmluZUNvbmZpZyh7IHRlc3Q6IHsgZW52aXJvbm1lbnQ6ICJub2RlIiwgaW5jbHVkZTogWyJzcmMvKiovKi50ZXN0LnRzIl0gfSB9KTsK
+import { defineConfig } from "vitest/config";
+export default defineConfig({ test: { environment: "node", include: ["src/**/*.test.ts"] } });

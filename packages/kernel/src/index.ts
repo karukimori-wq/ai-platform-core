@@ -1,1 +1,167 @@
-ZXhwb3J0IHR5cGUgUmVzdWx0PFQsIEUgZXh0ZW5kcyBQbGF0Zm9ybUVycm9yID0gUGxhdGZvcm1FcnJvcj4gPSBPazxUPiB8IEVycjxFPjsKCmV4cG9ydCBpbnRlcmZhY2UgT2s8VD4gewogIHJlYWRvbmx5IG9rOiB0cnVlOwogIHJlYWRvbmx5IHZhbHVlOiBUOwp9CgpleHBvcnQgaW50ZXJmYWNlIEVycjxFIGV4dGVuZHMgUGxhdGZvcm1FcnJvcj4gewogIHJlYWRvbmx5IG9rOiBmYWxzZTsKICByZWFkb25seSBlcnJvcjogRTsKfQoKZXhwb3J0IGludGVyZmFjZSBQbGF0Zm9ybUVycm9yIHsKICByZWFkb25seSBjb2RlOiBzdHJpbmc7CiAgcmVhZG9ubHkgbWVzc2FnZTogc3RyaW5nOwogIHJlYWRvbmx5IGNhdXNlPzogdW5rbm93bjsKfQoKZXhwb3J0IGNvbnN0IG9rID0gPFQ+KHZhbHVlOiBUKTogT2s8VD4gPT4gKHsgb2s6IHRydWUsIHZhbHVlIH0pOwoKZXhwb3J0IGNvbnN0IGVyciA9IDxFIGV4dGVuZHMgUGxhdGZvcm1FcnJvcj4oZXJyb3I6IEUpOiBFcnI8RT4gPT4gKHsgb2s6IGZhbHNlLCBlcnJvciB9KTsKCmV4cG9ydCBjb25zdCBwbGF0Zm9ybUVycm9yID0gKAogIGNvZGU6IHN0cmluZywKICBtZXNzYWdlOiBzdHJpbmcsCiAgY2F1c2U/OiB1bmtub3duCik6IFBsYXRmb3JtRXJyb3IgPT4gKHsgY29kZSwgbWVzc2FnZSwgY2F1c2UgfSk7CgpleHBvcnQgaW50ZXJmYWNlIExvZ2dlciB7CiAgcmVhZG9ubHkgZGVidWc6IChtZXNzYWdlOiBzdHJpbmcsIGNvbnRleHQ/OiBSZWFkb25seTxSZWNvcmQ8c3RyaW5nLCB1bmtub3duPj4pID0+IHZvaWQ7CiAgcmVhZG9ubHkgaW5mbzogKG1lc3NhZ2U6IHN0cmluZywgY29udGV4dD86IFJlYWRvbmx5PFJlY29yZDxzdHJpbmcsIHVua25vd24+PikgPT4gdm9pZDsKICByZWFkb25seSB3YXJuOiAobWVzc2FnZTogc3RyaW5nLCBjb250ZXh0PzogUmVhZG9ubHk8UmVjb3JkPHN0cmluZywgdW5rbm93bj4+KSA9PiB2b2lkOwogIHJlYWRvbmx5IGVycm9yOiAobWVzc2FnZTogc3RyaW5nLCBjb250ZXh0PzogUmVhZG9ubHk8UmVjb3JkPHN0cmluZywgdW5rbm93bj4+KSA9PiB2b2lkOwp9CgpleHBvcnQgY29uc3QgY3JlYXRlTm9vcExvZ2dlciA9ICgpOiBMb2dnZXIgPT4gKHsKICBkZWJ1ZzogKCkgPT4gdW5kZWZpbmVkLAogIGluZm86ICgpID0+IHVuZGVmaW5lZCwKICB3YXJuOiAoKSA9PiB1bmRlZmluZWQsCiAgZXJyb3I6ICgpID0+IHVuZGVmaW5lZAp9KTsKCmV4cG9ydCBpbnRlcmZhY2UgQ2xvY2sgewogIHJlYWRvbmx5IG5vdzogKCkgPT4gRGF0ZTsKfQoKZXhwb3J0IGNvbnN0IHN5c3RlbUNsb2NrID0gKCk6IENsb2NrID0+ICh7IG5vdzogKCkgPT4gbmV3IERhdGUoKSB9KTsKCmV4cG9ydCBpbnRlcmZhY2UgSWRHZW5lcmF0b3IgewogIHJlYWRvbmx5IHV1aWQ6ICgpID0+IFVVSUQ7Cn0KCmV4cG9ydCBjb25zdCBjcmVhdGVDcnlwdG9JZEdlbmVyYXRvciA9ICgpOiBJZEdlbmVyYXRvciA9PiAoewogIHV1aWQ6ICgpID0+IHsKICAgIGNvbnN0IGlkID0gVVVJRC5jcmVhdGUoZ2xvYmFsVGhpcy5jcnlwdG8ucmFuZG9tVVVJRCgpKTsKICAgIGlmICghaWQub2spIHsKICAgICAgcmV0dXJuIG5ldyBVVUlEKCIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDAiKTsKICAgIH0KICAgIHJldHVybiBpZC52YWx1ZTsKICB9Cn0pOwoKZXhwb3J0IGludGVyZmFjZSBDb25maWcgewogIHJlYWRvbmx5IGdldDogKGtleTogc3RyaW5nKSA9PiBSZXN1bHQ8c3RyaW5nPjsKfQoKZXhwb3J0IGNvbnN0IGNyZWF0ZUVudmlyb25tZW50Q29uZmlnID0gKGVudjogUmVhZG9ubHk8UmVjb3JkPHN0cmluZywgc3RyaW5nIHwgdW5kZWZpbmVkPj4pOiBDb25maWcgPT4gKHsKICBnZXQ6IChrZXkpID0+IHsKICAgIGNvbnN0IHZhbHVlID0gZW52W2tleV07CiAgICByZXR1cm4gdmFsdWUgPT09IHVuZGVmaW5lZAogICAgICA/IGVycihwbGF0Zm9ybUVycm9yKCJDT05GSUdfTk9UX0ZPVU5EIiwgYENvbmZpZyBrZXkgJyR7a2V5fScgd2FzIG5vdCBmb3VuZC5gKSkKICAgICAgOiBvayh2YWx1ZSk7CiAgfQp9KTsKCmV4cG9ydCBpbnRlcmZhY2UgRW50aXR5PFByb3BzIGV4dGVuZHMgUmVhZG9ubHk8UmVjb3JkPHN0cmluZywgdW5rbm93bj4+PiB7CiAgcmVhZG9ubHkgaWQ6IFVVSUQ7CiAgcmVhZG9ubHkgcHJvcHM6IFByb3BzOwp9CgpleHBvcnQgYWJzdHJhY3QgY2xhc3MgVmFsdWVPYmplY3Q8VD4gewogIHByb3RlY3RlZCBjb25zdHJ1Y3RvcihwdWJsaWMgcmVhZG9ubHkgdmFsdWU6IFQpIHt9CgogIHB1YmxpYyBlcXVhbHMob3RoZXI6IFZhbHVlT2JqZWN0PFQ+KTogYm9vbGVhbiB7CiAgICByZXR1cm4gT2JqZWN0LmlzKHRoaXMudmFsdWUsIG90aGVyLnZhbHVlKTsKICB9Cn0KCmV4cG9ydCBjbGFzcyBVVUlEIGV4dGVuZHMgVmFsdWVPYmplY3Q8c3RyaW5nPiB7CiAgcHJpdmF0ZSBzdGF0aWMgcmVhZG9ubHkgcGF0dGVybiA9CiAgICAvXlswLTlhLWZdezh9LVswLTlhLWZdezR9LVsxLTVdWzAtOWEtZl17M30tWzg5YWJdWzAtOWEtZl17M30tWzAtOWEtZl17MTJ9JC9pdTsKCiAgcHVibGljIGNvbnN0cnVjdG9yKHZhbHVlOiBzdHJpbmcpIHsKICAgIHN1cGVyKHZhbHVlKTsKICB9CgogIHB1YmxpYyBzdGF0aWMgY3JlYXRlKHZhbHVlOiBzdHJpbmcpOiBSZXN1bHQ8VVVJRD4gewogICAgcmV0dXJuIFVVSUQucGF0dGVybi50ZXN0KHZhbHVlKQogICAgICA/IG9rKG5ldyBVVUlEKHZhbHVlKSkKICAgICAgOiBlcnIocGxhdGZvcm1FcnJvcigiSU5WQUxJRF9VVUlEIiwgIlVVSUQgbXVzdCBiZSBSRkMgNDEyMiBjb21wYXRpYmxlLiIpKTsKICB9Cn0KCmV4cG9ydCBjbGFzcyBFbWFpbCBleHRlbmRzIFZhbHVlT2JqZWN0PHN0cmluZz4gewogIHB1YmxpYyBzdGF0aWMgY3JlYXRlKHZhbHVlOiBzdHJpbmcpOiBSZXN1bHQ8RW1haWw+IHsKICAgIHJldHVybiAvXlteXHNAXStAW15cc0BdK1wuW15cc0BdKyQvdS50ZXN0KHZhbHVlKQogICAgICA/IG9rKG5ldyBFbWFpbCh2YWx1ZSkpCiAgICAgIDogZXJyKHBsYXRmb3JtRXJyb3IoIklOVkFMSURfRU1BSUwiLCAiRW1haWwgZm9ybWF0IGlzIGludmFsaWQuIikpOwogIH0KfQoKZXhwb3J0IGNsYXNzIFBob25lIGV4dGVuZHMgVmFsdWVPYmplY3Q8c3RyaW5nPiB7CiAgcHVibGljIHN0YXRpYyBjcmVhdGUodmFsdWU6IHN0cmluZyk6IFJlc3VsdDxQaG9uZT4gewogICAgcmV0dXJuIC9eWzAtOStcLSgpXHNdezcsMjB9JC91LnRlc3QodmFsdWUpCiAgICAgID8gb2sobmV3IFBob25lKHZhbHVlKSkKICAgICAgOiBlcnIocGxhdGZvcm1FcnJvcigiSU5WQUxJRF9QSE9ORSIsICJQaG9uZSBmb3JtYXQgaXMgaW52YWxpZC4iKSk7CiAgfQp9CgpleHBvcnQgY2xhc3MgTW9uZXkgZXh0ZW5kcyBWYWx1ZU9iamVjdDxSZWFkb25seTx7IGFtb3VudDogbnVtYmVyOyBjdXJyZW5jeTogc3RyaW5nIH0+PiB7CiAgcHVibGljIHN0YXRpYyBjcmVhdGUoYW1vdW50OiBudW1iZXIsIGN1cnJlbmN5OiBzdHJpbmcpOiBSZXN1bHQ8TW9uZXk+IHsKICAgIGlmICghTnVtYmVyLmlzRmluaXRlKGFtb3VudCkpIHsKICAgICAgcmV0dXJuIGVycihwbGF0Zm9ybUVycm9yKCJJTlZBTElEX01PTkVZX0FNT1VOVCIsICJNb25leSBhbW91bnQgbXVzdCBiZSBmaW5pdGUuIikpOwogICAgfQogICAgaWYgKCEvXltBLVpdezN9JC91LnRlc3QoY3VycmVuY3kpKSB7CiAgICAgIHJldHVybiBlcnIocGxhdGZvcm1FcnJvcigiSU5WQUxJRF9DVVJSRU5DWSIsICJDdXJyZW5jeSBtdXN0IGJlIElTTyA0MjE3IHN0eWxlLiIpKTsKICAgIH0KICAgIHJldHVybiBvayhuZXcgTW9uZXkoeyBhbW91bnQsIGN1cnJlbmN5IH0pKTsKICB9Cn0KCmV4cG9ydCBjbGFzcyBQZXJjZW50YWdlIGV4dGVuZHMgVmFsdWVPYmplY3Q8bnVtYmVyPiB7CiAgcHVibGljIHN0YXRpYyBjcmVhdGUodmFsdWU6IG51bWJlcik6IFJlc3VsdDxQZXJjZW50YWdlPiB7CiAgICByZXR1cm4gdmFsdWUgPj0gMCAmJiB2YWx1ZSA8PSAxMDAKICAgICAgPyBvayhuZXcgUGVyY2VudGFnZSh2YWx1ZSkpCiAgICAgIDogZXJyKHBsYXRmb3JtRXJyb3IoIklOVkFMSURfUEVSQ0VOVEFHRSIsICJQZXJjZW50YWdlIG11c3QgYmUgYmV0d2VlbiAwIGFuZCAxMDAuIikpOwogIH0KfQoKZXhwb3J0IGNsYXNzIERhdGVSYW5nZSBleHRlbmRzIFZhbHVlT2JqZWN0PFJlYWRvbmx5PHsgc3RhcnQ6IERhdGU7IGVuZDogRGF0ZSB9Pj4gewogIHB1YmxpYyBzdGF0aWMgY3JlYXRlKHN0YXJ0OiBEYXRlLCBlbmQ6IERhdGUpOiBSZXN1bHQ8RGF0ZVJhbmdlPiB7CiAgICByZXR1cm4gc3RhcnQuZ2V0VGltZSgpIDw9IGVuZC5nZXRUaW1lKCkKICAgICAgPyBvayhuZXcgRGF0ZVJhbmdlKHsgc3RhcnQsIGVuZCB9KSkKICAgICAgOiBlcnIocGxhdGZvcm1FcnJvcigiSU5WQUxJRF9EQVRFX1JBTkdFIiwgIkRhdGVSYW5nZSBzdGFydCBtdXN0IGJlIGJlZm9yZSBlbmQuIikpOwogIH0KfQoKZXhwb3J0IGludGVyZmFjZSBDb250YWluZXIgewogIHJlYWRvbmx5IHJlZ2lzdGVyOiA8VD4odG9rZW46IHN0cmluZywgdmFsdWU6IFQpID0+IFJlc3VsdDx2b2lkPjsKICByZWFkb25seSByZXNvbHZlOiA8VD4odG9rZW46IHN0cmluZykgPT4gUmVzdWx0PFQ+Owp9CgpleHBvcnQgY29uc3QgY3JlYXRlQ29udGFpbmVyID0gKCk6IENvbnRhaW5lciA9PiB7CiAgY29uc3QgdmFsdWVzID0gbmV3IE1hcDxzdHJpbmcsIHVua25vd24+KCk7CiAgcmV0dXJuIHsKICAgIHJlZ2lzdGVyOiAodG9rZW4sIHZhbHVlKSA9PiB7CiAgICAgIHZhbHVlcy5zZXQodG9rZW4sIHZhbHVlKTsKICAgICAgcmV0dXJuIG9rKHVuZGVmaW5lZCk7CiAgICB9LAogICAgcmVzb2x2ZTogPFQ+KHRva2VuOiBzdHJpbmcpID0+IHsKICAgICAgaWYgKCF2YWx1ZXMuaGFzKHRva2VuKSkgewogICAgICAgIHJldHVybiBlcnIocGxhdGZvcm1FcnJvcigiREVQRU5ERU5DWV9OT1RfRk9VTkQiLCBgRGVwZW5kZW5jeSAnJHt0b2tlbn0nIHdhcyBub3QgZm91bmQuYCkpOwogICAgICB9CiAgICAgIHJldHVybiBvayh2YWx1ZXMuZ2V0KHRva2VuKSBhcyBUKTsKICAgIH0KICB9Owp9Owo=
+export type Result<T, E extends PlatformError = PlatformError> = Ok<T> | Err<E>;
+
+export interface Ok<T> {
+  readonly ok: true;
+  readonly value: T;
+}
+
+export interface Err<E extends PlatformError> {
+  readonly ok: false;
+  readonly error: E;
+}
+
+export interface PlatformError {
+  readonly code: string;
+  readonly message: string;
+  readonly cause?: unknown;
+}
+
+export const ok = <T>(value: T): Ok<T> => ({ ok: true, value });
+
+export const err = <E extends PlatformError>(error: E): Err<E> => ({ ok: false, error });
+
+export const platformError = (
+  code: string,
+  message: string,
+  cause?: unknown
+): PlatformError => ({ code, message, cause });
+
+export interface Logger {
+  readonly debug: (message: string, context?: Readonly<Record<string, unknown>>) => void;
+  readonly info: (message: string, context?: Readonly<Record<string, unknown>>) => void;
+  readonly warn: (message: string, context?: Readonly<Record<string, unknown>>) => void;
+  readonly error: (message: string, context?: Readonly<Record<string, unknown>>) => void;
+}
+
+export const createNoopLogger = (): Logger => ({
+  debug: () => undefined,
+  info: () => undefined,
+  warn: () => undefined,
+  error: () => undefined
+});
+
+export interface Clock {
+  readonly now: () => Date;
+}
+
+export const systemClock = (): Clock => ({ now: () => new Date() });
+
+export interface IdGenerator {
+  readonly uuid: () => UUID;
+}
+
+export const createCryptoIdGenerator = (): IdGenerator => ({
+  uuid: () => {
+    const id = UUID.create(globalThis.crypto.randomUUID());
+    if (!id.ok) {
+      return new UUID("00000000-0000-4000-8000-000000000000");
+    }
+    return id.value;
+  }
+});
+
+export interface Config {
+  readonly get: (key: string) => Result<string>;
+}
+
+export const createEnvironmentConfig = (env: Readonly<Record<string, string | undefined>>): Config => ({
+  get: (key) => {
+    const value = env[key];
+    return value === undefined
+      ? err(platformError("CONFIG_NOT_FOUND", `Config key '${key}' was not found.`))
+      : ok(value);
+  }
+});
+
+export interface Entity<Props extends Readonly<Record<string, unknown>>> {
+  readonly id: UUID;
+  readonly props: Props;
+}
+
+export abstract class ValueObject<T> {
+  protected constructor(public readonly value: T) {}
+
+  public equals(other: ValueObject<T>): boolean {
+    return Object.is(this.value, other.value);
+  }
+}
+
+export class UUID extends ValueObject<string> {
+  private static readonly pattern =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu;
+
+  public constructor(value: string) {
+    super(value);
+  }
+
+  public static create(value: string): Result<UUID> {
+    return UUID.pattern.test(value)
+      ? ok(new UUID(value))
+      : err(platformError("INVALID_UUID", "UUID must be RFC 4122 compatible."));
+  }
+}
+
+export class Email extends ValueObject<string> {
+  public static create(value: string): Result<Email> {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(value)
+      ? ok(new Email(value))
+      : err(platformError("INVALID_EMAIL", "Email format is invalid."));
+  }
+}
+
+export class Phone extends ValueObject<string> {
+  public static create(value: string): Result<Phone> {
+    return /^[0-9+\-()\s]{7,20}$/u.test(value)
+      ? ok(new Phone(value))
+      : err(platformError("INVALID_PHONE", "Phone format is invalid."));
+  }
+}
+
+export class Money extends ValueObject<Readonly<{ amount: number; currency: string }>> {
+  public static create(amount: number, currency: string): Result<Money> {
+    if (!Number.isFinite(amount)) {
+      return err(platformError("INVALID_MONEY_AMOUNT", "Money amount must be finite."));
+    }
+    if (!/^[A-Z]{3}$/u.test(currency)) {
+      return err(platformError("INVALID_CURRENCY", "Currency must be ISO 4217 style."));
+    }
+    return ok(new Money({ amount, currency }));
+  }
+}
+
+export class Percentage extends ValueObject<number> {
+  public static create(value: number): Result<Percentage> {
+    return value >= 0 && value <= 100
+      ? ok(new Percentage(value))
+      : err(platformError("INVALID_PERCENTAGE", "Percentage must be between 0 and 100."));
+  }
+}
+
+export class DateRange extends ValueObject<Readonly<{ start: Date; end: Date }>> {
+  public static create(start: Date, end: Date): Result<DateRange> {
+    return start.getTime() <= end.getTime()
+      ? ok(new DateRange({ start, end }))
+      : err(platformError("INVALID_DATE_RANGE", "DateRange start must be before end."));
+  }
+}
+
+export interface Container {
+  readonly register: <T>(token: string, value: T) => Result<void>;
+  readonly resolve: <T>(token: string) => Result<T>;
+}
+
+export const createContainer = (): Container => {
+  const values = new Map<string, unknown>();
+  return {
+    register: (token, value) => {
+      values.set(token, value);
+      return ok(undefined);
+    },
+    resolve: <T>(token: string) => {
+      if (!values.has(token)) {
+        return err(platformError("DEPENDENCY_NOT_FOUND", `Dependency '${token}' was not found.`));
+      }
+      return ok(values.get(token) as T);
+    }
+  };
+};

@@ -1,1 +1,49 @@
-aW1wb3J0IHsgdHlwZSBSZXN1bHQsIG9rIH0gZnJvbSAiQGFpLXBsYXRmb3JtLWNvcmUva2VybmVsIjsKCmV4cG9ydCBpbnRlcmZhY2UgUmVmZXJlbmNlIHsKICByZWFkb25seSBpZDogc3RyaW5nOwogIHJlYWRvbmx5IHNvdXJjZTogc3RyaW5nOwogIHJlYWRvbmx5IHRpdGxlPzogc3RyaW5nOwogIHJlYWRvbmx5IHVybD86IHN0cmluZzsKfQoKZXhwb3J0IGludGVyZmFjZSBLbm93bGVkZ2UgewogIHJlYWRvbmx5IGlkOiBzdHJpbmc7CiAgcmVhZG9ubHkgY29udGVudDogc3RyaW5nOwogIHJlYWRvbmx5IGNvbmZpZGVuY2U6IG51bWJlcjsKICByZWFkb25seSByZWZlcmVuY2VzOiByZWFkb25seSBSZWZlcmVuY2VbXTsKICByZWFkb25seSBsaWZlY3ljbGU6ICJkcmFmdCIgfCAiYWN0aXZlIiB8ICJhcmNoaXZlZCI7CiAgcmVhZG9ubHkgbWV0YWRhdGE6IFJlYWRvbmx5PFJlY29yZDxzdHJpbmcsIHVua25vd24+PjsKfQoKZXhwb3J0IGludGVyZmFjZSBLbm93bGVkZ2VTZWFyY2hSZXN1bHQgewogIHJlYWRvbmx5IGtub3dsZWRnZTogS25vd2xlZGdlOwogIHJlYWRvbmx5IHNjb3JlOiBudW1iZXI7Cn0KCmV4cG9ydCBpbnRlcmZhY2UgS25vd2xlZGdlUmVwb3NpdG9yeSB7CiAgcmVhZG9ubHkgc2F2ZTogKGtub3dsZWRnZTogS25vd2xlZGdlKSA9PiBQcm9taXNlPFJlc3VsdDx2b2lkPj47CiAgcmVhZG9ubHkgc2VhcmNoOiAocXVlcnk6IHN0cmluZykgPT4gUHJvbWlzZTxSZXN1bHQ8cmVhZG9ubHkgS25vd2xlZGdlU2VhcmNoUmVzdWx0W10+PjsKfQoKZXhwb3J0IGNvbnN0IGNyZWF0ZU1lbW9yeUtub3dsZWRnZVJlcG9zaXRvcnkgPSAoKTogS25vd2xlZGdlUmVwb3NpdG9yeSA9PiB7CiAgY29uc3QgaXRlbXMgPSBuZXcgTWFwPHN0cmluZywgS25vd2xlZGdlPigpOwogIHJldHVybiB7CiAgICBzYXZlOiBhc3luYyAoa25vd2xlZGdlKSA9PiB7CiAgICAgIGl0ZW1zLnNldChrbm93bGVkZ2UuaWQsIGtub3dsZWRnZSk7CiAgICAgIHJldHVybiBvayh1bmRlZmluZWQpOwogICAgfSwKICAgIHNlYXJjaDogYXN5bmMgKHF1ZXJ5KSA9PiB7CiAgICAgIGNvbnN0IG5vcm1hbGl6ZWQgPSBxdWVyeS50b0xvd2VyQ2FzZSgpOwogICAgICByZXR1cm4gb2soCiAgICAgICAgWy4uLml0ZW1zLnZhbHVlcygpXQogICAgICAgICAgLmZpbHRlcigoaXRlbSkgPT4gaXRlbS5saWZlY3ljbGUgPT09ICJhY3RpdmUiKQogICAgICAgICAgLm1hcCgoa25vd2xlZGdlKSA9PiAoewogICAgICAgICAgICBrbm93bGVkZ2UsCiAgICAgICAgICAgIHNjb3JlOiBrbm93bGVkZ2UuY29udGVudC50b0xvd2VyQ2FzZSgpLmluY2x1ZGVzKG5vcm1hbGl6ZWQpID8gMSA6IDAKICAgICAgICAgIH0pKQogICAgICAgICAgLmZpbHRlcigocmVzdWx0KSA9PiByZXN1bHQuc2NvcmUgPiAwKQogICAgICApOwogICAgfQogIH07Cn07Cg==
+import { type Result, ok } from "@ai-platform-core/kernel";
+
+export interface Reference {
+  readonly id: string;
+  readonly source: string;
+  readonly title?: string;
+  readonly url?: string;
+}
+
+export interface Knowledge {
+  readonly id: string;
+  readonly content: string;
+  readonly confidence: number;
+  readonly references: readonly Reference[];
+  readonly lifecycle: "draft" | "active" | "archived";
+  readonly metadata: Readonly<Record<string, unknown>>;
+}
+
+export interface KnowledgeSearchResult {
+  readonly knowledge: Knowledge;
+  readonly score: number;
+}
+
+export interface KnowledgeRepository {
+  readonly save: (knowledge: Knowledge) => Promise<Result<void>>;
+  readonly search: (query: string) => Promise<Result<readonly KnowledgeSearchResult[]>>;
+}
+
+export const createMemoryKnowledgeRepository = (): KnowledgeRepository => {
+  const items = new Map<string, Knowledge>();
+  return {
+    save: async (knowledge) => {
+      items.set(knowledge.id, knowledge);
+      return ok(undefined);
+    },
+    search: async (query) => {
+      const normalized = query.toLowerCase();
+      return ok(
+        [...items.values()]
+          .filter((item) => item.lifecycle === "active")
+          .map((knowledge) => ({
+            knowledge,
+            score: knowledge.content.toLowerCase().includes(normalized) ? 1 : 0
+          }))
+          .filter((result) => result.score > 0)
+      );
+    }
+  };
+};

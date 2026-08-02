@@ -1,1 +1,23 @@
-ewogICIkc2NoZW1hIjogImh0dHBzOi8vdHVyYm8uYnVpbGQvc2NoZW1hLmpzb24iLAogICJ0YXNrcyI6IHsKICAgICJidWlsZCI6IHsKICAgICAgImRlcGVuZHNPbiI6IFsiXmJ1aWxkIl0sCiAgICAgICJvdXRwdXRzIjogWyJkaXN0LyoqIl0KICAgIH0sCiAgICAibGludCI6IHsKICAgICAgImRlcGVuZHNPbiI6IFsiXmJ1aWxkIl0KICAgIH0sCiAgICAidGVzdCI6IHsKICAgICAgImRlcGVuZHNPbiI6IFsiXmJ1aWxkIl0KICAgIH0sCiAgICAidGVzdDpjb3ZlcmFnZSI6IHsKICAgICAgImRlcGVuZHNPbiI6IFsiXmJ1aWxkIl0sCiAgICAgICJvdXRwdXRzIjogWyJjb3ZlcmFnZS8qKiJdCiAgICB9LAogICAgImRldiI6IHsKICAgICAgImNhY2hlIjogZmFsc2UsCiAgICAgICJwZXJzaXN0ZW50IjogdHJ1ZQogICAgfQogIH0KfQo=
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
+    "test": {
+      "dependsOn": ["^build"]
+    },
+    "test:coverage": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

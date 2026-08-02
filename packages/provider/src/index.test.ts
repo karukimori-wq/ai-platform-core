@@ -1,1 +1,63 @@
-aW1wb3J0IHsgZGVzY3JpYmUsIGV4cGVjdCwgaXQgfSBmcm9tICJ2aXRlc3QiOwppbXBvcnQgeyBjcmVhdGVFY2hvUHJvdmlkZXIsIGNyZWF0ZU9wZW5BSUNvbXBhdGlibGVQcm92aWRlciwgY3JlYXRlUHJvdmlkZXJSZWdpc3RyeSB9IGZyb20gIi4vaW5kZXgiOwoKZGVzY3JpYmUoInByb3ZpZGVyIHJlZ2lzdHJ5IiwgKCkgPT4gewogIGl0KCJyZWdpc3RlcnMgYW5kIHJlc29sdmVzIHByb3ZpZGVycyIsIGFzeW5jICgpID0+IHsKICAgIGNvbnN0IHJlZ2lzdHJ5ID0gY3JlYXRlUHJvdmlkZXJSZWdpc3RyeSgpOwogICAgcmVnaXN0cnkucmVnaXN0ZXIoY3JlYXRlRWNob1Byb3ZpZGVyKCkpOwogICAgY29uc3QgcHJvdmlkZXIgPSByZWdpc3RyeS5nZXQoImVjaG8iKTsKICAgIGV4cGVjdChwcm92aWRlci5vaykudG9CZSh0cnVlKTsKICAgIGlmICghcHJvdmlkZXIub2spIHJldHVybjsKICAgIGNvbnN0IHJlc3BvbnNlID0gYXdhaXQgcHJvdmlkZXIudmFsdWUuY2hhdCh7CiAgICAgIG1vZGVsOiAidGVzdCIsCiAgICAgIG1lc3NhZ2VzOiBbeyByb2xlOiAidXNlciIsIGNvbnRlbnQ6ICJoZWxsbyIgfV0KICAgIH0pOwogICAgZXhwZWN0KHJlc3BvbnNlLm9rKS50b0JlKHRydWUpOwogIH0pOwoKICBpdCgiY3JlYXRlcyBPcGVuQUktY29tcGF0aWJsZSBjaGF0IGNvbXBsZXRpb25zIiwgYXN5bmMgKCkgPT4gewogICAgbGV0IGNhcHR1cmVkVXJsID0gIiI7CiAgICBsZXQgY2FwdHVyZWRJbml0OiBSZXF1ZXN0SW5pdCB8IHVuZGVmaW5lZDsKICAgIGNvbnN0IHByb3ZpZGVyID0gY3JlYXRlT3BlbkFJQ29tcGF0aWJsZVByb3ZpZGVyKHsKICAgICAgYXBpS2V5OiAidGVzdC1rZXkiLAogICAgICBmZXRjaDogYXN5bmMgKHVybCwgaW5pdCkgPT4gewogICAgICAgIGNhcHR1cmVkVXJsID0gU3RyaW5nKHVybCk7CiAgICAgICAgY2FwdHVyZWRJbml0ID0gaW5pdDsKICAgICAgICByZXR1cm4gbmV3IFJlc3BvbnNlKAogICAgICAgICAgSlNPTi5zdHJpbmdpZnkoewogICAgICAgICAgICBtb2RlbDogImdwdC10ZXN0IiwKICAgICAgICAgICAgY2hvaWNlczogW3sgbWVzc2FnZTogeyBjb250ZW50OiAiaGVsbG8gYmFjayIgfSB9XSwKICAgICAgICAgICAgdXNhZ2U6IHsgcHJvbXB0X3Rva2VuczogMywgY29tcGxldGlvbl90b2tlbnM6IDQsIHRvdGFsX3Rva2VuczogNyB9CiAgICAgICAgICB9KSwKICAgICAgICAgIHsgc3RhdHVzOiAyMDAgfQogICAgICAgICk7CiAgICAgIH0KICAgIH0pOwoKICAgIGNvbnN0IHJlc3BvbnNlID0gYXdhaXQgcHJvdmlkZXIuY2hhdCh7CiAgICAgIG1vZGVsOiAiZ3B0LXRlc3QiLAogICAgICBtZXNzYWdlczogW3sgcm9sZTogInVzZXIiLCBjb250ZW50OiAiaGVsbG8iIH1dCiAgICB9KTsKCiAgICBleHBlY3QocmVzcG9uc2Uub2spLnRvQmUodHJ1ZSk7CiAgICBpZiAoIXJlc3BvbnNlLm9rKSByZXR1cm47CiAgICBleHBlY3QoY2FwdHVyZWRVcmwpLnRvQmUoImh0dHBzOi8vYXBpLm9wZW5haS5jb20vdjEvY2hhdC9jb21wbGV0aW9ucyIpOwogICAgZXhwZWN0KGNhcHR1cmVkSW5pdD8ubWV0aG9kKS50b0JlKCJQT1NUIik7CiAgICBleHBlY3QocmVzcG9uc2UudmFsdWUudGV4dCkudG9CZSgiaGVsbG8gYmFjayIpOwogICAgZXhwZWN0KHJlc3BvbnNlLnZhbHVlLnRva2VucykudG9FcXVhbCh7IGlucHV0OiAzLCBvdXRwdXQ6IDQsIHRvdGFsOiA3IH0pOwogIH0pOwoKICBpdCgicmV0dXJucyBhbiBlcnJvciBmb3IgT3BlbkFJLWNvbXBhdGlibGUgSFRUUCBmYWlsdXJlcyIsIGFzeW5jICgpID0+IHsKICAgIGNvbnN0IHByb3ZpZGVyID0gY3JlYXRlT3BlbkFJQ29tcGF0aWJsZVByb3ZpZGVyKHsKICAgICAgYXBpS2V5OiAidGVzdC1rZXkiLAogICAgICBmZXRjaDogYXN5bmMgKCkgPT4gbmV3IFJlc3BvbnNlKCJmYWlsZWQiLCB7IHN0YXR1czogNDI5IH0pCiAgICB9KTsKCiAgICBjb25zdCByZXNwb25zZSA9IGF3YWl0IHByb3ZpZGVyLmNoYXQoewogICAgICBtb2RlbDogImdwdC10ZXN0IiwKICAgICAgbWVzc2FnZXM6IFt7IHJvbGU6ICJ1c2VyIiwgY29udGVudDogImhlbGxvIiB9XQogICAgfSk7CgogICAgZXhwZWN0KHJlc3BvbnNlLm9rKS50b0JlKGZhbHNlKTsKICB9KTsKfSk7Cg==
+import { describe, expect, it } from "vitest";
+import { createEchoProvider, createOpenAICompatibleProvider, createProviderRegistry } from "./index";
+
+describe("provider registry", () => {
+  it("registers and resolves providers", async () => {
+    const registry = createProviderRegistry();
+    registry.register(createEchoProvider());
+    const provider = registry.get("echo");
+    expect(provider.ok).toBe(true);
+    if (!provider.ok) return;
+    const response = await provider.value.chat({
+      model: "test",
+      messages: [{ role: "user", content: "hello" }]
+    });
+    expect(response.ok).toBe(true);
+  });
+
+  it("creates OpenAI-compatible chat completions", async () => {
+    let capturedUrl = "";
+    let capturedInit: RequestInit | undefined;
+    const provider = createOpenAICompatibleProvider({
+      apiKey: "test-key",
+      fetch: async (url, init) => {
+        capturedUrl = String(url);
+        capturedInit = init;
+        return new Response(
+          JSON.stringify({
+            model: "gpt-test",
+            choices: [{ message: { content: "hello back" } }],
+            usage: { prompt_tokens: 3, completion_tokens: 4, total_tokens: 7 }
+          }),
+          { status: 200 }
+        );
+      }
+    });
+
+    const response = await provider.chat({
+      model: "gpt-test",
+      messages: [{ role: "user", content: "hello" }]
+    });
+
+    expect(response.ok).toBe(true);
+    if (!response.ok) return;
+    expect(capturedUrl).toBe("https://api.openai.com/v1/chat/completions");
+    expect(capturedInit?.method).toBe("POST");
+    expect(response.value.text).toBe("hello back");
+    expect(response.value.tokens).toEqual({ input: 3, output: 4, total: 7 });
+  });
+
+  it("returns an error for OpenAI-compatible HTTP failures", async () => {
+    const provider = createOpenAICompatibleProvider({
+      apiKey: "test-key",
+      fetch: async () => new Response("failed", { status: 429 })
+    });
+
+    const response = await provider.chat({
+      model: "gpt-test",
+      messages: [{ role: "user", content: "hello" }]
+    });
+
+    expect(response.ok).toBe(false);
+  });
+});

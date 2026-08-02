@@ -1,1 +1,18 @@
-aW1wb3J0IHsgZGVzY3JpYmUsIGV4cGVjdCwgaXQgfSBmcm9tICJ2aXRlc3QiOwppbXBvcnQgeyBVVUlELCBvayB9IGZyb20gIkBhaS1wbGF0Zm9ybS1jb3JlL2tlcm5lbCI7CmltcG9ydCB7IGNyZWF0ZUV2ZW50QnVzLCBjcmVhdGVFdmVudERpc3BhdGNoZXIsIGNyZWF0ZU1lbW9yeUV2ZW50U3RvcmUgfSBmcm9tICIuL2luZGV4LmpzIjsKCmNvbnN0IGlkID0gVVVJRC5jcmVhdGUoIjExMTExMTExLTExMTEtNDExMS04MTExLTExMTExMTExMTExMSIpLnZhbHVlOwoKZGVzY3JpYmUoImV2ZW50IiwgKCkgPT4gewogIGl0KCJzdG9yZXMgYW5kIHB1Ymxpc2hlcyBldmVudHMiLCBhc3luYyAoKSA9PiB7CiAgICBjb25zdCBzdG9yZSA9IGNyZWF0ZU1lbW9yeUV2ZW50U3RvcmUoKTsKICAgIGNvbnN0IGJ1cyA9IGNyZWF0ZUV2ZW50QnVzKCk7CiAgICBjb25zdCBzZWVuOiBzdHJpbmdbXSA9IFtdOwogICAgYnVzLnN1YnNjcmliZSh7IGV2ZW50VHlwZTogIlRoaW5nSGFwcGVuZWQiLCBoYW5kbGU6IGFzeW5jIChldmVudCkgPT4geyBzZWVuLnB1c2goZXZlbnQudHlwZSk7IHJldHVybiBvayh1bmRlZmluZWQpOyB9IH0pOwogICAgY29uc3QgZGlzcGF0Y2hlciA9IGNyZWF0ZUV2ZW50RGlzcGF0Y2hlcihzdG9yZSwgYnVzKTsKICAgIGF3YWl0IGRpc3BhdGNoZXIuZGlzcGF0Y2goW3sgaWQsIGFnZ3JlZ2F0ZUlkOiBpZCwgdHlwZTogIlRoaW5nSGFwcGVuZWQiLCB2ZXJzaW9uOiAxLCBvY2N1cnJlZEF0OiBuZXcgRGF0ZSgpLCBwYXlsb2FkOiB7fSwgbWV0YWRhdGE6IHt9IH1dKTsKICAgIGV4cGVjdChzZWVuKS50b0VxdWFsKFsiVGhpbmdIYXBwZW5lZCJdKTsKICAgIGV4cGVjdCgoYXdhaXQgc3RvcmUubG9hZChpZCkpLnZhbHVlKS50b0hhdmVMZW5ndGgoMSk7CiAgfSk7Cn0pOwo=
+import { describe, expect, it } from "vitest";
+import { UUID, ok } from "@ai-platform-core/kernel";
+import { createEventBus, createEventDispatcher, createMemoryEventStore } from "./index.js";
+
+const id = UUID.create("11111111-1111-4111-8111-111111111111").value;
+
+describe("event", () => {
+  it("stores and publishes events", async () => {
+    const store = createMemoryEventStore();
+    const bus = createEventBus();
+    const seen: string[] = [];
+    bus.subscribe({ eventType: "ThingHappened", handle: async (event) => { seen.push(event.type); return ok(undefined); } });
+    const dispatcher = createEventDispatcher(store, bus);
+    await dispatcher.dispatch([{ id, aggregateId: id, type: "ThingHappened", version: 1, occurredAt: new Date(), payload: {}, metadata: {} }]);
+    expect(seen).toEqual(["ThingHappened"]);
+    expect((await store.load(id)).value).toHaveLength(1);
+  });
+});

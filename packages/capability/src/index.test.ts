@@ -1,1 +1,13 @@
-aW1wb3J0IHsgZGVzY3JpYmUsIGV4cGVjdCwgaXQgfSBmcm9tICJ2aXRlc3QiOwppbXBvcnQgeyBvayB9IGZyb20gIkBhaS1wbGF0Zm9ybS1jb3JlL2tlcm5lbCI7CmltcG9ydCB7IGNyZWF0ZUNhcGFiaWxpdHlSZWdpc3RyeSwgY3JlYXRlQ2FwYWJpbGl0eVJ1bnRpbWUsIGNyZWF0ZVBlcm1pc3Npb25DaGVja2VyIH0gZnJvbSAiLi9pbmRleC5qcyI7CgpkZXNjcmliZSgiY2FwYWJpbGl0eSIsICgpID0+IHsKICBpdCgiZXhlY3V0ZXMgcmVnaXN0ZXJlZCBjYXBhYmlsaXRpZXMgd2l0aCBwZXJtaXNzaW9uIiwgYXN5bmMgKCkgPT4gewogICAgY29uc3QgcmVnaXN0cnkgPSBjcmVhdGVDYXBhYmlsaXR5UmVnaXN0cnkoKTsKICAgIHJlZ2lzdHJ5LnJlZ2lzdGVyKHsgaWQ6ICJFY2hvLlJ1biIsIG5hbWU6ICJFY2hvIiwgZGVzY3JpcHRpb246ICJFY2hvIGlucHV0IiwgcGVybWlzc2lvbjogImVjaG8ucnVuIiwgaW5wdXQ6ICJzdHJpbmciLCBvdXRwdXQ6ICJzdHJpbmciLCBleGVjdXRlOiBhc3luYyAoaW5wdXQ6IHN0cmluZykgPT4gb2soaW5wdXQpIH0pOwogICAgY29uc3QgcnVudGltZSA9IGNyZWF0ZUNhcGFiaWxpdHlSdW50aW1lKHJlZ2lzdHJ5LCBjcmVhdGVQZXJtaXNzaW9uQ2hlY2tlcigpKTsKICAgIGNvbnN0IHJlc3VsdCA9IGF3YWl0IHJ1bnRpbWUuZXhlY3V0ZTxzdHJpbmcsIHN0cmluZz4oIkVjaG8uUnVuIiwgImhlbGxvIiwgeyBhY3RvcklkOiAidXNlciIsIHBlcm1pc3Npb25zOiBbImVjaG8ucnVuIl0sIG1ldGFkYXRhOiB7fSB9KTsKICAgIGV4cGVjdChyZXN1bHQpLnRvRXF1YWwoeyBvazogdHJ1ZSwgdmFsdWU6ICJoZWxsbyIgfSk7CiAgfSk7Cn0pOwo=
+import { describe, expect, it } from "vitest";
+import { ok } from "@ai-platform-core/kernel";
+import { createCapabilityRegistry, createCapabilityRuntime, createPermissionChecker } from "./index.js";
+
+describe("capability", () => {
+  it("executes registered capabilities with permission", async () => {
+    const registry = createCapabilityRegistry();
+    registry.register({ id: "Echo.Run", name: "Echo", description: "Echo input", permission: "echo.run", input: "string", output: "string", execute: async (input: string) => ok(input) });
+    const runtime = createCapabilityRuntime(registry, createPermissionChecker());
+    const result = await runtime.execute<string, string>("Echo.Run", "hello", { actorId: "user", permissions: ["echo.run"], metadata: {} });
+    expect(result).toEqual({ ok: true, value: "hello" });
+  });
+});

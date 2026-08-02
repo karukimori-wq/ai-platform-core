@@ -1,1 +1,396 @@
-aW1wb3J0IHsgY3JlYXRlTWVtb3J5QW5hbHl0aWNzUmVwb3NpdG9yeSB9IGZyb20gIkBhaS1wbGF0Zm9ybS1jb3JlL2FuYWx5dGljcyI7CmltcG9ydCB7IGNyZWF0ZUNsaWVudFJlZ2lzdHJ5IH0gZnJvbSAiQGFpLXBsYXRmb3JtLWNvcmUvY2xpZW50IjsKaW1wb3J0IHsgZGVzY3JpYmUsIGV4cGVjdCwgaXQgfSBmcm9tICJ2aXRlc3QiOwppbXBvcnQgeyBjcmVhdGVEYXNoYm9hcmRRdWVyeVNlcnZpY2UgfSBmcm9tICIuL2luZGV4IjsKCmRlc2NyaWJlKCJkYXNoYm9hcmQgcXVlcnkgc2VydmljZSIsICgpID0+IHsKICBpdCgiYnVpbGRzIHBlcmlvZCBhbmQgZ3JvdXBpbmcgbWV0cmljcyIsIGFzeW5jICgpID0+IHsKICAgIGNvbnN0IGFuYWx5dGljcyA9IGNyZWF0ZU1lbW9yeUFuYWx5dGljc1JlcG9zaXRvcnkoKTsKICAgIGF3YWl0IGFuYWx5dGljcy5yZWNvcmRVc2FnZSh7CiAgICAgIGFjdGl2aXR5SWQ6ICJhY3Rpdml0eS0xIiwKICAgICAgY2xpZW50OiAiY2xpZW50LWEiLAogICAgICBjYXBhYmlsaXR5OiAiU05TLkdlbmVyYXRlIiwKICAgICAgcHJvdmlkZXI6ICJlY2hvIiwKICAgICAgbW9kZWw6ICJ0ZXN0IiwKICAgICAgaW5wdXRUb2tlbnM6IDMsCiAgICAgIG91dHB1dFRva2VuczogNywKICAgICAgdG90YWxUb2tlbnM6IDEwLAogICAgICBjb3N0QW1vdW50OiAwLjIsCiAgICAgIGNvc3RDdXJyZW5jeTogIlVTRCIsCiAgICAgIGxhdGVuY3lNczogMTAwLAogICAgICBvY2N1cnJlZEF0OiBuZXcgRGF0ZSgiMjAyNi0wOC0wMlQxMDowMDowMC4wMDBaIikKICAgIH0pOwogICAgYXdhaXQgYW5hbHl0aWNzLnJlY29yZE91dGNvbWUoewogICAgICBhY3Rpdml0eUlkOiAiYWN0aXZpdHktMSIsCiAgICAgIHJlc3VsdDogInB1Ymxpc2hlZCIsCiAgICAgIHNjb3JlOiAwLjgsCiAgICAgIHJvaTogMS41CiAgICB9KTsKICAgIGF3YWl0IGFuYWx5dGljcy5yZWNvcmRGZWVkYmFjayh7CiAgICAgIGFjdGl2aXR5SWQ6ICJhY3Rpdml0eS0xIiwKICAgICAgcmF0aW5nOiA0LAogICAgICBlZGl0ZWQ6IHRydWUsCiAgICAgIGFjY2VwdGVkOiB0cnVlLAogICAgICBtZW1vOiAidXNhYmxlIgogICAgfSk7CiAgICBjb25zdCBkYXNoYm9hcmQgPSBjcmVhdGVEYXNoYm9hcmRRdWVyeVNlcnZpY2UoYW5hbHl0aWNzLCB7IG5vdzogKCkgPT4gbmV3IERhdGUoIjIwMjYtMDgtMDJUMTI6MDA6MDAuMDAwWiIpIH0pOwogICAgY29uc3QgdmlldyA9IGF3YWl0IGRhc2hib2FyZC5nZXRWaWV3KHsgcGVyaW9kOiAidG9kYXkiIH0pOwogICAgZXhwZWN0KHZpZXcub2spLnRvQmUodHJ1ZSk7CiAgICBpZiAoIXZpZXcub2spIHJldHVybjsKICAgIGV4cGVjdCh2aWV3LnZhbHVlLm1ldHJpYy50b3RhbFRva2VucykudG9CZSgxMCk7CiAgICBleHBlY3Qodmlldy52YWx1ZS5tZXRyaWMub3V0Y29tZUNvdW50KS50b0JlKDEpOwogICAgZXhwZWN0KHZpZXcudmFsdWUubWV0cmljLmF2ZXJhZ2VPdXRjb21lU2NvcmUpLnRvQmUoMC44KTsKICAgIGV4cGVjdCh2aWV3LnZhbHVlLm1ldHJpYy5hdmVyYWdlUm9pKS50b0JlKDEuNSk7CiAgICBleHBlY3Qodmlldy52YWx1ZS5tZXRyaWMuZmVlZGJhY2tDb3VudCkudG9CZSgxKTsKICAgIGV4cGVjdCh2aWV3LnZhbHVlLm1ldHJpYy5hY2NlcHRlZENvdW50KS50b0JlKDEpOwogICAgZXhwZWN0KHZpZXcudmFsdWUubWV0cmljLmVkaXRlZENvdW50KS50b0JlKDEpOwogICAgZXhwZWN0KHZpZXcudmFsdWUubWV0cmljLmF2ZXJhZ2VSYXRpbmcpLnRvQmUoNCk7CiAgICBleHBlY3Qodmlldy52YWx1ZS5ieUNsaWVudFsiY2xpZW50LWEiXT8udXNhZ2VDb3VudCkudG9CZSgxKTsKICAgIGV4cGVjdCh2aWV3LnZhbHVlLmJ5Q2FwYWJpbGl0eVsiU05TLkdlbmVyYXRlIl0/LmFjY2VwdGVkQ291bnQpLnRvQmUoMSk7CiAgfSk7CgogIGl0KCJidWlsZHMgbW9udGhseSBjbGllbnQgYnVkZ2V0IG1ldHJpY3MgZnJvbSBtYW5pZmVzdHMgYW5kIHVzYWdlIiwgYXN5bmMgKCkgPT4gewogICAgY29uc3QgYW5hbHl0aWNzID0gY3JlYXRlTWVtb3J5QW5hbHl0aWNzUmVwb3NpdG9yeSgpOwogICAgY29uc3QgY2xpZW50cyA9IGNyZWF0ZUNsaWVudFJlZ2lzdHJ5KCk7CiAgICBjbGllbnRzLnJlZ2lzdGVyKHsKICAgICAgaWQ6ICJjbGllbnQtYSIsCiAgICAgIG5hbWU6ICJDbGllbnQgQSIsCiAgICAgIHR5cGU6ICJ3ZWIiLAogICAgICB2ZXJzaW9uOiAiMC4xLjAiLAogICAgICBjYXBhYmlsaXRpZXM6IFsiU05TLkdlbmVyYXRlIl0sCiAgICAgIGtub3dsZWRnZTogW10sCiAgICAgIGFuYWx5dGljczogdHJ1ZSwKICAgICAgYnVkZ2V0OiB7IG1vbnRobHlUb2tlbkxpbWl0OiAxMDAsIG1vbnRobHlDb3N0TGltaXQ6IDEwLCBjdXJyZW5jeTogIlVTRCIgfQogICAgfSk7CiAgICBjbGllbnRzLnJlZ2lzdGVyKHsKICAgICAgaWQ6ICJjbGllbnQtYiIsCiAgICAgIG5hbWU6ICJDbGllbnQgQiIsCiAgICAgIHR5cGU6ICJhcGkiLAogICAgICB2ZXJzaW9uOiAiMC4xLjAiLAogICAgICBjYXBhYmlsaXRpZXM6IFsiUERGLkV4cG9ydCJdLAogICAgICBrbm93bGVkZ2U6IFtdLAogICAgICBhbmFseXRpY3M6IHRydWUKICAgIH0pOwogICAgYXdhaXQgYW5hbHl0aWNzLnJlY29yZFVzYWdlKHsKICAgICAgYWN0aXZpdHlJZDogImFjdGl2aXR5LTEiLAogICAgICBjbGllbnQ6ICJjbGllbnQtYSIsCiAgICAgIGNhcGFiaWxpdHk6ICJTTlMuR2VuZXJhdGUiLAogICAgICBwcm92aWRlcjogImVjaG8iLAogICAgICBtb2RlbDogInRlc3QiLAogICAgICBpbnB1dFRva2VuczogMjAsCiAgICAgIG91dHB1dFRva2VuczogMzAsCiAgICAgIHRvdGFsVG9rZW5zOiA1MCwKICAgICAgY29zdEFtb3VudDogNCwKICAgICAgY29zdEN1cnJlbmN5OiAiVVNEIiwKICAgICAgbGF0ZW5jeU1zOiAxMDAsCiAgICAgIG9jY3VycmVkQXQ6IG5ldyBEYXRlKCIyMDI2LTA4LTAyVDEwOjAwOjAwLjAwMFoiKQogICAgfSk7CiAgICBhd2FpdCBhbmFseXRpY3MucmVjb3JkVXNhZ2UoewogICAgICBhY3Rpdml0eUlkOiAiYWN0aXZpdHktMiIsCiAgICAgIGNsaWVudDogImNsaWVudC1jIiwKICAgICAgY2FwYWJpbGl0eTogIlNOUy5HZW5lcmF0ZSIsCiAgICAgIHByb3ZpZGVyOiAiZWNobyIsCiAgICAgIG1vZGVsOiAidGVzdCIsCiAgICAgIGlucHV0VG9rZW5zOiAxMCwKICAgICAgb3V0cHV0VG9rZW5zOiAxMCwKICAgICAgdG90YWxUb2tlbnM6IDIwLAogICAgICBjb3N0QW1vdW50OiAxLAogICAgICBjb3N0Q3VycmVuY3k6ICJVU0QiLAogICAgICBsYXRlbmN5TXM6IDEwMCwKICAgICAgb2NjdXJyZWRBdDogbmV3IERhdGUoIjIwMjYtMDgtMDJUMTA6MDA6MDAuMDAwWiIpCiAgICB9KTsKICAgIGNvbnN0IGRhc2hib2FyZCA9IGNyZWF0ZURhc2hib2FyZFF1ZXJ5U2VydmljZSgKICAgICAgYW5hbHl0aWNzLAogICAgICB7IG5vdzogKCkgPT4gbmV3IERhdGUoIjIwMjYtMDgtMDJUMTI6MDA6MDAuMDAwWiIpIH0sCiAgICAgIGNsaWVudHMKICAgICk7CgogICAgY29uc3QgdmlldyA9IGF3YWl0IGRhc2hib2FyZC5nZXRDbGllbnRCdWRnZXRWaWV3KCk7CgogICAgZXhwZWN0KHZpZXcub2spLnRvQmUodHJ1ZSk7CiAgICBpZiAoIXZpZXcub2spIHJldHVybjsKICAgIGV4cGVjdCh2aWV3LnZhbHVlLmNsaWVudHMpLnRvSGF2ZUxlbmd0aCgzKTsKICAgIGNvbnN0IGNsaWVudEEgPSB2aWV3LnZhbHVlLmNsaWVudHMuZmluZCgoY2xpZW50KSA9PiBjbGllbnQuY2xpZW50SWQgPT09ICJjbGllbnQtYSIpOwogICAgY29uc3QgY2xpZW50QiA9IHZpZXcudmFsdWUuY2xpZW50cy5maW5kKChjbGllbnQpID0+IGNsaWVudC5jbGllbnRJZCA9PT0gImNsaWVudC1iIik7CiAgICBjb25zdCBjbGllbnRDID0gdmlldy52YWx1ZS5jbGllbnRzLmZpbmQoKGNsaWVudCkgPT4gY2xpZW50LmNsaWVudElkID09PSAiY2xpZW50LWMiKTsKICAgIGV4cGVjdChjbGllbnRBPy51c2VkVG9rZW5zKS50b0JlKDUwKTsKICAgIGV4cGVjdChjbGllbnRBPy5yZW1haW5pbmdUb2tlbnMpLnRvQmUoNTApOwogICAgZXhwZWN0KGNsaWVudEE/LnRva2VuVXNhZ2VSYXRpbykudG9CZSgwLjUpOwogICAgZXhwZWN0KGNsaWVudEE/LnVzZWRDb3N0KS50b0JlKDQpOwogICAgZXhwZWN0KGNsaWVudEE/LnJlbWFpbmluZ0Nvc3QpLnRvQmUoNik7CiAgICBleHBlY3QoY2xpZW50QT8uY29zdFVzYWdlUmF0aW8pLnRvQmUoMC40KTsKICAgIGV4cGVjdChjbGllbnRBPy50b2tlbkxpbWl0UmVhY2hlZCkudG9CZShmYWxzZSk7CiAgICBleHBlY3QoY2xpZW50QT8uc3RhdHVzKS50b0JlKCJvayIpOwogICAgZXhwZWN0KGNsaWVudEI/LnVzZWRUb2tlbnMpLnRvQmUoMCk7CiAgICBleHBlY3QoY2xpZW50Qj8ubW9udGhseVRva2VuTGltaXQpLnRvQmVVbmRlZmluZWQoKTsKICAgIGV4cGVjdChjbGllbnRDPy51c2VkVG9rZW5zKS50b0JlKDIwKTsKICB9KTsKCiAgaXQoIm1hcmtzIGNsaWVudCBidWRnZXQgc3RhdHVzIGFzIHdhcm5pbmcgb3IgZXhjZWVkZWQiLCBhc3luYyAoKSA9PiB7CiAgICBjb25zdCBhbmFseXRpY3MgPSBjcmVhdGVNZW1vcnlBbmFseXRpY3NSZXBvc2l0b3J5KCk7CiAgICBjb25zdCBjbGllbnRzID0gY3JlYXRlQ2xpZW50UmVnaXN0cnkoKTsKICAgIGNsaWVudHMucmVnaXN0ZXIoewogICAgICBpZDogIndhcm5pbmctY2xpZW50IiwKICAgICAgbmFtZTogIldhcm5pbmcgQ2xpZW50IiwKICAgICAgdHlwZTogIndlYiIsCiAgICAgIHZlcnNpb246ICIwLjEuMCIsCiAgICAgIGNhcGFiaWxpdGllczogWyJTTlMuR2VuZXJhdGUiXSwKICAgICAga25vd2xlZGdlOiBbXSwKICAgICAgYW5hbHl0aWNzOiB0cnVlLAogICAgICBidWRnZXQ6IHsgbW9udGhseVRva2VuTGltaXQ6IDEwMCB9CiAgICB9KTsKICAgIGNsaWVudHMucmVnaXN0ZXIoewogICAgICBpZDogImV4Y2VlZGVkLWNsaWVudCIsCiAgICAgIG5hbWU6ICJFeGNlZWRlZCBDbGllbnQiLAogICAgICB0eXBlOiAid2ViIiwKICAgICAgdmVyc2lvbjogIjAuMS4wIiwKICAgICAgY2FwYWJpbGl0aWVzOiBbIlNOUy5HZW5lcmF0ZSJdLAogICAgICBrbm93bGVkZ2U6IFtdLAogICAgICBhbmFseXRpY3M6IHRydWUsCiAgICAgIGJ1ZGdldDogeyBtb250aGx5Q29zdExpbWl0OiAxMCB9CiAgICB9KTsKICAgIGF3YWl0IGFuYWx5dGljcy5yZWNvcmRVc2FnZSh7CiAgICAgIGFjdGl2aXR5SWQ6ICJhY3Rpdml0eS13YXJuaW5nIiwKICAgICAgY2xpZW50OiAid2FybmluZy1jbGllbnQiLAogICAgICBjYXBhYmlsaXR5OiAiU05TLkdlbmVyYXRlIiwKICAgICAgcHJvdmlkZXI6ICJlY2hvIiwKICAgICAgbW9kZWw6ICJ0ZXN0IiwKICAgICAgaW5wdXRUb2tlbnM6IDQwLAogICAgICBvdXRwdXRUb2tlbnM6IDQwLAogICAgICB0b3RhbFRva2VuczogODAsCiAgICAgIGNvc3RBbW91bnQ6IDAsCiAgICAgIGNvc3RDdXJyZW5jeTogIlVTRCIsCiAgICAgIGxhdGVuY3lNczogMTAwLAogICAgICBvY2N1cnJlZEF0OiBuZXcgRGF0ZSgiMjAyNi0wOC0wMlQxMDowMDowMC4wMDBaIikKICAgIH0pOwogICAgYXdhaXQgYW5hbHl0aWNzLnJlY29yZFVzYWdlKHsKICAgICAgYWN0aXZpdHlJZDogImFjdGl2aXR5LWV4Y2VlZGVkIiwKICAgICAgY2xpZW50OiAiZXhjZWVkZWQtY2xpZW50IiwKICAgICAgY2FwYWJpbGl0eTogIlNOUy5HZW5lcmF0ZSIsCiAgICAgIHByb3ZpZGVyOiAiZWNobyIsCiAgICAgIG1vZGVsOiAidGVzdCIsCiAgICAgIGlucHV0VG9rZW5zOiAxLAogICAgICBvdXRwdXRUb2tlbnM6IDEsCiAgICAgIHRvdGFsVG9rZW5zOiAyLAogICAgICBjb3N0QW1vdW50OiAxMCwKICAgICAgY29zdEN1cnJlbmN5OiAiVVNEIiwKICAgICAgbGF0ZW5jeU1zOiAxMDAsCiAgICAgIG9jY3VycmVkQXQ6IG5ldyBEYXRlKCIyMDI2LTA4LTAyVDEwOjAwOjAwLjAwMFoiKQogICAgfSk7CiAgICBjb25zdCBkYXNoYm9hcmQgPSBjcmVhdGVEYXNoYm9hcmRRdWVyeVNlcnZpY2UoCiAgICAgIGFuYWx5dGljcywKICAgICAgeyBub3c6ICgpID0+IG5ldyBEYXRlKCIyMDI2LTA4LTAyVDEyOjAwOjAwLjAwMFoiKSB9LAogICAgICBjbGllbnRzCiAgICApOwoKICAgIGNvbnN0IHZpZXcgPSBhd2FpdCBkYXNoYm9hcmQuZ2V0Q2xpZW50QnVkZ2V0VmlldygpOwoKICAgIGV4cGVjdCh2aWV3Lm9rKS50b0JlKHRydWUpOwogICAgaWYgKCF2aWV3Lm9rKSByZXR1cm47CiAgICBleHBlY3Qodmlldy52YWx1ZS5jbGllbnRzLmZpbmQoKGNsaWVudCkgPT4gY2xpZW50LmNsaWVudElkID09PSAid2FybmluZy1jbGllbnQiKT8uc3RhdHVzKS50b0JlKCJ3YXJuaW5nIik7CiAgICBleHBlY3Qodmlldy52YWx1ZS5jbGllbnRzLmZpbmQoKGNsaWVudCkgPT4gY2xpZW50LmNsaWVudElkID09PSAiZXhjZWVkZWQtY2xpZW50Iik/LnN0YXR1cykudG9CZSgiZXhjZWVkZWQiKTsKICB9KTsKCiAgaXQoInJldHVybnMgb25seSBjbGllbnQgYnVkZ2V0IGFsZXJ0cyIsIGFzeW5jICgpID0+IHsKICAgIGNvbnN0IGFuYWx5dGljcyA9IGNyZWF0ZU1lbW9yeUFuYWx5dGljc1JlcG9zaXRvcnkoKTsKICAgIGNvbnN0IGNsaWVudHMgPSBjcmVhdGVDbGllbnRSZWdpc3RyeSgpOwogICAgY2xpZW50cy5yZWdpc3Rlcih7CiAgICAgIGlkOiAib2stY2xpZW50IiwKICAgICAgbmFtZTogIk9LIENsaWVudCIsCiAgICAgIHR5cGU6ICJ3ZWIiLAogICAgICB2ZXJzaW9uOiAiMC4xLjAiLAogICAgICBjYXBhYmlsaXRpZXM6IFsiU05TLkdlbmVyYXRlIl0sCiAgICAgIGtub3dsZWRnZTogW10sCiAgICAgIGFuYWx5dGljczogdHJ1ZSwKICAgICAgYnVkZ2V0OiB7IG1vbnRobHlUb2tlbkxpbWl0OiAxMDAgfQogICAgfSk7CiAgICBjbGllbnRzLnJlZ2lzdGVyKHsKICAgICAgaWQ6ICJ3YXJuaW5nLWNsaWVudCIsCiAgICAgIG5hbWU6ICJXYXJuaW5nIENsaWVudCIsCiAgICAgIHR5cGU6ICJ3ZWIiLAogICAgICB2ZXJzaW9uOiAiMC4xLjAiLAogICAgICBjYXBhYmlsaXRpZXM6IFsiU05TLkdlbmVyYXRlIl0sCiAgICAgIGtub3dsZWRnZTogW10sCiAgICAgIGFuYWx5dGljczogdHJ1ZSwKICAgICAgYnVkZ2V0OiB7IG1vbnRobHlUb2tlbkxpbWl0OiAxMDAgfQogICAgfSk7CiAgICBjbGllbnRzLnJlZ2lzdGVyKHsKICAgICAgaWQ6ICJleGNlZWRlZC1jbGllbnQiLAogICAgICBuYW1lOiAiRXhjZWVkZWQgQ2xpZW50IiwKICAgICAgdHlwZTogIndlYiIsCiAgICAgIHZlcnNpb246ICIwLjEuMCIsCiAgICAgIGNhcGFiaWxpdGllczogWyJTTlMuR2VuZXJhdGUiXSwKICAgICAga25vd2xlZGdlOiBbXSwKICAgICAgYW5hbHl0aWNzOiB0cnVlLAogICAgICBidWRnZXQ6IHsgbW9udGhseUNvc3RMaW1pdDogMTAgfQogICAgfSk7CiAgICBhd2FpdCBhbmFseXRpY3MucmVjb3JkVXNhZ2UoewogICAgICBhY3Rpdml0eUlkOiAiYWN0aXZpdHktb2siLAogICAgICBjbGllbnQ6ICJvay1jbGllbnQiLAogICAgICBjYXBhYmlsaXR5OiAiU05TLkdlbmVyYXRlIiwKICAgICAgcHJvdmlkZXI6ICJlY2hvIiwKICAgICAgbW9kZWw6ICJ0ZXN0IiwKICAgICAgaW5wdXRUb2tlbnM6IDIwLAogICAgICBvdXRwdXRUb2tlbnM6IDIwLAogICAgICB0b3RhbFRva2VuczogNDAsCiAgICAgIGNvc3RBbW91bnQ6IDAsCiAgICAgIGNvc3RDdXJyZW5jeTogIlVTRCIsCiAgICAgIGxhdGVuY3lNczogMTAwLAogICAgICBvY2N1cnJlZEF0OiBuZXcgRGF0ZSgiMjAyNi0wOC0wMlQxMDowMDowMC4wMDBaIikKICAgIH0pOwogICAgYXdhaXQgYW5hbHl0aWNzLnJlY29yZFVzYWdlKHsKICAgICAgYWN0aXZpdHlJZDogImFjdGl2aXR5LXdhcm5pbmciLAogICAgICBjbGllbnQ6ICJ3YXJuaW5nLWNsaWVudCIsCiAgICAgIGNhcGFiaWxpdHk6ICJTTlMuR2VuZXJhdGUiLAogICAgICBwcm92aWRlcjogImVjaG8iLAogICAgICBtb2RlbDogInRlc3QiLAogICAgICBpbnB1dFRva2VuczogNDAsCiAgICAgIG91dHB1dFRva2VuczogNDAsCiAgICAgIHRvdGFsVG9rZW5zOiA4MCwKICAgICAgY29zdEFtb3VudDogMCwKICAgICAgY29zdEN1cnJlbmN5OiAiVVNEIiwKICAgICAgbGF0ZW5jeU1zOiAxMDAsCiAgICAgIG9jY3VycmVkQXQ6IG5ldyBEYXRlKCIyMDI2LTA4LTAyVDEwOjAwOjAwLjAwMFoiKQogICAgfSk7CiAgICBhd2FpdCBhbmFseXRpY3MucmVjb3JkVXNhZ2UoewogICAgICBhY3Rpdml0eUlkOiAiYWN0aXZpdHktZXhjZWVkZWQiLAogICAgICBjbGllbnQ6ICJleGNlZWRlZC1jbGllbnQiLAogICAgICBjYXBhYmlsaXR5OiAiU05TLkdlbmVyYXRlIiwKICAgICAgcHJvdmlkZXI6ICJlY2hvIiwKICAgICAgbW9kZWw6ICJ0ZXN0IiwKICAgICAgaW5wdXRUb2tlbnM6IDEsCiAgICAgIG91dHB1dFRva2VuczogMSwKICAgICAgdG90YWxUb2tlbnM6IDIsCiAgICAgIGNvc3RBbW91bnQ6IDEwLAogICAgICBjb3N0Q3VycmVuY3k6ICJVU0QiLAogICAgICBsYXRlbmN5TXM6IDEwMCwKICAgICAgb2NjdXJyZWRBdDogbmV3IERhdGUoIjIwMjYtMDgtMDJUMTA6MDA6MDAuMDAwWiIpCiAgICB9KTsKICAgIGNvbnN0IGRhc2hib2FyZCA9IGNyZWF0ZURhc2hib2FyZFF1ZXJ5U2VydmljZSgKICAgICAgYW5hbHl0aWNzLAogICAgICB7IG5vdzogKCkgPT4gbmV3IERhdGUoIjIwMjYtMDgtMDJUMTI6MDA6MDAuMDAwWiIpIH0sCiAgICAgIGNsaWVudHMKICAgICk7CgogICAgY29uc3QgYWxlcnRzID0gYXdhaXQgZGFzaGJvYXJkLmdldENsaWVudEJ1ZGdldEFsZXJ0cygpOwoKICAgIGV4cGVjdChhbGVydHMub2spLnRvQmUodHJ1ZSk7CiAgICBpZiAoIWFsZXJ0cy5vaykgcmV0dXJuOwogICAgZXhwZWN0KGFsZXJ0cy52YWx1ZS5zdW1tYXJ5KS50b0VxdWFsKHsKICAgICAgdG90YWw6IDIsCiAgICAgIHdhcm5pbmc6IDEsCiAgICAgIGV4Y2VlZGVkOiAxLAogICAgICBieVJlYXNvbjogewogICAgICAgICJ0b2tlbi1saW1pdCI6IDAsCiAgICAgICAgImNvc3QtbGltaXQiOiAxLAogICAgICAgICJ0b2tlbi13YXJuaW5nIjogMSwKICAgICAgICAiY29zdC13YXJuaW5nIjogMAogICAgICB9CiAgICB9KTsKICAgIGV4cGVjdChhbGVydHMudmFsdWUuY2xpZW50cy5tYXAoKGNsaWVudCkgPT4gY2xpZW50LmNsaWVudElkKSkudG9FcXVhbChbImV4Y2VlZGVkLWNsaWVudCIsICJ3YXJuaW5nLWNsaWVudCJdKTsKICAgIGV4cGVjdChhbGVydHMudmFsdWUuY2xpZW50cy5maW5kKChjbGllbnQpID0+IGNsaWVudC5jbGllbnRJZCA9PT0gImV4Y2VlZGVkLWNsaWVudCIpPy5yZWFzb25zKS50b0VxdWFsKFsiY29zdC1saW1pdCJdKTsKICAgIGV4cGVjdChhbGVydHMudmFsdWUuY2xpZW50cy5maW5kKChjbGllbnQpID0+IGNsaWVudC5jbGllbnRJZCA9PT0gIndhcm5pbmctY2xpZW50Iik/LnJlYXNvbnMpLnRvRXF1YWwoWyJ0b2tlbi13YXJuaW5nIl0pOwogIH0pOwoKICBpdCgiZmlsdGVycyBjbGllbnQgYnVkZ2V0IGFsZXJ0cyBieSBzdGF0dXMgYW5kIHJlYXNvbiIsIGFzeW5jICgpID0+IHsKICAgIGNvbnN0IGFuYWx5dGljcyA9IGNyZWF0ZU1lbW9yeUFuYWx5dGljc1JlcG9zaXRvcnkoKTsKICAgIGNvbnN0IGNsaWVudHMgPSBjcmVhdGVDbGllbnRSZWdpc3RyeSgpOwogICAgY2xpZW50cy5yZWdpc3Rlcih7CiAgICAgIGlkOiAidG9rZW4td2FybmluZy1jbGllbnQiLAogICAgICBuYW1lOiAiVG9rZW4gV2FybmluZyBDbGllbnQiLAogICAgICB0eXBlOiAid2ViIiwKICAgICAgdmVyc2lvbjogIjAuMS4wIiwKICAgICAgY2FwYWJpbGl0aWVzOiBbIlNOUy5HZW5lcmF0ZSJdLAogICAgICBrbm93bGVkZ2U6IFtdLAogICAgICBhbmFseXRpY3M6IHRydWUsCiAgICAgIGJ1ZGdldDogeyBtb250aGx5VG9rZW5MaW1pdDogMTAwIH0KICAgIH0pOwogICAgY2xpZW50cy5yZWdpc3Rlcih7CiAgICAgIGlkOiAiY29zdC13YXJuaW5nLWNsaWVudCIsCiAgICAgIG5hbWU6ICJDb3N0IFdhcm5pbmcgQ2xpZW50IiwKICAgICAgdHlwZTogIndlYiIsCiAgICAgIHZlcnNpb246ICIwLjEuMCIsCiAgICAgIGNhcGFiaWxpdGllczogWyJTTlMuR2VuZXJhdGUiXSwKICAgICAga25vd2xlZGdlOiBbXSwKICAgICAgYW5hbHl0aWNzOiB0cnVlLAogICAgICBidWRnZXQ6IHsgbW9udGhseUNvc3RMaW1pdDogMTAgfQogICAgfSk7CiAgICBjbGllbnRzLnJlZ2lzdGVyKHsKICAgICAgaWQ6ICJjb3N0LWV4Y2VlZGVkLWNsaWVudCIsCiAgICAgIG5hbWU6ICJDb3N0IEV4Y2VlZGVkIENsaWVudCIsCiAgICAgIHR5cGU6ICJ3ZWIiLAogICAgICB2ZXJzaW9uOiAiMC4xLjAiLAogICAgICBjYXBhYmlsaXRpZXM6IFsiU05TLkdlbmVyYXRlIl0sCiAgICAgIGtub3dsZWRnZTogW10sCiAgICAgIGFuYWx5dGljczogdHJ1ZSwKICAgICAgYnVkZ2V0OiB7IG1vbnRobHlDb3N0TGltaXQ6IDEwIH0KICAgIH0pOwogICAgYXdhaXQgYW5hbHl0aWNzLnJlY29yZFVzYWdlKHsKICAgICAgYWN0aXZpdHlJZDogImFjdGl2aXR5LXRva2VuLXdhcm5pbmciLAogICAgICBjbGllbnQ6ICJ0b2tlbi13YXJuaW5nLWNsaWVudCIsCiAgICAgIGNhcGFiaWxpdHk6ICJTTlMuR2VuZXJhdGUiLAogICAgICBwcm92aWRlcjogImVjaG8iLAogICAgICBtb2RlbDogInRlc3QiLAogICAgICBpbnB1dFRva2VuczogNDAsCiAgICAgIG91dHB1dFRva2VuczogNDAsCiAgICAgIHRvdGFsVG9rZW5zOiA4MCwKICAgICAgY29zdEFtb3VudDogMCwKICAgICAgY29zdEN1cnJlbmN5OiAiVVNEIiwKICAgICAgbGF0ZW5jeU1zOiAxMDAsCiAgICAgIG9jY3VycmVkQXQ6IG5ldyBEYXRlKCIyMDI2LTA4LTAyVDEwOjAwOjAwLjAwMFoiKQogICAgfSk7CiAgICBhd2FpdCBhbmFseXRpY3MucmVjb3JkVXNhZ2UoewogICAgICBhY3Rpdml0eUlkOiAiYWN0aXZpdHktY29zdC13YXJuaW5nIiwKICAgICAgY2xpZW50OiAiY29zdC13YXJuaW5nLWNsaWVudCIsCiAgICAgIGNhcGFiaWxpdHk6ICJTTlMuR2VuZXJhdGUiLAogICAgICBwcm92aWRlcjogImVjaG8iLAogICAgICBtb2RlbDogInRlc3QiLAogICAgICBpbnB1dFRva2VuczogMSwKICAgICAgb3V0cHV0VG9rZW5zOiAxLAogICAgICB0b3RhbFRva2VuczogMiwKICAgICAgY29zdEFtb3VudDogOCwKICAgICAgY29zdEN1cnJlbmN5OiAiVVNEIiwKICAgICAgbGF0ZW5jeU1zOiAxMDAsCiAgICAgIG9jY3VycmVkQXQ6IG5ldyBEYXRlKCIyMDI2LTA4LTAyVDEwOjAwOjAwLjAwMFoiKQogICAgfSk7CiAgICBhd2FpdCBhbmFseXRpY3MucmVjb3JkVXNhZ2UoewogICAgICBhY3Rpdml0eUlkOiAiYWN0aXZpdHktY29zdC1leGNlZWRlZCIsCiAgICAgIGNsaWVudDogImNvc3QtZXhjZWVkZWQtY2xpZW50IiwKICAgICAgY2FwYWJpbGl0eTogIlNOUy5HZW5lcmF0ZSIsCiAgICAgIHByb3ZpZGVyOiAiZWNobyIsCiAgICAgIG1vZGVsOiAidGVzdCIsCiAgICAgIGlucHV0VG9rZW5zOiAxLAogICAgICBvdXRwdXRUb2tlbnM6IDEsCiAgICAgIHRvdGFsVG9rZW5zOiAyLAogICAgICBjb3N0QW1vdW50OiAxMCwKICAgICAgY29zdEN1cnJlbmN5OiAiVVNEIiwKICAgICAgbGF0ZW5jeU1zOiAxMDAsCiAgICAgIG9jY3VycmVkQXQ6IG5ldyBEYXRlKCIyMDI2LTA4LTAyVDEwOjAwOjAwLjAwMFoiKQogICAgfSk7CiAgICBjb25zdCBkYXNoYm9hcmQgPSBjcmVhdGVEYXNoYm9hcmRRdWVyeVNlcnZpY2UoCiAgICAgIGFuYWx5dGljcywKICAgICAgeyBub3c6ICgpID0+IG5ldyBEYXRlKCIyMDI2LTA4LTAyVDEyOjAwOjAwLjAwMFoiKSB9LAogICAgICBjbGllbnRzCiAgICApOwoKICAgIGNvbnN0IGFsZXJ0cyA9IGF3YWl0IGRhc2hib2FyZC5nZXRDbGllbnRCdWRnZXRBbGVydHMoewogICAgICBzdGF0dXNlczogWyJ3YXJuaW5nIl0sCiAgICAgIHJlYXNvbnM6IFsiY29zdC13YXJuaW5nIl0KICAgIH0pOwoKICAgIGV4cGVjdChhbGVydHMub2spLnRvQmUodHJ1ZSk7CiAgICBpZiAoIWFsZXJ0cy5vaykgcmV0dXJuOwogICAgZXhwZWN0KGFsZXJ0cy52YWx1ZS5zdW1tYXJ5KS50b0VxdWFsKHsKICAgICAgdG90YWw6IDEsCiAgICAgIHdhcm5pbmc6IDEsCiAgICAgIGV4Y2VlZGVkOiAwLAogICAgICBieVJlYXNvbjogewogICAgICAgICJ0b2tlbi1saW1pdCI6IDAsCiAgICAgICAgImNvc3QtbGltaXQiOiAwLAogICAgICAgICJ0b2tlbi13YXJuaW5nIjogMCwKICAgICAgICAiY29zdC13YXJuaW5nIjogMQogICAgICB9CiAgICB9KTsKICAgIGV4cGVjdChhbGVydHMudmFsdWUuY2xpZW50cy5tYXAoKGNsaWVudCkgPT4gY2xpZW50LmNsaWVudElkKSkudG9FcXVhbChbImNvc3Qtd2FybmluZy1jbGllbnQiXSk7CiAgfSk7Cn0pOwo=
+import { createMemoryAnalyticsRepository } from "@ai-platform-core/analytics";
+import { createClientRegistry } from "@ai-platform-core/client";
+import { describe, expect, it } from "vitest";
+import { createDashboardQueryService } from "./index";
+
+describe("dashboard query service", () => {
+  it("builds period and grouping metrics", async () => {
+    const analytics = createMemoryAnalyticsRepository();
+    await analytics.recordUsage({
+      activityId: "activity-1",
+      client: "client-a",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 3,
+      outputTokens: 7,
+      totalTokens: 10,
+      costAmount: 0.2,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    await analytics.recordOutcome({
+      activityId: "activity-1",
+      result: "published",
+      score: 0.8,
+      roi: 1.5
+    });
+    await analytics.recordFeedback({
+      activityId: "activity-1",
+      rating: 4,
+      edited: true,
+      accepted: true,
+      memo: "usable"
+    });
+    const dashboard = createDashboardQueryService(analytics, { now: () => new Date("2026-08-02T12:00:00.000Z") });
+    const view = await dashboard.getView({ period: "today" });
+    expect(view.ok).toBe(true);
+    if (!view.ok) return;
+    expect(view.value.metric.totalTokens).toBe(10);
+    expect(view.value.metric.outcomeCount).toBe(1);
+    expect(view.value.metric.averageOutcomeScore).toBe(0.8);
+    expect(view.value.metric.averageRoi).toBe(1.5);
+    expect(view.value.metric.feedbackCount).toBe(1);
+    expect(view.value.metric.acceptedCount).toBe(1);
+    expect(view.value.metric.editedCount).toBe(1);
+    expect(view.value.metric.averageRating).toBe(4);
+    expect(view.value.byClient["client-a"]?.usageCount).toBe(1);
+    expect(view.value.byCapability["SNS.Generate"]?.acceptedCount).toBe(1);
+  });
+
+  it("builds monthly client budget metrics from manifests and usage", async () => {
+    const analytics = createMemoryAnalyticsRepository();
+    const clients = createClientRegistry();
+    clients.register({
+      id: "client-a",
+      name: "Client A",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyTokenLimit: 100, monthlyCostLimit: 10, currency: "USD" }
+    });
+    clients.register({
+      id: "client-b",
+      name: "Client B",
+      type: "api",
+      version: "0.1.0",
+      capabilities: ["PDF.Export"],
+      knowledge: [],
+      analytics: true
+    });
+    await analytics.recordUsage({
+      activityId: "activity-1",
+      client: "client-a",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 20,
+      outputTokens: 30,
+      totalTokens: 50,
+      costAmount: 4,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    await analytics.recordUsage({
+      activityId: "activity-2",
+      client: "client-c",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 10,
+      outputTokens: 10,
+      totalTokens: 20,
+      costAmount: 1,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    const dashboard = createDashboardQueryService(
+      analytics,
+      { now: () => new Date("2026-08-02T12:00:00.000Z") },
+      clients
+    );
+
+    const view = await dashboard.getClientBudgetView();
+
+    expect(view.ok).toBe(true);
+    if (!view.ok) return;
+    expect(view.value.clients).toHaveLength(3);
+    const clientA = view.value.clients.find((client) => client.clientId === "client-a");
+    const clientB = view.value.clients.find((client) => client.clientId === "client-b");
+    const clientC = view.value.clients.find((client) => client.clientId === "client-c");
+    expect(clientA?.usedTokens).toBe(50);
+    expect(clientA?.remainingTokens).toBe(50);
+    expect(clientA?.tokenUsageRatio).toBe(0.5);
+    expect(clientA?.usedCost).toBe(4);
+    expect(clientA?.remainingCost).toBe(6);
+    expect(clientA?.costUsageRatio).toBe(0.4);
+    expect(clientA?.tokenLimitReached).toBe(false);
+    expect(clientA?.status).toBe("ok");
+    expect(clientB?.usedTokens).toBe(0);
+    expect(clientB?.monthlyTokenLimit).toBeUndefined();
+    expect(clientC?.usedTokens).toBe(20);
+  });
+
+  it("marks client budget status as warning or exceeded", async () => {
+    const analytics = createMemoryAnalyticsRepository();
+    const clients = createClientRegistry();
+    clients.register({
+      id: "warning-client",
+      name: "Warning Client",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyTokenLimit: 100 }
+    });
+    clients.register({
+      id: "exceeded-client",
+      name: "Exceeded Client",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyCostLimit: 10 }
+    });
+    await analytics.recordUsage({
+      activityId: "activity-warning",
+      client: "warning-client",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 40,
+      outputTokens: 40,
+      totalTokens: 80,
+      costAmount: 0,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    await analytics.recordUsage({
+      activityId: "activity-exceeded",
+      client: "exceeded-client",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 1,
+      outputTokens: 1,
+      totalTokens: 2,
+      costAmount: 10,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    const dashboard = createDashboardQueryService(
+      analytics,
+      { now: () => new Date("2026-08-02T12:00:00.000Z") },
+      clients
+    );
+
+    const view = await dashboard.getClientBudgetView();
+
+    expect(view.ok).toBe(true);
+    if (!view.ok) return;
+    expect(view.value.clients.find((client) => client.clientId === "warning-client")?.status).toBe("warning");
+    expect(view.value.clients.find((client) => client.clientId === "exceeded-client")?.status).toBe("exceeded");
+  });
+
+  it("returns only client budget alerts", async () => {
+    const analytics = createMemoryAnalyticsRepository();
+    const clients = createClientRegistry();
+    clients.register({
+      id: "ok-client",
+      name: "OK Client",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyTokenLimit: 100 }
+    });
+    clients.register({
+      id: "warning-client",
+      name: "Warning Client",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyTokenLimit: 100 }
+    });
+    clients.register({
+      id: "exceeded-client",
+      name: "Exceeded Client",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyCostLimit: 10 }
+    });
+    await analytics.recordUsage({
+      activityId: "activity-ok",
+      client: "ok-client",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 20,
+      outputTokens: 20,
+      totalTokens: 40,
+      costAmount: 0,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    await analytics.recordUsage({
+      activityId: "activity-warning",
+      client: "warning-client",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 40,
+      outputTokens: 40,
+      totalTokens: 80,
+      costAmount: 0,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    await analytics.recordUsage({
+      activityId: "activity-exceeded",
+      client: "exceeded-client",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 1,
+      outputTokens: 1,
+      totalTokens: 2,
+      costAmount: 10,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    const dashboard = createDashboardQueryService(
+      analytics,
+      { now: () => new Date("2026-08-02T12:00:00.000Z") },
+      clients
+    );
+
+    const alerts = await dashboard.getClientBudgetAlerts();
+
+    expect(alerts.ok).toBe(true);
+    if (!alerts.ok) return;
+    expect(alerts.value.summary).toEqual({
+      total: 2,
+      warning: 1,
+      exceeded: 1,
+      byReason: {
+        "token-limit": 0,
+        "cost-limit": 1,
+        "token-warning": 1,
+        "cost-warning": 0
+      }
+    });
+    expect(alerts.value.clients.map((client) => client.clientId)).toEqual(["exceeded-client", "warning-client"]);
+    expect(alerts.value.clients.find((client) => client.clientId === "exceeded-client")?.reasons).toEqual(["cost-limit"]);
+    expect(alerts.value.clients.find((client) => client.clientId === "warning-client")?.reasons).toEqual(["token-warning"]);
+  });
+
+  it("filters client budget alerts by status and reason", async () => {
+    const analytics = createMemoryAnalyticsRepository();
+    const clients = createClientRegistry();
+    clients.register({
+      id: "token-warning-client",
+      name: "Token Warning Client",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyTokenLimit: 100 }
+    });
+    clients.register({
+      id: "cost-warning-client",
+      name: "Cost Warning Client",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyCostLimit: 10 }
+    });
+    clients.register({
+      id: "cost-exceeded-client",
+      name: "Cost Exceeded Client",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyCostLimit: 10 }
+    });
+    await analytics.recordUsage({
+      activityId: "activity-token-warning",
+      client: "token-warning-client",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 40,
+      outputTokens: 40,
+      totalTokens: 80,
+      costAmount: 0,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    await analytics.recordUsage({
+      activityId: "activity-cost-warning",
+      client: "cost-warning-client",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 1,
+      outputTokens: 1,
+      totalTokens: 2,
+      costAmount: 8,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    await analytics.recordUsage({
+      activityId: "activity-cost-exceeded",
+      client: "cost-exceeded-client",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 1,
+      outputTokens: 1,
+      totalTokens: 2,
+      costAmount: 10,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    const dashboard = createDashboardQueryService(
+      analytics,
+      { now: () => new Date("2026-08-02T12:00:00.000Z") },
+      clients
+    );
+
+    const alerts = await dashboard.getClientBudgetAlerts({
+      statuses: ["warning"],
+      reasons: ["cost-warning"]
+    });
+
+    expect(alerts.ok).toBe(true);
+    if (!alerts.ok) return;
+    expect(alerts.value.summary).toEqual({
+      total: 1,
+      warning: 1,
+      exceeded: 0,
+      byReason: {
+        "token-limit": 0,
+        "cost-limit": 0,
+        "token-warning": 0,
+        "cost-warning": 1
+      }
+    });
+    expect(alerts.value.clients.map((client) => client.clientId)).toEqual(["cost-warning-client"]);
+  });
+});

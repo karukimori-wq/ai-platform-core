@@ -1,1 +1,261 @@
-IyBBSSBQbGF0Zm9ybSBDb3JlIFJlcXVpcmVtZW50cyB2MS4wCgojIyBDb3JyZWN0aW9uIFN1bW1hcnkKClRoZSBvcmlnaW5hbCByZXF1aXJlbWVudHMgd2VyZSBkaXJlY3Rpb25hbGx5IHN0cm9uZywgYnV0IGltcGxlbWVudGF0aW9uIHdvdWxkIGRyaWZ0IHdpdGhvdXQgdGhlc2UgY29ycmVjdGlvbnM6Cgp8IEFyZWEgfCBDb3JyZWN0aW9uIHwKfCAtLS0gfCAtLS0gfAp8IFBsYXRmb3JtIHNjb3BlIHwgS2VlcCB0aGlzIHJlcG9zaXRvcnkgZm9jdXNlZCBvbiBwbGF0Zm9ybSwgcnVudGltZSwgZW5naW5lLCBhbmQgU0RLIGNvZGUgb25seS4gfAp8IEFJIEFjdGl2aXR5IHwgVHJlYXQgQUkgQWN0aXZpdHkgYXMgdGhlIG1haW4gbWFuYWdlZCB1bml0LCBub3QgYXBwIG5hbWVzIG9yIHByb3ZpZGVyIGNhbGxzLiB8CnwgR2F0ZXdheSB8IE1ha2UgdGhlIEFJIEdhdGV3YXkgdGhlIG9ubHkgcnVudGltZSBlbnRyeXBvaW50IGZvciBBSSB1c2FnZS4gfAp8IEFuYWx5dGljcyB8IEltcGxlbWVudCB1c2FnZSB2aXNpYmlsaXR5IGJlZm9yZSBsZWFybmluZyBvciBvcHRpbWl6YXRpb24uIHwKfCBQcm92aWRlciB8IEtlZXAgcHJvdmlkZXJzIHJlcGxhY2VhYmxlIHRocm91Z2ggaW50ZXJmYWNlcy4gfAp8IExlYXJuaW5nIHwgS2VlcCBMZWFybmluZyBFbmdpbmUgb3V0IG9mIE1WUDsgZGVmaW5lIGZ1dHVyZSBleHRlbnNpb24gcG9pbnRzIG9ubHkuIHwKfCBOb24tZnVuY3Rpb25hbCByZXF1aXJlbWVudHMgfCBBZGQgcGVyZm9ybWFuY2UsIHJldGVudGlvbiwgcHJpdmFjeSwgYXZhaWxhYmlsaXR5LCBhbmQgcHJvdmlkZXItc3dpdGNoaW5nIHJ1bGVzLiB8CnwgUHVibGljIEFQSSB8IEV4cG9zZSBhcHBsaWNhdGlvbi1mYWNpbmcgQVBJcyB0aHJvdWdoIGBAYWktcGxhdGZvcm0tY29yZS9zZGtgLiB8CgojIyBQdXJwb3NlCgpBSSBQbGF0Zm9ybSBDb3JlIGlzIG5vdCBhIGZyYW1ld29yayBmb3IgYSBzaW5nbGUgQUkgYXBwbGljYXRpb24uIEl0IGlzIGEgY29tbW9uIHBsYXRmb3JtIGZvciBtYW5hZ2luZywgb2JzZXJ2aW5nLCBhbmFseXppbmcsIGFuZCBldmVudHVhbGx5IG9wdGltaXppbmcgQUkgQWN0aXZpdGllcyBhY3Jvc3MgV2ViIGFwcGxpY2F0aW9ucywgYm90cywgYXNzaXN0YW50cywgQ0xJcywgQVBJcywgQUkgZW1wbG95ZWVzLCBhbmQgZnV0dXJlIEFJIHNlcnZpY2VzLgoKVGhlIHBsYXRmb3JtJ3MgY29yZSB2YWx1ZSBpcyB0byB0dXJuIEFJIHVzYWdlIGludG8gYW4gYXNzZXQ6CgotIFdoaWNoIGNsaWVudCB1c2VkIEFJCi0gV2hpY2ggY2FwYWJpbGl0eSB3YXMgZXhlY3V0ZWQKLSBXaGljaCBwcm92aWRlciBhbmQgbW9kZWwgd2VyZSB1c2VkCi0gSG93IG1hbnkgdG9rZW5zIHdlcmUgY29uc3VtZWQKLSBIb3cgbXVjaCBjb3N0IHdhcyBpbmN1cnJlZAotIEhvdyBsb25nIHRoZSBhY3Rpdml0eSB0b29rCi0gV2hpY2ggb3V0cHV0IHdhcyBwcm9kdWNlZAotIFdoaWNoIG91dGNvbWUgYW5kIGZlZWRiYWNrIHdlcmUgcmVjb3JkZWQKLSBXaGF0IFJPSSB3YXMgYWNoaWV2ZWQKCiMjIFByaW5jaXBsZXMKCi0gUGxhdGZvcm0gRmlyc3Q6IG5vIGFwcGxpY2F0aW9uLXNwZWNpZmljIGJ1c2luZXNzIGxvZ2ljLgotIEFJIEFjdGl2aXR5IEZpcnN0OiB0aGUgbWFuYWdlZCB1bml0IGlzIGFuIEFJIEFjdGl2aXR5LgotIENhcGFiaWxpdHkgRmlyc3Q6IGV2ZXJ5IGV4ZWN1dGFibGUgZmVhdHVyZSBpcyByZXByZXNlbnRlZCBhcyBhIENhcGFiaWxpdHkuCi0gRXZlbnQgRmlyc3Q6IGltcG9ydGFudCBjaGFuZ2VzIG11c3QgYmUgcmVwcmVzZW50YWJsZSBhcyBFdmVudHMuCi0gR2F0ZXdheSBGaXJzdDogYWxsIEFJIHVzYWdlIG11c3QgcGFzcyB0aHJvdWdoIHRoZSBBSSBHYXRld2F5LgotIEh1bWFuIEFwcHJvdmFsOiBBSSBwcm9wb3NlczsgaHVtYW5zIGRlY2lkZS4KLSBMZWFybmluZyBSZWFkeTogTVZQIG11c3QgYmUgZXh0ZW5kYWJsZSB0b3dhcmQgbGVhcm5pbmcsIGJ1dCBub3QgaW1wbGVtZW50IGxlYXJuaW5nLgoKIyMgTVZQIFNjb3BlCgpNVlAgZG9lcyBub3QgbWFrZSBBSSBzbWFydGVyLiBNVlAgbWFrZXMgQUkgdXNhZ2UgdmlzaWJsZS4KCk1WUCBtdXN0IGNhcHR1cmU6CgotIEFJIHVzYWdlIGNvdW50Ci0gSW5wdXQsIG91dHB1dCwgYW5kIHRvdGFsIHRva2VucwotIENvc3QKLSBQcm92aWRlcgotIE1vZGVsCi0gTGF0ZW5jeQotIFdvcmtmbG93Ci0gQ2FwYWJpbGl0eQotIEFjdGl2aXR5Ci0gRmVlZGJhY2sKLSBPdXRjb21lCgojIyBDb3JlIFBhY2thZ2VzCgp8IFBhY2thZ2UgfCBSZXNwb25zaWJpbGl0eSB8CnwgLS0tIHwgLS0tIHwKfCBga2VybmVsYCB8IFJlc3VsdCwgZXJyb3JzLCBsb2dnZXIsIGNvbmZpZywgY2xvY2ssIFVVSUQsIERJLCBlbnRpdHksIHZhbHVlIG9iamVjdHMgfAp8IGBjbGllbnRgIHwgQ2xpZW50IE1hbmlmZXN0IHJlZ2lzdHJhdGlvbiwgdmFsaWRhdGlvbiwgYW5kIGNhcGFiaWxpdHkgYWNjZXNzIGNoZWNrcyB8CnwgYGFjdGl2aXR5YCB8IEFJIEFjdGl2aXR5IGNvbnRyYWN0LCBsaWZlY3ljbGUsIHJlc3VsdCwgb3V0Y29tZSwgZmVlZGJhY2sgfAp8IGBnYXRld2F5YCB8IEF1dGhlbnRpY2F0aW9uLCBwcm92aWRlciByb3V0aW5nLCB0b2tlbi9jb3N0L2xhdGVuY3kgcmVjb3JkaW5nIHwKfCBgcHJvdmlkZXJgIHwgUmVwbGFjZWFibGUgQUkgcHJvdmlkZXIgaW50ZXJmYWNlcyB8CnwgYHNlY3JldHNgIHwgUGxhdGZvcm0tb3duZWQgQVBJIGtleSBhbmQgc2VjcmV0IGFjY2VzcyB8CnwgYGFuYWx5dGljc2AgfCBVc2FnZSByZWNvcmRzIGFuZCBzdW1tYXJpZXMgfAp8IGBkYXNoYm9hcmRgIHwgRGFzaGJvYXJkLXJlYWR5IHVzYWdlIHZpZXdzIGJ5IHBlcmlvZCBhbmQgZGltZW5zaW9uIHwKfCBgZXZlbnRgIHwgRXZlbnRCdXMsIGRpc3BhdGNoZXIsIHN1YnNjcmliZXJzLCBFdmVudFN0b3JlIHwKfCBgY2FwYWJpbGl0eWAgfCBDYXBhYmlsaXR5IGludGVyZmFjZSwgcmVnaXN0cnksIHBlcm1pc3Npb24gY2hlY2tzLCBleGVjdXRpb24gfAp8IGB3b3JrZmxvd2AgfCBXb3JrZmxvdyBkZWZpbml0aW9ucywgaW5zdGFuY2VzLCBhcHByb3ZhbCwgcmV0cnksIHJvbGxiYWNrLCB0aW1lb3V0IHwKfCBga25vd2xlZGdlYCB8IEtub3dsZWRnZSBzdG9yYWdlIGFuZCBzaW1wbGUgc2VhcmNoIHwKfCBgc3RvcmFnZWAgfCBNZW1vcnkvRmlsZS9FbnZpcm9ubWVudCBzdG9yYWdlIGFic3RyYWN0aW9ucyB8CnwgYHJ1bnRpbWVgIHwgQ29tcG9zZWQgaW50ZXJuYWwgcnVudGltZSB8CnwgYHNka2AgfCBQdWJsaWMgYXBwbGljYXRpb24tZmFjaW5nIEFQSSB8CgojIyBBSSBBY3Rpdml0eSBDb250cmFjdAoKYEFjdGl2aXR5UmVxdWVzdGAgaW5jbHVkZXM6CgotIGNsaWVudAotIGNhcGFiaWxpdHkKLSB3b3JrZmxvdwotIGdvYWwKLSBjb250ZXh0Ci0gYnVkZ2V0Ci0gcHJvdmlkZXIKLSBtb2RlbAotIGlucHV0CgpgQWN0aXZpdHlSZXN1bHRgIGluY2x1ZGVzOgoKLSBhY3Rpdml0eUlkCi0gb3V0cHV0Ci0gcHJvdmlkZXIKLSBtb2RlbAotIHRva2VucwotIGNvc3QKLSBsYXRlbmN5TXMKLSBrbm93bGVkZ2VVc2VkCgpgQWN0aXZpdHlPdXRjb21lYCBpbmNsdWRlczoKCi0gYWN0aXZpdHlJZAotIHJlc3VsdAotIHNjb3JlCi0gcm9pCgpgQWN0aXZpdHlGZWVkYmFja2AgaW5jbHVkZXM6CgotIGFjdGl2aXR5SWQKLSByYXRpbmcKLSBlZGl0ZWQKLSBhY2NlcHRlZAotIG1lbW8KCiMjIENsaWVudCBNYW5pZmVzdAoKRWFjaCBjbGllbnQgbXVzdCBkZWNsYXJlIGEgbWFuaWZlc3QgYmVmb3JlIGl0IGNhbiBleGVjdXRlIHBsYXRmb3JtIGNhcGFiaWxpdGllcy4KCmBDbGllbnRNYW5pZmVzdGAgaW5jbHVkZXM6CgotIGlkCi0gbmFtZQotIHR5cGUKLSB2ZXJzaW9uCi0gcHJvdmlkZXIKLSBkZWZhdWx0TW9kZWwKLSBjYXBhYmlsaXRpZXMKLSBrbm93bGVkZ2UKLSBhbmFseXRpY3MKLSBidWRnZXQKLSBtZXRhZGF0YQoKR2F0ZXdheSBtdXN0IHJlamVjdCBhIHJlcXVlc3Qgd2hlbjoKCi0gdGhlIGF1dGhlbnRpY2F0ZWQgY2xpZW50IGRpZmZlcnMgZnJvbSBgQWN0aXZpdHlSZXF1ZXN0LmNsaWVudGAKLSB0aGUgY2xpZW50IGlzIG5vdCByZWdpc3RlcmVkCi0gdGhlIHJlcXVlc3RlZCBjYXBhYmlsaXR5IGlzIG5vdCBkZWNsYXJlZCBieSB0aGUgY2xpZW50IG1hbmlmZXN0Ci0gdGhlIHByb3ZpZGVyIHJlc3BvbnNlIGV4Y2VlZHMgdGhlIEFjdGl2aXR5IHRva2VuIGJ1ZGdldAotIHRoZSBwcm92aWRlciByZXNwb25zZSBleGNlZWRzIHRoZSBBY3Rpdml0eSBjb3N0IGJ1ZGdldAotIHRoZSByZWdpc3RlcmVkIGNsaWVudCBoYXMgcmVhY2hlZCBvciB3b3VsZCBleGNlZWQgaXRzIG1vbnRobHkgdG9rZW4gYnVkZ2V0Ci0gdGhlIHJlZ2lzdGVyZWQgY2xpZW50IGhhcyByZWFjaGVkIG9yIHdvdWxkIGV4Y2VlZCBpdHMgbW9udGhseSBjb3N0IGJ1ZGdldAotIHRoZSBhdXRoZW50aWNhdGVkIGNsaWVudCBkb2VzIG5vdCBvd24gdGhlIEFjdGl2aXR5IGJlaW5nIHVwZGF0ZWQgd2l0aCBvdXRjb21lIG9yIGZlZWRiYWNrCgpHYXRld2F5IG11c3Qgb25seSBhdHRhY2ggS25vd2xlZGdlIHJlY29yZHMgZGVjbGFyZWQgYnkgdGhlIHJlZ2lzdGVyZWQgQ2xpZW50IE1hbmlmZXN0LgoKR2F0ZXdheSBtdXN0IHJlc29sdmUgcHJvdmlkZXIgYW5kIG1vZGVsIGluIHRoaXMgb3JkZXI6CgoxLiBgQWN0aXZpdHlSZXF1ZXN0LnByb3ZpZGVyYCAvIGBBY3Rpdml0eVJlcXVlc3QubW9kZWxgCjIuIGBDbGllbnRNYW5pZmVzdC5wcm92aWRlcmAgLyBgQ2xpZW50TWFuaWZlc3QuZGVmYXVsdE1vZGVsYAozLiBwbGF0Zm9ybSBmYWxsYmFjayBwcm92aWRlciBgZWNob2AgYW5kIG1vZGVsIGBkZWZhdWx0YAoKR2F0ZXdheSBtYXkgcmV0cnkgcHJvdmlkZXIgZXhlY3V0aW9uIGFuZCBmYWxsIGJhY2sgdG8gY29uZmlndXJlZCByZXBsYWNlbWVudCBwcm92aWRlcnMgd2l0aG91dCBjaGFuZ2luZyB0aGUgQWN0aXZpdHlSZXF1ZXN0IGNvbnRyYWN0LgoKUHJvdmlkZXIgYWRhcHRlcnMgbXVzdCBrZWVwIHByb3ZpZGVyLXNwZWNpZmljIHJlcXVlc3QgZGV0YWlscyBiZWhpbmQgdGhlIHNoYXJlZCBBSVByb3ZpZGVyIGludGVyZmFjZS4KClByb3ZpZGVyIEFQSSBrZXlzIGFuZCBwcm92aWRlciBzZWNyZXRzIG11c3QgYmUgcmVhZCBmcm9tIHBsYXRmb3JtLW93bmVkIFNlY3JldFJlYWRlciBvciBTZWNyZXRTdG9yZSBpbXBsZW1lbnRhdGlvbnMuCgojIyBBY3Rpdml0eSBFdmVudHMKCkFjdGl2aXR5IGxpZmVjeWNsZSBjaGFuZ2VzIG11c3QgYmUgcmVwcmVzZW50YWJsZSBhcyBEb21haW5FdmVudHMuCgpJbml0aWFsIEFjdGl2aXR5IGV2ZW50czoKCi0gQWN0aXZpdHlDcmVhdGVkCi0gQWN0aXZpdHlTdGF0dXNDaGFuZ2VkCi0gQWN0aXZpdHlDb21wbGV0ZWQKLSBBY3Rpdml0eU91dGNvbWVSZWNvcmRlZAotIEFjdGl2aXR5RmVlZGJhY2tSZWNvcmRlZAoKVGhlIG1lbW9yeSBydW50aW1lIHN0b3JlcyB0aGVzZSBldmVudHMgdGhyb3VnaCBFdmVudFN0b3JlLiBGdXR1cmUgaW5mcmFzdHJ1Y3R1cmUgYWRhcHRlcnMgY2FuIHJlcGxhY2UgdGhlIG1lbW9yeSBFdmVudFN0b3JlIHdpdGggUG9zdGdyZVNRTCwgUmVkaXMsIEthZmthLCBvciBhbm90aGVyIGV2ZW50IGJhY2tlbmQgd2l0aG91dCBjaGFuZ2luZyB0aGUgQWN0aXZpdHkgY29udHJhY3QuCgojIyBEYXNoYm9hcmQKCkRhc2hib2FyZCBxdWVyaWVzIG11c3QgYmUgQVBJLXJlYWR5IGFuZCBVSS1hZ25vc3RpYy4KCkluaXRpYWwgZGFzaGJvYXJkIHBlcmlvZHM6CgotIHRvZGF5Ci0gbW9udGgKLSB5ZWFyCi0gYWxsCgpJbml0aWFsIGRhc2hib2FyZCBkaW1lbnNpb25zOgoKLSBjbGllbnQKLSBjYXBhYmlsaXR5Ci0gcHJvdmlkZXIKLSBtb2RlbAoKSW5pdGlhbCBtZXRyaWNzOgoKLSB1c2FnZUNvdW50Ci0gdG90YWxUb2tlbnMKLSB0b3RhbENvc3QKLSBhdmVyYWdlTGF0ZW5jeU1zCi0gbW9udGhseVRva2VuTGltaXQKLSBtb250aGx5Q29zdExpbWl0Ci0gcmVtYWluaW5nVG9rZW5zCi0gcmVtYWluaW5nQ29zdAotIHRva2VuVXNhZ2VSYXRpbwotIGNvc3RVc2FnZVJhdGlvCi0gdG9rZW5MaW1pdFJlYWNoZWQKLSBjb3N0TGltaXRSZWFjaGVkCi0gYnVkZ2V0U3RhdHVzCi0gYnVkZ2V0QWxlcnRSZWFzb25zCi0gYnVkZ2V0QWxlcnRTdW1tYXJ5Ci0gYnVkZ2V0QWxlcnRSZWFzb25Db3VudHMKLSBidWRnZXRBbGVydEZpbHRlcnMKLSBvdXRjb21lQ291bnQKLSBhdmVyYWdlT3V0Y29tZVNjb3JlCi0gYXZlcmFnZVJvaQotIGZlZWRiYWNrQ291bnQKLSBhY2NlcHRlZENvdW50Ci0gZWRpdGVkQ291bnQKLSBhdmVyYWdlUmF0aW5nCgpJbml0aWFsIGRhc2hib2FyZCBxdWVyaWVzOgoKLSB1c2FnZSBkYXNoYm9hcmQgdmlldwotIGNsaWVudCBtb250aGx5IGJ1ZGdldCB2aWV3Ci0gY2xpZW50IG1vbnRobHkgYnVkZ2V0IGFsZXJ0IHZpZXcKCiMjIE5vbi1GdW5jdGlvbmFsIFJlcXVpcmVtZW50cwoKfCBDYXRlZ29yeSB8IFJlcXVpcmVtZW50IHwKfCAtLS0gfCAtLS0gfAp8IEdhdGV3YXkgcmVzcG9uc2UgfCBHYXRld2F5IG9yY2hlc3RyYXRpb24gb3ZlcmhlYWQgc2hvdWxkIHJlbWFpbiBiZWxvdyAxMDAgbXMgZXhjbHVkaW5nIHByb3ZpZGVyIGxhdGVuY3kgaW4gbWVtb3J5IG1vZGUuIHwKfCBBdmFpbGFiaWxpdHkgfCBDb3JlIHJ1bnRpbWUgc2hvdWxkIG5vdCBkZXBlbmQgb24gYSBzcGVjaWZpYyBleHRlcm5hbCBwcm92aWRlci4gfAp8IFByaXZhY3kgfCBBUEkga2V5cyBhbmQgc2VjcmV0cyBhcmUgaGVsZCBieSBwbGF0Zm9ybSBpbmZyYXN0cnVjdHVyZSBvbmx5OyBjbGllbnRzIGRvIG5vdCBob2xkIHByb3ZpZGVyIHNlY3JldHMuIHwKfCBSZXRlbnRpb24gfCBVc2FnZSwgb3V0Y29tZSwgZmVlZGJhY2ssIGFuZCBldmVudCByZXRlbnRpb24gbXVzdCBiZSBjb25maWd1cmFibGUgYnkgaW5mcmFzdHJ1Y3R1cmUgYWRhcHRlcnMuIHwKfCBQcm92aWRlciBzd2l0Y2hpbmcgfCBQcm92aWRlciByZXBsYWNlbWVudCBtdXN0IG5vdCBjaGFuZ2UgQWN0aXZpdHlSZXF1ZXN0IG9yIEFjdGl2aXR5UmVzdWx0IGNvbnRyYWN0cy4gfAp8IFRlc3RhYmlsaXR5IHwgRWFjaCBwYWNrYWdlIG11c3QgYmUgdGVzdGFibGUgaW5kZXBlbmRlbnRseS4gfAp8IFR5cGUgc2FmZXR5IHwgU3RyaWN0IFR5cGVTY3JpcHQgaXMgcmVxdWlyZWQuIGBhbnlgIGlzIHByb2hpYml0ZWQuIHwKfCBPYnNlcnZhYmlsaXR5IHwgR2F0ZXdheSBtdXN0IHJlY29yZCBwcm92aWRlciwgbW9kZWwsIHRva2VucywgY29zdCwgbGF0ZW5jeSwgY2xpZW50LCBjYXBhYmlsaXR5LCBhbmQgd29ya2Zsb3cuIHwKfCBDbGllbnQgYm91bmRhcnkgfCBHYXRld2F5IG11c3QgdmFsaWRhdGUgQWN0aXZpdHkgb3duZXJzaGlwIGJlZm9yZSByZWNvcmRpbmcgb3V0Y29tZSBvciBmZWVkYmFjay4gfAp8IEtub3dsZWRnZSBib3VuZGFyeSB8IEdhdGV3YXkgbXVzdCBub3QgYXR0YWNoIEtub3dsZWRnZSByZWNvcmRzIG91dHNpZGUgdGhlIGNsaWVudCBtYW5pZmVzdCBhbGxvd2xpc3QuIHwKfCBCdWRnZXQgYm91bmRhcnkgfCBHYXRld2F5IG11c3QgZW5mb3JjZSBib3RoIHBlci1BY3Rpdml0eSBidWRnZXQgYW5kIENsaWVudCBNYW5pZmVzdCBtb250aGx5IGJ1ZGdldC4gfAp8IFByb3ZpZGVyIHJlc2lsaWVuY2UgfCBHYXRld2F5IHJldHJ5IGFuZCBmYWxsYmFjayBiZWhhdmlvciBtdXN0IGJlIGNvbmZpZ3VyYWJsZSB3aXRob3V0IGNoYW5naW5nIGNsaWVudCByZXF1ZXN0IGNvbnRyYWN0cy4gfAoKIyMgTm90IEluY2x1ZGVkIEluIE1WUAoKLSBBSSBBZHZpc29yCi0gUmVjb21tZW5kYXRpb24gRW5naW5lCi0gUHJvbXB0IE9wdGltaXplcgotIExlYXJuaW5nIEVuZ2luZQotIERlY2lzaW9uIEVuZ2luZQotIEFkdmFuY2VkIE1vZGVsIFJvdXRlcgotIE1hcmtldHBsYWNlCi0gQmx1ZXByaW50IHN5c3RlbQotIERldmVsb3BtZW50IHBsYXRmb3JtCi0gR2l0SHViIGNvbm5lY3RvcgotIEFJIGVtcGxveWVlIG1hbmFnZW1lbnQKLSBLbm93bGVkZ2UgR3JhcGgKLSBQYXR0ZXJuIEVuZ2luZQo=
+# AI Platform Core Requirements v1.0
+
+## Correction Summary
+
+The original requirements were directionally strong, but implementation would drift without these corrections:
+
+| Area | Correction |
+| --- | --- |
+| Platform scope | Keep this repository focused on platform, runtime, engine, and SDK code only. |
+| AI Activity | Treat AI Activity as the main managed unit, not app names or provider calls. |
+| Gateway | Make the AI Gateway the only runtime entrypoint for AI usage. |
+| Analytics | Implement usage visibility before learning or optimization. |
+| Provider | Keep providers replaceable through interfaces. |
+| Learning | Keep Learning Engine out of MVP; define future extension points only. |
+| Non-functional requirements | Add performance, retention, privacy, availability, and provider-switching rules. |
+| Public API | Expose application-facing APIs through `@ai-platform-core/sdk`. |
+
+## Purpose
+
+AI Platform Core is not a framework for a single AI application. It is a common platform for managing, observing, analyzing, and eventually optimizing AI Activities across Web applications, bots, assistants, CLIs, APIs, AI employees, and future AI services.
+
+The platform's core value is to turn AI usage into an asset:
+
+- Which client used AI
+- Which capability was executed
+- Which provider and model were used
+- How many tokens were consumed
+- How much cost was incurred
+- How long the activity took
+- Which output was produced
+- Which outcome and feedback were recorded
+- What ROI was achieved
+
+## Principles
+
+- Platform First: no application-specific business logic.
+- AI Activity First: the managed unit is an AI Activity.
+- Capability First: every executable feature is represented as a Capability.
+- Event First: important changes must be representable as Events.
+- Gateway First: all AI usage must pass through the AI Gateway.
+- Human Approval: AI proposes; humans decide.
+- Learning Ready: MVP must be extendable toward learning, but not implement learning.
+
+## MVP Scope
+
+MVP does not make AI smarter. MVP makes AI usage visible.
+
+MVP must capture:
+
+- AI usage count
+- Input, output, and total tokens
+- Cost
+- Provider
+- Model
+- Latency
+- Workflow
+- Capability
+- Activity
+- Feedback
+- Outcome
+
+## Core Packages
+
+| Package | Responsibility |
+| --- | --- |
+| `kernel` | Result, errors, logger, config, clock, UUID, DI, entity, value objects |
+| `client` | Client Manifest registration, validation, and capability access checks |
+| `activity` | AI Activity contract, lifecycle, result, outcome, feedback |
+| `gateway` | Authentication, provider routing, token/cost/latency recording |
+| `provider` | Replaceable AI provider interfaces |
+| `secrets` | Platform-owned API key and secret access |
+| `analytics` | Usage records and summaries |
+| `dashboard` | Dashboard-ready usage views by period and dimension |
+| `event` | EventBus, dispatcher, subscribers, EventStore |
+| `capability` | Capability interface, registry, permission checks, execution |
+| `workflow` | Workflow definitions, instances, approval, retry, rollback, timeout |
+| `knowledge` | Knowledge storage and simple search |
+| `storage` | Memory/File/Environment storage abstractions |
+| `runtime` | Composed internal runtime |
+| `sdk` | Public application-facing API |
+
+## AI Activity Contract
+
+`ActivityRequest` includes:
+
+- client
+- capability
+- workflow
+- goal
+- context
+- budget
+- provider
+- model
+- input
+
+`ActivityResult` includes:
+
+- activityId
+- output
+- provider
+- model
+- tokens
+- cost
+- latencyMs
+- knowledgeUsed
+
+`ActivityOutcome` includes:
+
+- activityId
+- result
+- score
+- roi
+
+`ActivityFeedback` includes:
+
+- activityId
+- rating
+- edited
+- accepted
+- memo
+
+## Client Manifest
+
+Each client must declare a manifest before it can execute platform capabilities.
+
+`ClientManifest` includes:
+
+- id
+- name
+- type
+- version
+- provider
+- defaultModel
+- capabilities
+- knowledge
+- analytics
+- budget
+- metadata
+
+Gateway must reject a request when:
+
+- the authenticated client differs from `ActivityRequest.client`
+- the client is not registered
+- the requested capability is not declared by the client manifest
+- the provider response exceeds the Activity token budget
+- the provider response exceeds the Activity cost budget
+- the registered client has reached or would exceed its monthly token budget
+- the registered client has reached or would exceed its monthly cost budget
+- the authenticated client does not own the Activity being updated with outcome or feedback
+
+Gateway must only attach Knowledge records declared by the registered Client Manifest.
+
+Gateway must resolve provider and model in this order:
+
+1. `ActivityRequest.provider` / `ActivityRequest.model`
+2. `ClientManifest.provider` / `ClientManifest.defaultModel`
+3. platform fallback provider `echo` and model `default`
+
+Gateway may retry provider execution and fall back to configured replacement providers without changing the ActivityRequest contract.
+
+Provider adapters must keep provider-specific request details behind the shared AIProvider interface.
+
+Provider API keys and provider secrets must be read from platform-owned SecretReader or SecretStore implementations.
+
+## Activity Events
+
+Activity lifecycle changes must be representable as DomainEvents.
+
+Initial Activity events:
+
+- ActivityCreated
+- ActivityStatusChanged
+- ActivityCompleted
+- ActivityOutcomeRecorded
+- ActivityFeedbackRecorded
+
+The memory runtime stores these events through EventStore. Future infrastructure adapters can replace the memory EventStore with PostgreSQL, Redis, Kafka, or another event backend without changing the Activity contract.
+
+## Dashboard
+
+Dashboard queries must be API-ready and UI-agnostic.
+
+Initial dashboard periods:
+
+- today
+- month
+- year
+- all
+
+Initial dashboard dimensions:
+
+- client
+- capability
+- provider
+- model
+
+Initial metrics:
+
+- usageCount
+- totalTokens
+- totalCost
+- averageLatencyMs
+- monthlyTokenLimit
+- monthlyCostLimit
+- remainingTokens
+- remainingCost
+- tokenUsageRatio
+- costUsageRatio
+- tokenLimitReached
+- costLimitReached
+- budgetStatus
+- budgetAlertReasons
+- budgetAlertSummary
+- budgetAlertReasonCounts
+- budgetAlertFilters
+- outcomeCount
+- averageOutcomeScore
+- averageRoi
+- feedbackCount
+- acceptedCount
+- editedCount
+- averageRating
+
+Initial dashboard queries:
+
+- usage dashboard view
+- client monthly budget view
+- client monthly budget alert view
+
+## Non-Functional Requirements
+
+| Category | Requirement |
+| --- | --- |
+| Gateway response | Gateway orchestration overhead should remain below 100 ms excluding provider latency in memory mode. |
+| Availability | Core runtime should not depend on a specific external provider. |
+| Privacy | API keys and secrets are held by platform infrastructure only; clients do not hold provider secrets. |
+| Retention | Usage, outcome, feedback, and event retention must be configurable by infrastructure adapters. |
+| Provider switching | Provider replacement must not change ActivityRequest or ActivityResult contracts. |
+| Testability | Each package must be testable independently. |
+| Type safety | Strict TypeScript is required. `any` is prohibited. |
+| Observability | Gateway must record provider, model, tokens, cost, latency, client, capability, and workflow. |
+| Client boundary | Gateway must validate Activity ownership before recording outcome or feedback. |
+| Knowledge boundary | Gateway must not attach Knowledge records outside the client manifest allowlist. |
+| Budget boundary | Gateway must enforce both per-Activity budget and Client Manifest monthly budget. |
+| Provider resilience | Gateway retry and fallback behavior must be configurable without changing client request contracts. |
+
+## Not Included In MVP
+
+- AI Advisor
+- Recommendation Engine
+- Prompt Optimizer
+- Learning Engine
+- Decision Engine
+- Advanced Model Router
+- Marketplace
+- Blueprint system
+- Development platform
+- GitHub connector
+- AI employee management
+- Knowledge Graph
+- Pattern Engine

@@ -1,1 +1,131 @@
-aW1wb3J0IHsgY3JlYXRlUGxhdGZvcm1SdW50aW1lIH0gZnJvbSAiQGFpLXBsYXRmb3JtLWNvcmUvcnVudGltZSI7CgpleHBvcnQgewogIHR5cGUgQWN0aXZpdHksCiAgdHlwZSBBY3Rpdml0eUJ1ZGdldCwKICB0eXBlIEFjdGl2aXR5RmVlZGJhY2ssCiAgdHlwZSBBY3Rpdml0eU91dGNvbWUsCiAgdHlwZSBBY3Rpdml0eVJlcXVlc3QsCiAgdHlwZSBBY3Rpdml0eVJlc3VsdCwKICB0eXBlIEFjdGl2aXR5UnVudGltZSwKICB0eXBlIEFjdGl2aXR5U3RhdHVzLAogIHR5cGUgQWN0aXZpdHlFdmVudCwKICB0eXBlIEFjdGl2aXR5RXZlbnRQYXlsb2FkLAogIHR5cGUgQWN0aXZpdHlFdmVudFR5cGUsCiAgdHlwZSBDb3N0VXNhZ2UsCiAgdHlwZSBUb2tlblVzYWdlLAogIGNyZWF0ZUFjdGl2aXR5UnVudGltZSwKICBjcmVhdGVNZW1vcnlBY3Rpdml0eVJlcG9zaXRvcnkKfSBmcm9tICJAYWktcGxhdGZvcm0tY29yZS9hY3Rpdml0eSI7CmV4cG9ydCB7CiAgdHlwZSBBbmFseXRpY3NSZXBvc2l0b3J5LAogIHR5cGUgQW5hbHl0aWNzU3VtbWFyeSwKICB0eXBlIFVzYWdlUmVjb3JkLAogIGNyZWF0ZU1lbW9yeUFuYWx5dGljc1JlcG9zaXRvcnksCiAgY3JlYXRlVXNhZ2VSZWNvcmQKfSBmcm9tICJAYWktcGxhdGZvcm0tY29yZS9hbmFseXRpY3MiOwpleHBvcnQgewogIHR5cGUgQ2FwYWJpbGl0eSwKICB0eXBlIENhcGFiaWxpdHlDb250ZXh0LAogIHR5cGUgQ2FwYWJpbGl0eVJ1bnRpbWUsCiAgY3JlYXRlQ2FwYWJpbGl0eVJlZ2lzdHJ5LAogIGNyZWF0ZUNhcGFiaWxpdHlSdW50aW1lLAogIGNyZWF0ZVBlcm1pc3Npb25DaGVja2VyCn0gZnJvbSAiQGFpLXBsYXRmb3JtLWNvcmUvY2FwYWJpbGl0eSI7CmV4cG9ydCB7CiAgdHlwZSBDbGllbnRCdWRnZXRQb2xpY3ksCiAgdHlwZSBDbGllbnRNYW5pZmVzdCwKICB0eXBlIENsaWVudFJlZ2lzdHJ5LAogIHR5cGUgQ2xpZW50VHlwZSwKICBjcmVhdGVDbGllbnRSZWdpc3RyeSwKICB2YWxpZGF0ZUNsaWVudE1hbmlmZXN0Cn0gZnJvbSAiQGFpLXBsYXRmb3JtLWNvcmUvY2xpZW50IjsKZXhwb3J0IHsKICB0eXBlIENsaWVudEJ1ZGdldEFsZXJ0LAogIHR5cGUgQ2xpZW50QnVkZ2V0QWxlcnRTdW1tYXJ5LAogIHR5cGUgQ2xpZW50QnVkZ2V0QWxlcnRWaWV3LAogIHR5cGUgQ2xpZW50QnVkZ2V0QWxlcnRSZWFzb24sCiAgdHlwZSBDbGllbnRCdWRnZXRNZXRyaWMsCiAgdHlwZSBDbGllbnRCdWRnZXRWaWV3LAogIHR5cGUgRGFzaGJvYXJkTWV0cmljLAogIHR5cGUgRGFzaGJvYXJkUGVyaW9kLAogIHR5cGUgRGFzaGJvYXJkUXVlcnksCiAgdHlwZSBEYXNoYm9hcmRRdWVyeVNlcnZpY2UsCiAgdHlwZSBEYXNoYm9hcmRWaWV3LAogIGNyZWF0ZURhc2hib2FyZFF1ZXJ5U2VydmljZQp9IGZyb20gIkBhaS1wbGF0Zm9ybS1jb3JlL2Rhc2hib2FyZCI7CmV4cG9ydCB7CiAgdHlwZSBEb21haW5FdmVudCwKICB0eXBlIEV2ZW50QnVzLAogIHR5cGUgRXZlbnREaXNwYXRjaGVyLAogIHR5cGUgRXZlbnRTdG9yZSwKICBjcmVhdGVFdmVudEJ1cywKICBjcmVhdGVFdmVudERpc3BhdGNoZXIsCiAgY3JlYXRlTWVtb3J5RXZlbnRTdG9yZQp9IGZyb20gIkBhaS1wbGF0Zm9ybS1jb3JlL2V2ZW50IjsKZXhwb3J0IHsKICB0eXBlIEFJR2F0ZXdheSwKICB0eXBlIEdhdGV3YXlBdXRoQ29udGV4dCwKICB0eXBlIEdhdGV3YXlBdXRoZW50aWNhdG9yLAogIHR5cGUgR2F0ZXdheUZlZWRiYWNrUmVxdWVzdCwKICB0eXBlIEdhdGV3YXlPdXRjb21lUmVxdWVzdCwKICB0eXBlIEdhdGV3YXlSZXF1ZXN0LAogIHR5cGUgR2F0ZXdheVJlc2lsaWVuY2VQb2xpY3ksCiAgdHlwZSBHYXRld2F5UmV0cnlQb2xpY3ksCiAgY3JlYXRlQUlHYXRld2F5LAogIGNyZWF0ZUFsbG93QWxsQXV0aGVudGljYXRvcgp9IGZyb20gIkBhaS1wbGF0Zm9ybS1jb3JlL2dhdGV3YXkiOwpleHBvcnQgewogIERhdGVSYW5nZSwKICBFbWFpbCwKICBNb25leSwKICBQZXJjZW50YWdlLAogIFBob25lLAogIFVVSUQsCiAgY3JlYXRlQ29udGFpbmVyLAogIGVyciwKICBvaywKICBwbGF0Zm9ybUVycm9yLAogIHR5cGUgUmVzdWx0Cn0gZnJvbSAiQGFpLXBsYXRmb3JtLWNvcmUva2VybmVsIjsKZXhwb3J0IHsKICB0eXBlIEtub3dsZWRnZSwKICB0eXBlIEtub3dsZWRnZVJlcG9zaXRvcnksCiAgY3JlYXRlTWVtb3J5S25vd2xlZGdlUmVwb3NpdG9yeQp9IGZyb20gIkBhaS1wbGF0Zm9ybS1jb3JlL2tub3dsZWRnZSI7CmV4cG9ydCB7IHR5cGUgUGx1Z2luTWFuaWZlc3QsIHR5cGUgUGx1Z2luUnVudGltZSwgY3JlYXRlUGx1Z2luUnVudGltZSB9IGZyb20gIkBhaS1wbGF0Zm9ybS1jb3JlL3BsdWdpbiI7CmV4cG9ydCB7CiAgdHlwZSBBSU1lc3NhZ2UsCiAgdHlwZSBBSVByb3ZpZGVyLAogIHR5cGUgQUlQcm92aWRlclJlcXVlc3QsCiAgdHlwZSBBSVByb3ZpZGVyUmVzcG9uc2UsCiAgdHlwZSBPcGVuQUlDb21wYXRpYmxlUHJvdmlkZXJDb25maWcsCiAgdHlwZSBQcm92aWRlclJlZ2lzdHJ5LAogIGNyZWF0ZUVjaG9Qcm92aWRlciwKICBjcmVhdGVPcGVuQUlDb21wYXRpYmxlUHJvdmlkZXIsCiAgY3JlYXRlUHJvdmlkZXJSZWdpc3RyeQp9IGZyb20gIkBhaS1wbGF0Zm9ybS1jb3JlL3Byb3ZpZGVyIjsKZXhwb3J0IHsgdHlwZSBQbGF0Zm9ybVJ1bnRpbWUsIGNyZWF0ZVBsYXRmb3JtUnVudGltZSB9IGZyb20gIkBhaS1wbGF0Zm9ybS1jb3JlL3J1bnRpbWUiOwpleHBvcnQgewogIHR5cGUgU2VjcmV0UmVhZGVyLAogIHR5cGUgU2VjcmV0U3RvcmUsCiAgdHlwZSBTZWNyZXRWYWx1ZSwKICBjcmVhdGVFbnZpcm9ubWVudFNlY3JldFJlYWRlciwKICBjcmVhdGVNZW1vcnlTZWNyZXRTdG9yZSwKICBjcmVhdGVTZWNyZXRSZWFkZXIKfSBmcm9tICJAYWktcGxhdGZvcm0tY29yZS9zZWNyZXRzIjsKZXhwb3J0IHsKICB0eXBlIEVudmlyb25tZW50UmVhZGVyLAogIHR5cGUgS2V5VmFsdWVTdG9yZSwKICB0eXBlIFN0b3JhZ2VSZWNvcmQsCiAgY3JlYXRlRW52aXJvbm1lbnRSZWFkZXIsCiAgY3JlYXRlTWVtb3J5S2V5VmFsdWVTdG9yZQp9IGZyb20gIkBhaS1wbGF0Zm9ybS1jb3JlL3N0b3JhZ2UiOwpleHBvcnQgewogIHR5cGUgV29ya2Zsb3dEZWZpbml0aW9uLAogIHR5cGUgV29ya2Zsb3dJbnN0YW5jZSwKICB0eXBlIFdvcmtmbG93UnVudGltZSwKICBjcmVhdGVXb3JrZmxvd1J1bnRpbWUKfSBmcm9tICJAYWktcGxhdGZvcm0tY29yZS93b3JrZmxvdyI7CgpleHBvcnQgY29uc3QgY3JlYXRlUGxhdGZvcm0gPSBjcmVhdGVQbGF0Zm9ybVJ1bnRpbWU7Cg==
+import { createPlatformRuntime } from "@ai-platform-core/runtime";
+
+export {
+  type Activity,
+  type ActivityBudget,
+  type ActivityFeedback,
+  type ActivityOutcome,
+  type ActivityRequest,
+  type ActivityResult,
+  type ActivityRuntime,
+  type ActivityStatus,
+  type ActivityEvent,
+  type ActivityEventPayload,
+  type ActivityEventType,
+  type CostUsage,
+  type TokenUsage,
+  createActivityRuntime,
+  createMemoryActivityRepository
+} from "@ai-platform-core/activity";
+export {
+  type AnalyticsRepository,
+  type AnalyticsSummary,
+  type UsageRecord,
+  createMemoryAnalyticsRepository,
+  createUsageRecord
+} from "@ai-platform-core/analytics";
+export {
+  type Capability,
+  type CapabilityContext,
+  type CapabilityRuntime,
+  createCapabilityRegistry,
+  createCapabilityRuntime,
+  createPermissionChecker
+} from "@ai-platform-core/capability";
+export {
+  type ClientBudgetPolicy,
+  type ClientManifest,
+  type ClientRegistry,
+  type ClientType,
+  createClientRegistry,
+  validateClientManifest
+} from "@ai-platform-core/client";
+export {
+  type ClientBudgetAlert,
+  type ClientBudgetAlertSummary,
+  type ClientBudgetAlertView,
+  type ClientBudgetAlertReason,
+  type ClientBudgetMetric,
+  type ClientBudgetView,
+  type DashboardMetric,
+  type DashboardPeriod,
+  type DashboardQuery,
+  type DashboardQueryService,
+  type DashboardView,
+  createDashboardQueryService
+} from "@ai-platform-core/dashboard";
+export {
+  type DomainEvent,
+  type EventBus,
+  type EventDispatcher,
+  type EventStore,
+  createEventBus,
+  createEventDispatcher,
+  createMemoryEventStore
+} from "@ai-platform-core/event";
+export {
+  type AIGateway,
+  type GatewayAuthContext,
+  type GatewayAuthenticator,
+  type GatewayFeedbackRequest,
+  type GatewayOutcomeRequest,
+  type GatewayRequest,
+  type GatewayResiliencePolicy,
+  type GatewayRetryPolicy,
+  createAIGateway,
+  createAllowAllAuthenticator
+} from "@ai-platform-core/gateway";
+export {
+  DateRange,
+  Email,
+  Money,
+  Percentage,
+  Phone,
+  UUID,
+  createContainer,
+  err,
+  ok,
+  platformError,
+  type Result
+} from "@ai-platform-core/kernel";
+export {
+  type Knowledge,
+  type KnowledgeRepository,
+  createMemoryKnowledgeRepository
+} from "@ai-platform-core/knowledge";
+export { type PluginManifest, type PluginRuntime, createPluginRuntime } from "@ai-platform-core/plugin";
+export {
+  type AIMessage,
+  type AIProvider,
+  type AIProviderRequest,
+  type AIProviderResponse,
+  type OpenAICompatibleProviderConfig,
+  type ProviderRegistry,
+  createEchoProvider,
+  createOpenAICompatibleProvider,
+  createProviderRegistry
+} from "@ai-platform-core/provider";
+export { type PlatformRuntime, createPlatformRuntime } from "@ai-platform-core/runtime";
+export {
+  type SecretReader,
+  type SecretStore,
+  type SecretValue,
+  createEnvironmentSecretReader,
+  createMemorySecretStore,
+  createSecretReader
+} from "@ai-platform-core/secrets";
+export {
+  type EnvironmentReader,
+  type KeyValueStore,
+  type StorageRecord,
+  createEnvironmentReader,
+  createMemoryKeyValueStore
+} from "@ai-platform-core/storage";
+export {
+  type WorkflowDefinition,
+  type WorkflowInstance,
+  type WorkflowRuntime,
+  createWorkflowRuntime
+} from "@ai-platform-core/workflow";
+
+export const createPlatform = createPlatformRuntime;

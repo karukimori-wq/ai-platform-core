@@ -1,1 +1,180 @@
-IyBSb2FkbWFwCgojIyB2MC4wLjEgUGxhdGZvcm0gSW5pdGlhbGl6YXRpb24KCi0gTW9ub3JlcG8KLSBwbnBtCi0gVHVyYm9yZXBvCi0gRVNMaW50Ci0gUHJldHRpZXIKLSBWaXRlc3QKCiMjIHYwLjAuMiBLZXJuZWwKCi0gUmVzdWx0Ci0gUGxhdGZvcm1FcnJvcgotIExvZ2dlcgotIENsb2NrCi0gVVVJRAotIENvbmZpZwotIERJIGNvbnRhaW5lcgotIFZhbHVlIG9iamVjdHMKCiMjIHYwLjAuMyBFdmVudCBFbmdpbmUKCi0gRXZlbnQKLSBFdmVudEJ1cwotIFB1Ymxpc2hlciBhbmQgc3Vic2NyaWJlciBtb2RlbAotIERpc3BhdGNoZXIKLSBFdmVudFN0b3JlCi0gTWVtb3J5U3RvcmUKCiMjIHYwLjAuNCBDYXBhYmlsaXR5IFJ1bnRpbWUKCi0gQ2FwYWJpbGl0eSBpbnRlcmZhY2UKLSBSZWdpc3RyeQotIFBlcm1pc3Npb24gY2hlY2tlcgotIFJ1bnRpbWUgZXhlY3V0b3IKLSBNZXRhZGF0YQoKIyMgdjAuMC41IFdvcmtmbG93IFJ1bnRpbWUKCi0gV29ya2Zsb3cgZGVmaW5pdGlvbgotIFdvcmtmbG93IGluc3RhbmNlCi0gQXBwcm92YWwgc3RhdGUKLSBSZXRyeSBtZXRhZGF0YQotIFJvbGxiYWNrIG1ldGFkYXRhCi0gVGltZW91dCBtZXRhZGF0YQoKIyMgdjAuMS4wIFNESyBQdWJsaWMgQVBJCgotIENhcGFiaWxpdHkgU0RLCi0gV29ya2Zsb3cgU0RLCi0gU3RvcmFnZSBTREsKLSBQbHVnaW4gU0RLCi0gS25vd2xlZGdlIFNESwoKIyMgdjAuMS4xIEFJIEFjdGl2aXR5IE9ic2VydmFiaWxpdHkKCi0gQWN0aXZpdHkgcnVudGltZQotIFByb3ZpZGVyIHJlZ2lzdHJ5Ci0gQUkgR2F0ZXdheQotIEFuYWx5dGljcyByZXBvc2l0b3J5Ci0gR2F0ZXdheSB1c2FnZSByZWNvcmRpbmcKLSBSZXZpc2VkIHJlcXVpcmVtZW50cyBkb2N1bWVudAoKIyMgdjAuMS4yIENsaWVudCBNYW5pZmVzdCBFbmZvcmNlbWVudAoKLSBDbGllbnQgbWFuaWZlc3QgcmVnaXN0cnkKLSBDbGllbnQgY2FwYWJpbGl0eSBhbGxvd2xpc3QgdmFsaWRhdGlvbgotIEFjdGl2aXR5IGJ1ZGdldCBjaGVja3MgaW4gR2F0ZXdheQotIFNESyBleHBvcnRzIGZvciBjbGllbnQgbWFuaWZlc3RzCgojIyB2MC4xLjMgQWN0aXZpdHkgRXZlbnQgU291cmNpbmcKCi0gQWN0aXZpdHkgbGlmZWN5Y2xlIGV2ZW50cwotIFJ1bnRpbWUgRXZlbnRTdG9yZSBjb25uZWN0aW9uCi0gRXZlbnRCdXMgc3Vic2NyaXB0aW9uIHN1cHBvcnQgZm9yIEFjdGl2aXR5IGV2ZW50cwoKIyMgdjAuMS40IERhc2hib2FyZCBRdWVyeSBFbmdpbmUKCi0gVG9kYXkvbW9udGgveWVhci9hbGwgbWV0cmljcwotIENsaWVudCwgY2FwYWJpbGl0eSwgcHJvdmlkZXIsIGFuZCBtb2RlbCBncm91cGluZwotIFNESyBkYXNoYm9hcmQgcXVlcnkgQVBJCgojIyB2MC4xLjUgT3V0Y29tZSBhbmQgRmVlZGJhY2sgTWV0cmljcwoKLSBBbmFseXRpY3Mgb3V0Y29tZSBhbmQgZmVlZGJhY2sgcmVhZCBtb2RlbHMKLSBEYXNoYm9hcmQgb3V0Y29tZSBzY29yZSwgUk9JLCBhY2NlcHRhbmNlLCBlZGl0LCBhbmQgcmF0aW5nIG1ldHJpY3MKLSBEYXNoYm9hcmQgdGVzdCBjb3ZlcmFnZSBmb3Igb3V0Y29tZSBhbmQgZmVlZGJhY2sgYWdncmVnYXRpb24KCiMjIHYwLjEuNiBHYXRld2F5IE91dGNvbWUgYW5kIEZlZWRiYWNrIFJlY29yZGluZwoKLSBHYXRld2F5IG91dGNvbWUgcmVjb3JkaW5nIEFQSQotIEdhdGV3YXkgZmVlZGJhY2sgcmVjb3JkaW5nIEFQSQotIEFjdGl2aXR5IG93bmVyc2hpcCB2YWxpZGF0aW9uIGJlZm9yZSBvdXRjb21lIG9yIGZlZWRiYWNrIG11dGF0aW9uCi0gU0RLIGV4cG9ydHMgZm9yIEdhdGV3YXkgb3V0Y29tZSBhbmQgZmVlZGJhY2sgcmVxdWVzdCBjb250cmFjdHMKCiMjIHYwLjEuNyBHYXRld2F5IEtub3dsZWRnZSBDb250ZXh0CgotIEdhdGV3YXkgS25vd2xlZGdlIHNlYXJjaCBiZWZvcmUgcHJvdmlkZXIgZXhlY3V0aW9uCi0gQ2xpZW50IG1hbmlmZXN0IEtub3dsZWRnZSBhbGxvd2xpc3QgZW5mb3JjZW1lbnQKLSBBY3Rpdml0eVJlc3VsdC5rbm93bGVkZ2VVc2VkIHBvcHVsYXRpb24gZnJvbSBtYXRjaGVkIEtub3dsZWRnZSByZWNvcmRzCi0gUGxhdGZvcm1SdW50aW1lIEtub3dsZWRnZSByZXBvc2l0b3J5IHdpcmluZwoKIyMgdjAuMS44IEdhdGV3YXkgUHJvdmlkZXIgTW9kZWwgUm91dGluZwoKLSBDbGllbnQgTWFuaWZlc3QgZGVmYXVsdCBwcm92aWRlciBhbmQgbW9kZWwKLSBBY3Rpdml0eVJlcXVlc3QgcHJvdmlkZXIgYW5kIG1vZGVsIG92ZXJyaWRlIHN1cHBvcnQKLSBQbGF0Zm9ybSBmYWxsYmFjayBwcm92aWRlciBhbmQgbW9kZWwKLSBHYXRld2F5IHRlc3RzIGZvciByb3V0ZSByZXNvbHV0aW9uIG9yZGVyCgojIyB2MC4xLjkgQ2xpZW50IE1vbnRobHkgQnVkZ2V0IEVuZm9yY2VtZW50CgotIEdhdGV3YXkgbW9udGhseSB0b2tlbiBidWRnZXQgY2hlY2tzIGZyb20gQ2xpZW50IE1hbmlmZXN0Ci0gR2F0ZXdheSBtb250aGx5IGNvc3QgYnVkZ2V0IGNoZWNrcyBmcm9tIENsaWVudCBNYW5pZmVzdAotIEFuYWx5dGljcy1iYWNrZWQgYnVkZ2V0IHVzYWdlIGNhbGN1bGF0aW9uCi0gR2F0ZXdheSB0ZXN0cyBmb3IgcHJvamVjdGVkIG1vbnRobHkgYnVkZ2V0IHJlamVjdGlvbgoKIyMgdjAuMS4xMCBEYXNoYm9hcmQgQ2xpZW50IEJ1ZGdldCBWaWV3CgotIERhc2hib2FyZCBjbGllbnQgbW9udGhseSBidWRnZXQgcXVlcnkKLSBSZW1haW5pbmcgdG9rZW4gYW5kIGNvc3QgbWV0cmljcwotIFVzYWdlIHJhdGlvIGFuZCBsaW1pdCByZWFjaGVkIGZsYWdzCi0gUnVudGltZSBhbmQgU0RLIGV4cG9zdXJlIGZvciBidWRnZXQgZGFzaGJvYXJkIGRhdGEKCiMjIHYwLjEuMTEgRGFzaGJvYXJkIEJ1ZGdldCBTdGF0dXMKCi0gRGFzaGJvYXJkIGJ1ZGdldCBzdGF0dXMgdmFsdWVzOiBvaywgd2FybmluZywgZXhjZWVkZWQKLSA4MCBwZXJjZW50IHdhcm5pbmcgdGhyZXNob2xkIGZvciB0b2tlbiBhbmQgY29zdCBidWRnZXQgdXNhZ2UKLSBEYXNoYm9hcmQgdGVzdHMgZm9yIHdhcm5pbmcgYW5kIGV4Y2VlZGVkIHN0YXRlcwoKIyMgdjAuMS4xMiBEYXNoYm9hcmQgQnVkZ2V0IEFsZXJ0cwoKLSBEYXNoYm9hcmQgY2xpZW50IGJ1ZGdldCBhbGVydCBxdWVyeQotIFdhcm5pbmcgYW5kIGV4Y2VlZGVkIGNsaWVudCBmaWx0ZXJpbmcKLSBTREsgZXhwb3N1cmUgZm9yIGJ1ZGdldCBhbGVydCB2aWV3CgojIyB2MC4xLjEzIERhc2hib2FyZCBBbGVydCBPcmRlcmluZwoKLSBFeGNlZWRlZCBidWRnZXQgYWxlcnRzIGJlZm9yZSB3YXJuaW5nIGFsZXJ0cwotIERldGVybWluaXN0aWMgY2xpZW50SWQgb3JkZXJpbmcgd2l0aGluIHRoZSBzYW1lIHN0YXR1cwoKIyMgdjAuMS4xNCBEYXNoYm9hcmQgQWxlcnQgUmVhc29ucwoKLSBUb2tlbiBhbmQgY29zdCBhbGVydCByZWFzb24gdmFsdWVzCi0gU0RLIGV4cG9zdXJlIGZvciBidWRnZXQgYWxlcnQgcmVhc29uIHR5cGVzCgojIyB2MC4xLjE1IERhc2hib2FyZCBBbGVydCBTdW1tYXJ5CgotIFRvdGFsLCB3YXJuaW5nLCBhbmQgZXhjZWVkZWQgYWxlcnQgY291bnRzCi0gU0RLIGV4cG9zdXJlIGZvciBidWRnZXQgYWxlcnQgc3VtbWFyeSB0eXBlCgojIyB2MC4xLjE2IERhc2hib2FyZCBBbGVydCBSZWFzb24gQ291bnRzCgotIFJlYXNvbi1sZXZlbCBjb3VudHMgaW4gYnVkZ2V0IGFsZXJ0IHN1bW1hcnkKLSBUb2tlbiBhbmQgY29zdCBhbGVydCByZWFzb24gdG90YWxzIGZvciBEYXNoYm9hcmQgdmlld3MKCiMjIHYwLjEuMTcgRGFzaGJvYXJkIEFsZXJ0IEZpbHRlcnMKCi0gU3RhdHVzIGZpbHRlcnMgZm9yIGJ1ZGdldCBhbGVydCBxdWVyaWVzCi0gUmVhc29uIGZpbHRlcnMgZm9yIGJ1ZGdldCBhbGVydCBxdWVyaWVzCi0gRmlsdGVyZWQgYWxlcnQgc3VtbWFyeSB0b3RhbHMKCiMjIHYwLjEuMTggR2F0ZXdheSBSZXRyeSBBbmQgRmFsbGJhY2sKCi0gUmV0cnkgcG9saWN5IGZvciBwcm92aWRlciBjaGF0IGV4ZWN1dGlvbgotIEZhbGxiYWNrIHByb3ZpZGVyIHBvbGljeSBmb3IgZmFpbGVkIHByb3ZpZGVyIGV4ZWN1dGlvbgotIFNESyBleHBvc3VyZSBmb3IgR2F0ZXdheSByZXNpbGllbmNlIHBvbGljeSB0eXBlcwoKIyMgdjAuMS4xOSBPcGVuQUktQ29tcGF0aWJsZSBQcm92aWRlcgoKLSBPcGVuQUktY29tcGF0aWJsZSBjaGF0IGNvbXBsZXRpb25zIGFkYXB0ZXIKLSBGZXRjaCBpbmplY3Rpb24gZm9yIHRlc3RhYmxlIHByb3ZpZGVyIGNhbGxzCi0gU0RLIGV4cG9zdXJlIGZvciBwcm92aWRlciBhZGFwdGVyIGZhY3RvcnkKCiMjIHYwLjEuMjAgUGxhdGZvcm0gU2VjcmV0cwoKLSBQbGF0Zm9ybS1vd25lZCBTZWNyZXRTdG9yZSBwYWNrYWdlCi0gTWVtb3J5IGFuZCBlbnZpcm9ubWVudCBzZWNyZXQgcmVhZGVycwotIFJ1bnRpbWUgYW5kIFNESyBleHBvc3VyZSBmb3Igc2VjcmV0IG1hbmFnZW1lbnQK
+# Roadmap
+
+## v0.0.1 Platform Initialization
+
+- Monorepo
+- pnpm
+- Turborepo
+- ESLint
+- Prettier
+- Vitest
+
+## v0.0.2 Kernel
+
+- Result
+- PlatformError
+- Logger
+- Clock
+- UUID
+- Config
+- DI container
+- Value objects
+
+## v0.0.3 Event Engine
+
+- Event
+- EventBus
+- Publisher and subscriber model
+- Dispatcher
+- EventStore
+- MemoryStore
+
+## v0.0.4 Capability Runtime
+
+- Capability interface
+- Registry
+- Permission checker
+- Runtime executor
+- Metadata
+
+## v0.0.5 Workflow Runtime
+
+- Workflow definition
+- Workflow instance
+- Approval state
+- Retry metadata
+- Rollback metadata
+- Timeout metadata
+
+## v0.1.0 SDK Public API
+
+- Capability SDK
+- Workflow SDK
+- Storage SDK
+- Plugin SDK
+- Knowledge SDK
+
+## v0.1.1 AI Activity Observability
+
+- Activity runtime
+- Provider registry
+- AI Gateway
+- Analytics repository
+- Gateway usage recording
+- Revised requirements document
+
+## v0.1.2 Client Manifest Enforcement
+
+- Client manifest registry
+- Client capability allowlist validation
+- Activity budget checks in Gateway
+- SDK exports for client manifests
+
+## v0.1.3 Activity Event Sourcing
+
+- Activity lifecycle events
+- Runtime EventStore connection
+- EventBus subscription support for Activity events
+
+## v0.1.4 Dashboard Query Engine
+
+- Today/month/year/all metrics
+- Client, capability, provider, and model grouping
+- SDK dashboard query API
+
+## v0.1.5 Outcome and Feedback Metrics
+
+- Analytics outcome and feedback read models
+- Dashboard outcome score, ROI, acceptance, edit, and rating metrics
+- Dashboard test coverage for outcome and feedback aggregation
+
+## v0.1.6 Gateway Outcome and Feedback Recording
+
+- Gateway outcome recording API
+- Gateway feedback recording API
+- Activity ownership validation before outcome or feedback mutation
+- SDK exports for Gateway outcome and feedback request contracts
+
+## v0.1.7 Gateway Knowledge Context
+
+- Gateway Knowledge search before provider execution
+- Client manifest Knowledge allowlist enforcement
+- ActivityResult.knowledgeUsed population from matched Knowledge records
+- PlatformRuntime Knowledge repository wiring
+
+## v0.1.8 Gateway Provider Model Routing
+
+- Client Manifest default provider and model
+- ActivityRequest provider and model override support
+- Platform fallback provider and model
+- Gateway tests for route resolution order
+
+## v0.1.9 Client Monthly Budget Enforcement
+
+- Gateway monthly token budget checks from Client Manifest
+- Gateway monthly cost budget checks from Client Manifest
+- Analytics-backed budget usage calculation
+- Gateway tests for projected monthly budget rejection
+
+## v0.1.10 Dashboard Client Budget View
+
+- Dashboard client monthly budget query
+- Remaining token and cost metrics
+- Usage ratio and limit reached flags
+- Runtime and SDK exposure for budget dashboard data
+
+## v0.1.11 Dashboard Budget Status
+
+- Dashboard budget status values: ok, warning, exceeded
+- 80 percent warning threshold for token and cost budget usage
+- Dashboard tests for warning and exceeded states
+
+## v0.1.12 Dashboard Budget Alerts
+
+- Dashboard client budget alert query
+- Warning and exceeded client filtering
+- SDK exposure for budget alert view
+
+## v0.1.13 Dashboard Alert Ordering
+
+- Exceeded budget alerts before warning alerts
+- Deterministic clientId ordering within the same status
+
+## v0.1.14 Dashboard Alert Reasons
+
+- Token and cost alert reason values
+- SDK exposure for budget alert reason types
+
+## v0.1.15 Dashboard Alert Summary
+
+- Total, warning, and exceeded alert counts
+- SDK exposure for budget alert summary type
+
+## v0.1.16 Dashboard Alert Reason Counts
+
+- Reason-level counts in budget alert summary
+- Token and cost alert reason totals for Dashboard views
+
+## v0.1.17 Dashboard Alert Filters
+
+- Status filters for budget alert queries
+- Reason filters for budget alert queries
+- Filtered alert summary totals
+
+## v0.1.18 Gateway Retry And Fallback
+
+- Retry policy for provider chat execution
+- Fallback provider policy for failed provider execution
+- SDK exposure for Gateway resilience policy types
+
+## v0.1.19 OpenAI-Compatible Provider
+
+- OpenAI-compatible chat completions adapter
+- Fetch injection for testable provider calls
+- SDK exposure for provider adapter factory
+
+## v0.1.20 Platform Secrets
+
+- Platform-owned SecretStore package
+- Memory and environment secret readers
+- Runtime and SDK exposure for secret management

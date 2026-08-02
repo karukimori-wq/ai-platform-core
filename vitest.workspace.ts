@@ -1,1 +1,3 @@
-aW1wb3J0IHsgZGVmaW5lV29ya3NwYWNlIH0gZnJvbSAidml0ZXN0L2NvbmZpZyI7CgpleHBvcnQgZGVmYXVsdCBkZWZpbmVXb3Jrc3BhY2UoWyJwYWNrYWdlcy8qIiwgImFwcHMvKiJdKTsK
+import { defineWorkspace } from "vitest/config";
+
+export default defineWorkspace(["packages/*", "apps/*"]);

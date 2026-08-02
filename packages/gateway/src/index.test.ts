@@ -24,6 +24,21 @@ describe("ai gateway", () => {
     })
   });
 
+  const createMeteredProvider = (id: string, totalTokens: number, costAmount: number): AIProvider => ({
+    id,
+    chat: async (request) => ({
+      ok: true,
+      value: {
+        output: { model: request.model, provider: id },
+        text: request.model,
+        model: request.model,
+        tokens: { input: totalTokens, output: 0, total: totalTokens },
+        cost: { amount: costAmount, currency: "USD" },
+        knowledgeUsed: []
+      }
+    })
+  });
+
   it("creates an activity and records usage", async () => {
     const providers = createProviderRegistry();
     providers.register(createEchoProvider());
@@ -281,6 +296,106 @@ describe("ai gateway", () => {
     if (!result.ok) return;
     expect(result.value.provider).toBe("request-provider");
     expect(result.value.model).toBe("request-model");
+  });
+
+  it("blocks usage when projected monthly token budget would be exceeded", async () => {
+    const providers = createProviderRegistry();
+    providers.register(createMeteredProvider("metered", 2, 0));
+    const clients = createClientRegistry();
+    clients.register({
+      id: "client-a",
+      name: "Client A",
+      type: "web",
+      version: "0.1.0",
+      provider: "metered",
+      defaultModel: "metered-model",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyTokenLimit: 3 }
+    });
+    const analytics = createMemoryAnalyticsRepository();
+    const gateway = createAIGateway(
+      createActivityRuntime(createMemoryActivityRepository(), createCryptoIdGenerator(), systemClock()),
+      providers,
+      analytics,
+      createAllowAllAuthenticator(),
+      systemClock(),
+      createNoopLogger(),
+      clients
+    );
+    const request = {
+      auth: { clientId: "client-a", permissions: [] },
+      activity: {
+        client: "client-a",
+        capability: "SNS.Generate",
+        goal: "Generate a post",
+        context: {},
+        input: {}
+      },
+      messages: [{ role: "user" as const, content: "hello" }]
+    };
+
+    const first = await gateway.run(request);
+    const second = await gateway.run(request);
+    const summary = await analytics.summarize();
+
+    expect(first.ok).toBe(true);
+    expect(second.ok).toBe(false);
+    expect(summary.ok).toBe(true);
+    if (!summary.ok) return;
+    expect(summary.value.usageCount).toBe(1);
+    expect(summary.value.totalTokens).toBe(2);
+  });
+
+  it("blocks usage when projected monthly cost budget would be exceeded", async () => {
+    const providers = createProviderRegistry();
+    providers.register(createMeteredProvider("metered", 1, 2));
+    const clients = createClientRegistry();
+    clients.register({
+      id: "client-a",
+      name: "Client A",
+      type: "web",
+      version: "0.1.0",
+      provider: "metered",
+      defaultModel: "metered-model",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyCostLimit: 3, currency: "USD" }
+    });
+    const analytics = createMemoryAnalyticsRepository();
+    const gateway = createAIGateway(
+      createActivityRuntime(createMemoryActivityRepository(), createCryptoIdGenerator(), systemClock()),
+      providers,
+      analytics,
+      createAllowAllAuthenticator(),
+      systemClock(),
+      createNoopLogger(),
+      clients
+    );
+    const request = {
+      auth: { clientId: "client-a", permissions: [] },
+      activity: {
+        client: "client-a",
+        capability: "SNS.Generate",
+        goal: "Generate a post",
+        context: {},
+        input: {}
+      },
+      messages: [{ role: "user" as const, content: "hello" }]
+    };
+
+    const first = await gateway.run(request);
+    const second = await gateway.run(request);
+    const summary = await analytics.summarize();
+
+    expect(first.ok).toBe(true);
+    expect(second.ok).toBe(false);
+    expect(summary.ok).toBe(true);
+    if (!summary.ok) return;
+    expect(summary.value.usageCount).toBe(1);
+    expect(summary.value.totalCost).toBe(2);
   });
 
   it("uses only knowledge allowed by the client manifest", async () => {

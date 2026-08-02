@@ -184,3 +184,9 @@
 - SecretReader-backed OpenAI-compatible provider credentials
 - Provider adapter config without direct API key ownership
 - Tests for missing provider secrets
+
+## v0.1.22 Gateway HTTP Handler
+
+- Fetch-compatible HTTP handler for Gateway run requests
+- Application API server integration surface
+- SDK exports for HTTP handler utilities

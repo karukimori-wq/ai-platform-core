@@ -99,8 +99,10 @@ export {
   type AIProvider,
   type AIProviderRequest,
   type AIProviderResponse,
+  type OpenAICompatibleProviderConfig,
   type ProviderRegistry,
   createEchoProvider,
+  createOpenAICompatibleProvider,
   createProviderRegistry
 } from "@ai-platform-core/provider";
 export { type PlatformRuntime, createPlatformRuntime } from "@ai-platform-core/runtime";

@@ -17,6 +17,7 @@
   "dependencies": {
     "@ai-platform-core/activity": "workspace:*",
     "@ai-platform-core/analytics": "workspace:*",
+    "@ai-platform-core/client": "workspace:*",
     "@ai-platform-core/kernel": "workspace:*"
   }
 }

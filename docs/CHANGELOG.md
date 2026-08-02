@@ -129,3 +129,9 @@
 
 - Added status and reason filters to Dashboard budget alert queries.
 - Added filtered budget alert summary behavior.
+
+## 0.1.18
+
+- Added Gateway retry policy for provider chat execution.
+- Added Gateway fallback provider policy for failed provider execution.
+- Exposed Gateway resilience policy types through the SDK.

@@ -193,6 +193,14 @@ Initial metrics:
 - totalTokens
 - totalCost
 - averageLatencyMs
+- monthlyTokenLimit
+- monthlyCostLimit
+- remainingTokens
+- remainingCost
+- tokenUsageRatio
+- costUsageRatio
+- tokenLimitReached
+- costLimitReached
 - outcomeCount
 - averageOutcomeScore
 - averageRoi

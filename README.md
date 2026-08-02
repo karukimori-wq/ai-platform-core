@@ -56,6 +56,24 @@ pnpm install
 pnpm check
 ```
 
+## Playground
+
+Run the playground without any external AI API key:
+
+```bash
+pnpm --filter @ai-platform-core/playground build
+node apps/playground/dist/index.js
+```
+
+The playground registers a sample client, `fortune_teller_a`, runs `report.generate`
+through the built-in `echo` provider, and prints usage analytics plus monthly
+budget metrics by client.
+
+Real provider credentials should stay server-side. Register an OpenAI-compatible
+provider with a `SecretReader`, store the key in `runtime.secrets` or an
+environment-backed reader, and route application requests through the Gateway so
+client usage, tokens, cost, and monthly limits are recorded centrally.
+
 ## Roadmap
 
 The first stable core should be grown in this order:

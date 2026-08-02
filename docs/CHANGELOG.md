@@ -153,3 +153,9 @@
 - Updated OpenAI-compatible provider to read API keys from SecretReader.
 - Removed direct API key ownership from provider adapter config.
 - Added provider tests for secret-backed authorization and missing secret errors.
+
+## 0.1.22
+
+- Added fetch-compatible Gateway HTTP handler package.
+- Added HTTP request parsing for Gateway run requests.
+- Exposed HTTP handler utilities through the SDK.

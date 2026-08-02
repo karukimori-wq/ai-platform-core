@@ -67,3 +67,9 @@
 - Added Client Manifest Knowledge allowlist filtering.
 - Added ActivityResult.knowledgeUsed population from matched Knowledge records.
 - Wired the PlatformRuntime Gateway to the memory Knowledge repository.
+
+## 0.1.8
+
+- Added Client Manifest default model support.
+- Added Gateway provider/model resolution from ActivityRequest, Client Manifest defaults, and platform fallback.
+- Added tests for manifest route defaults and ActivityRequest route overrides.

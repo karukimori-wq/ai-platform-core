@@ -24,6 +24,7 @@ export interface ClientManifest {
   readonly type: ClientType;
   readonly version: string;
   readonly provider?: string;
+  readonly defaultModel?: string;
   readonly capabilities: readonly string[];
   readonly knowledge: readonly string[];
   readonly analytics: boolean;
@@ -47,6 +48,12 @@ export const validateClientManifest = (manifest: ClientManifest): Result<void> =
   }
   if (manifest.version.trim().length === 0) {
     return err(platformError("CLIENT_MANIFEST_INVALID", "Client version is required."));
+  }
+  if (manifest.provider !== undefined && manifest.provider.trim().length === 0) {
+    return err(platformError("CLIENT_MANIFEST_INVALID", "Client provider must not be empty when provided."));
+  }
+  if (manifest.defaultModel !== undefined && manifest.defaultModel.trim().length === 0) {
+    return err(platformError("CLIENT_MANIFEST_INVALID", "Client default model must not be empty when provided."));
   }
   if (manifest.capabilities.length === 0) {
     return err(platformError("CLIENT_MANIFEST_INVALID", "Client must declare at least one capability."));

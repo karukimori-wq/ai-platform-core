@@ -98,7 +98,16 @@ describe("gateway http handler", () => {
     const response = await handler(new Request("https://example.com/v1/analytics/usage?client=fortune_teller_a&period=month"));
     const body = await response.json() as Readonly<{
       ok: boolean;
-      summary: Readonly<{ client: string; period: string; usageCount: number; totalTokens: number }>;
+      summary: Readonly<{
+        client: string;
+        period: string;
+        usageCount: number;
+        totalTokens: number;
+        byCapability: Readonly<Record<string, Readonly<{ usageCount: number; totalTokens: number }>>>;
+        byWorkflow: Readonly<Record<string, Readonly<{ usageCount: number; totalTokens: number }>>>;
+        byProvider: Readonly<Record<string, Readonly<{ usageCount: number; totalTokens: number }>>>;
+        byModel: Readonly<Record<string, Readonly<{ usageCount: number; totalTokens: number }>>>;
+      }>;
     }>;
 
     expect(hidden.status).toBe(404);
@@ -110,5 +119,9 @@ describe("gateway http handler", () => {
     expect(body.summary.period).toBe("month");
     expect(body.summary.usageCount).toBe(1);
     expect(body.summary.totalTokens).toBeGreaterThan(0);
+    expect(body.summary.byCapability["report.generate"]?.usageCount).toBe(1);
+    expect(body.summary.byWorkflow.numerology?.usageCount).toBe(1);
+    expect(body.summary.byProvider.echo?.usageCount).toBe(1);
+    expect(body.summary.byModel["echo-report-v1"]?.usageCount).toBe(1);
   });
 });

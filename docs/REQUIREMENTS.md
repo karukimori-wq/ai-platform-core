@@ -201,6 +201,7 @@ Initial metrics:
 - costUsageRatio
 - tokenLimitReached
 - costLimitReached
+- budgetStatus
 - outcomeCount
 - averageOutcomeScore
 - averageRoi

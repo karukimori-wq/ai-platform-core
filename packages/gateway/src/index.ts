@@ -5,7 +5,7 @@ import type { ClientBudgetPolicy, ClientRegistry } from "@ai-platform-core/clien
 import type { KnowledgeRepository, KnowledgeSearchResult } from "@ai-platform-core/knowledge";
 import type { Clock, Logger, Result } from "@ai-platform-core/kernel";
 import { err, ok, platformError } from "@ai-platform-core/kernel";
-import type { AIMessage, ProviderRegistry } from "@ai-platform-core/provider";
+import type { AIMessage, AIProviderRequest, AIProviderResponse, ProviderRegistry } from "@ai-platform-core/provider";
 
 export interface GatewayAuthContext {
   readonly clientId: string;
@@ -46,6 +46,20 @@ export interface GatewayKnowledgeContext {
 export interface GatewayRoute {
   readonly providerId: string;
   readonly model: string;
+}
+
+export interface GatewayRetryPolicy {
+  readonly maxAttempts: number;
+}
+
+export interface GatewayResiliencePolicy {
+  readonly retry?: GatewayRetryPolicy;
+  readonly fallbackProviders?: readonly string[];
+}
+
+interface GatewayProviderExecution {
+  readonly providerId: string;
+  readonly response: AIProviderResponse;
 }
 
 interface GatewayBudgetUsage {
@@ -172,6 +186,52 @@ const filterKnowledgeResults = (
   return results.filter((result) => allowedIds.includes(result.knowledge.id));
 };
 
+const normalizeAttemptCount = (policy?: GatewayRetryPolicy): number => Math.max(1, policy?.maxAttempts ?? 1);
+
+const resolveProviderOrder = (
+  route: GatewayRoute,
+  policy?: GatewayResiliencePolicy
+): readonly string[] => unique([route.providerId, ...policy?.fallbackProviders ?? []]);
+
+const executeProviderWithRetry = async (
+  providers: ProviderRegistry,
+  providerId: string,
+  request: AIProviderRequest,
+  attempts: number,
+  logger: Logger,
+  activityId: string
+): Promise<Result<GatewayProviderExecution>> => {
+  const provider = providers.get(providerId);
+  if (!provider.ok) return err(provider.error);
+  let lastFailure: Result<GatewayProviderExecution> | undefined;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const response = await provider.value.chat(request);
+    if (response.ok) return ok({ providerId, response: response.value });
+    lastFailure = err(response.error);
+    logger.warn("AI provider execution attempt failed.", { activityId, provider: providerId, attempt });
+  }
+  return lastFailure ?? err(platformError("GATEWAY_PROVIDER_RETRY_FAILED", "AI provider execution failed."));
+};
+
+const executeProviderWithResilience = async (
+  providers: ProviderRegistry,
+  route: GatewayRoute,
+  request: AIProviderRequest,
+  logger: Logger,
+  activityId: string,
+  policy?: GatewayResiliencePolicy
+): Promise<Result<GatewayProviderExecution>> => {
+  let lastFailure: Result<GatewayProviderExecution> | undefined;
+  const attempts = normalizeAttemptCount(policy?.retry);
+  for (const providerId of resolveProviderOrder(route, policy)) {
+    const response = await executeProviderWithRetry(providers, providerId, request, attempts, logger, activityId);
+    if (response.ok) return response;
+    lastFailure = response;
+    logger.warn("AI provider fallback candidate failed.", { activityId, provider: providerId });
+  }
+  return lastFailure ?? err(platformError("GATEWAY_PROVIDER_NOT_AVAILABLE", "No AI provider was available."));
+};
+
 export const createAIGateway = (
   activityRuntime: ActivityRuntime,
   providers: ProviderRegistry,
@@ -180,7 +240,8 @@ export const createAIGateway = (
   clock: Clock,
   logger: Logger,
   clients?: ClientRegistry,
-  knowledge?: KnowledgeRepository
+  knowledge?: KnowledgeRepository,
+  resilience?: GatewayResiliencePolicy
 ): AIGateway => ({
   run: async (request) => {
     const authenticated = authenticateGatewayRequest(authenticator, request.auth);
@@ -194,8 +255,6 @@ export const createAIGateway = (
     }
     const route = resolveGatewayRoute(request, clients);
     if (!route.ok) return route;
-    const provider = providers.get(route.value.providerId);
-    if (!provider.ok) return provider;
     const clientBudget = readClientBudget(request, clients);
     if (!clientBudget.ok) return clientBudget;
     const monthlyUsage = await readMonthlyUsage(analytics, request.activity.client, clock.now());
@@ -211,7 +270,7 @@ export const createAIGateway = (
     if (!knowledgeContext.ok) return knowledgeContext;
 
     const startedAt = clock.now().getTime();
-    const response = await provider.value.chat({
+    const response = await executeProviderWithResilience(providers, route.value, {
       model: route.value.model,
       messages: request.messages,
       input: request.activity.input,
@@ -221,23 +280,23 @@ export const createAIGateway = (
         workflow: request.activity.workflow,
         ...knowledgeContext.value.metadata
       }
-    });
+    }, logger, created.value.id.value, resilience);
     if (!response.ok) {
       await activityRuntime.transition(created.value.id.value, "failed");
       logger.error("AI provider execution failed.", { activityId: created.value.id.value, provider: route.value.providerId });
       return response;
     }
-    if (request.activity.budget?.maxTokens !== undefined && response.value.tokens.total > request.activity.budget.maxTokens) {
+    if (request.activity.budget?.maxTokens !== undefined && response.value.response.tokens.total > request.activity.budget.maxTokens) {
       await activityRuntime.transition(created.value.id.value, "failed");
       return err(platformError("GATEWAY_TOKEN_BUDGET_EXCEEDED", "Provider response exceeded the Activity token budget."));
     }
-    if (request.activity.budget?.maxCost !== undefined && response.value.cost.amount > request.activity.budget.maxCost) {
+    if (request.activity.budget?.maxCost !== undefined && response.value.response.cost.amount > request.activity.budget.maxCost) {
       await activityRuntime.transition(created.value.id.value, "failed");
       return err(platformError("GATEWAY_COST_BUDGET_EXCEEDED", "Provider response exceeded the Activity cost budget."));
     }
     const projectedBudget = ensureMonthlyBudget(clientBudget.value, {
-      tokens: monthlyUsage.value.tokens + response.value.tokens.total,
-      cost: monthlyUsage.value.cost + response.value.cost.amount
+      tokens: monthlyUsage.value.tokens + response.value.response.tokens.total,
+      cost: monthlyUsage.value.cost + response.value.response.cost.amount
     });
     if (!projectedBudget.ok) {
       await activityRuntime.transition(created.value.id.value, "failed");
@@ -246,13 +305,13 @@ export const createAIGateway = (
 
     const result: ActivityResult = {
       activityId: created.value.id.value,
-      output: response.value.output,
-      provider: route.value.providerId,
-      model: response.value.model,
-      tokens: response.value.tokens,
-      cost: response.value.cost,
+      output: response.value.response.output,
+      provider: response.value.providerId,
+      model: response.value.response.model,
+      tokens: response.value.response.tokens,
+      cost: response.value.response.cost,
       latencyMs: clock.now().getTime() - startedAt,
-      knowledgeUsed: unique([...knowledgeContext.value.usedIds, ...response.value.knowledgeUsed])
+      knowledgeUsed: unique([...knowledgeContext.value.usedIds, ...response.value.response.knowledgeUsed])
     };
     const completed = await activityRuntime.complete(result);
     if (!completed.ok) return completed;

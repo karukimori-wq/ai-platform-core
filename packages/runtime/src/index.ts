@@ -51,19 +51,33 @@ export interface PlatformRuntime {
   readonly logger: Logger;
 }
 
-export const createPlatformRuntime = (): PlatformRuntime => {
+export interface PlatformRuntimeOptions {
+  readonly analytics?: AnalyticsRepository;
+  readonly clients?: ClientRegistry;
+  readonly clock?: Clock;
+  readonly events?: EventStore;
+  readonly eventBus?: EventBus;
+  readonly eventDispatcher?: EventDispatcher;
+  readonly knowledge?: KnowledgeRepository;
+  readonly logger?: Logger;
+  readonly providers?: ProviderRegistry;
+  readonly secrets?: SecretStore;
+  readonly storage?: KeyValueStore<Readonly<Record<string, unknown>>>;
+}
+
+export const createPlatformRuntime = (options: PlatformRuntimeOptions = {}): PlatformRuntime => {
   const registry = createCapabilityRegistry();
-  const clients = createClientRegistry();
+  const clients = options.clients ?? createClientRegistry();
   const capability = createCapabilityRuntime(registry, createPermissionChecker());
-  const clock = systemClock();
-  const logger = createNoopLogger();
-  const eventStore = createMemoryEventStore();
-  const eventBus = createEventBus();
-  const eventDispatcher = createEventDispatcher(eventStore, eventBus);
+  const clock = options.clock ?? systemClock();
+  const logger = options.logger ?? createNoopLogger();
+  const eventStore = options.events ?? createMemoryEventStore();
+  const eventBus = options.eventBus ?? createEventBus();
+  const eventDispatcher = options.eventDispatcher ?? createEventDispatcher(eventStore, eventBus);
   const activity = createActivityRuntime(createMemoryActivityRepository(), createCryptoIdGenerator(), clock, eventDispatcher);
-  const analytics = createMemoryAnalyticsRepository();
-  const knowledge = createMemoryKnowledgeRepository();
-  const providers = createProviderRegistry();
+  const analytics = options.analytics ?? createMemoryAnalyticsRepository();
+  const knowledge = options.knowledge ?? createMemoryKnowledgeRepository();
+  const providers = options.providers ?? createProviderRegistry();
   providers.register(createEchoProvider());
   return {
     registry,
@@ -80,8 +94,8 @@ export const createPlatformRuntime = (): PlatformRuntime => {
     providers,
     workflow: createWorkflowRuntime(capability),
     plugin: createPluginRuntime(),
-    secrets: createMemorySecretStore(),
-    storage: createMemoryKeyValueStore(),
+    secrets: options.secrets ?? createMemorySecretStore(),
+    storage: options.storage ?? createMemoryKeyValueStore(),
     clock,
     logger
   };

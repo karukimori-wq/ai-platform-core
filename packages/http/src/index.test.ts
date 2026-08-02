@@ -94,17 +94,20 @@ describe("gateway http handler", () => {
 
     const hidden = await closedHandler(new Request("https://example.com/v1/analytics/usage?client=fortune_teller_a"));
     const forbidden = await handler(new Request("https://example.com/v1/analytics/usage?client=other_client"));
-    const response = await handler(new Request("https://example.com/v1/analytics/usage?client=fortune_teller_a"));
+    const invalid = await handler(new Request("https://example.com/v1/analytics/usage?client=fortune_teller_a&period=week"));
+    const response = await handler(new Request("https://example.com/v1/analytics/usage?client=fortune_teller_a&period=month"));
     const body = await response.json() as Readonly<{
       ok: boolean;
-      summary: Readonly<{ client: string; usageCount: number; totalTokens: number }>;
+      summary: Readonly<{ client: string; period: string; usageCount: number; totalTokens: number }>;
     }>;
 
     expect(hidden.status).toBe(404);
     expect(forbidden.status).toBe(403);
+    expect(invalid.status).toBe(400);
     expect(response.status).toBe(200);
     expect(body.ok).toBe(true);
     expect(body.summary.client).toBe("fortune_teller_a");
+    expect(body.summary.period).toBe("month");
     expect(body.summary.usageCount).toBe(1);
     expect(body.summary.totalTokens).toBeGreaterThan(0);
   });

@@ -124,3 +124,8 @@
 
 - Added reason-level counts to Dashboard budget alert summary.
 - Added token and cost alert reason totals for budget alert views.
+
+## 0.1.17
+
+- Added status and reason filters to Dashboard budget alert queries.
+- Added filtered budget alert summary behavior.

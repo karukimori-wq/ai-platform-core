@@ -122,3 +122,9 @@
 - Remaining token and cost metrics
 - Usage ratio and limit reached flags
 - Runtime and SDK exposure for budget dashboard data
+
+## v0.1.11 Dashboard Budget Status
+
+- Dashboard budget status values: ok, warning, exceeded
+- 80 percent warning threshold for token and cost budget usage
+- Dashboard tests for warning and exceeded states

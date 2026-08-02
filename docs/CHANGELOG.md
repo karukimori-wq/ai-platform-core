@@ -73,3 +73,10 @@
 - Added Client Manifest default model support.
 - Added Gateway provider/model resolution from ActivityRequest, Client Manifest defaults, and platform fallback.
 - Added tests for manifest route defaults and ActivityRequest route overrides.
+
+## 0.1.9
+
+- Added Gateway enforcement for Client Manifest monthly token budgets.
+- Added Gateway enforcement for Client Manifest monthly cost budgets.
+- Added analytics-backed monthly usage calculation for budget checks.
+- Added Gateway tests for projected monthly budget rejection.

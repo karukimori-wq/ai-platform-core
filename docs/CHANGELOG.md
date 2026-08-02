@@ -94,3 +94,10 @@
 - Added warning status at 80 percent token or cost usage.
 - Added exceeded status when token or cost budget limit is reached.
 - Added Dashboard tests for budget status calculation.
+
+## 0.1.12
+
+- Added Dashboard client budget alert query.
+- Added alert filtering for warning and exceeded client budget status.
+- Exposed client budget alert view through the SDK.
+- Added Dashboard tests for budget alert filtering.

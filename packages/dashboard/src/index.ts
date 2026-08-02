@@ -64,6 +64,7 @@ export interface ClientBudgetAlertSummary {
   readonly total: number;
   readonly warning: number;
   readonly exceeded: number;
+  readonly byReason: Readonly<Record<ClientBudgetAlertReason, number>>;
 }
 
 export interface ClientBudgetAlertView {
@@ -272,7 +273,13 @@ const createBudgetAlert = (client: ClientBudgetMetric): ClientBudgetAlert => ({
 const createBudgetAlertSummary = (alerts: readonly ClientBudgetAlert[]): ClientBudgetAlertSummary => ({
   total: alerts.length,
   warning: alerts.filter((alert) => alert.status === "warning").length,
-  exceeded: alerts.filter((alert) => alert.status === "exceeded").length
+  exceeded: alerts.filter((alert) => alert.status === "exceeded").length,
+  byReason: {
+    "token-limit": alerts.filter((alert) => alert.reasons.includes("token-limit")).length,
+    "cost-limit": alerts.filter((alert) => alert.reasons.includes("cost-limit")).length,
+    "token-warning": alerts.filter((alert) => alert.reasons.includes("token-warning")).length,
+    "cost-warning": alerts.filter((alert) => alert.reasons.includes("cost-warning")).length
+  }
 });
 
 export const createDashboardQueryService = (

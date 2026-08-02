@@ -171,3 +171,8 @@
 - Added period filters to HTTP usage totals.
 - Defaulted usage total queries to the current month.
 - Exposed HTTP usage period type through the SDK.
+
+## 0.1.25
+
+- Added capability, workflow, provider, and model breakdowns to HTTP usage totals.
+- Kept usage endpoint responses aggregate-only for client-scoped reporting.

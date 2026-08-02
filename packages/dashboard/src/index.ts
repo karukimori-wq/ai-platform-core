@@ -231,6 +231,15 @@ const createClientBudgetMetric = (
   return budget?.currency === undefined ? withCostBudget : { ...withCostBudget, currency: budget.currency };
 };
 
+const budgetStatusPriority: Readonly<Record<ClientBudgetMetric["status"], number>> = {
+  exceeded: 0,
+  warning: 1,
+  ok: 2
+};
+
+const compareBudgetAlert = (left: ClientBudgetMetric, right: ClientBudgetMetric): number =>
+  budgetStatusPriority[left.status] - budgetStatusPriority[right.status] || left.clientId.localeCompare(right.clientId);
+
 export const createDashboardQueryService = (
   analytics: AnalyticsRepository,
   clock: Clock,
@@ -281,7 +290,7 @@ export const createDashboardQueryService = (
       if (!budgetView.ok) return budgetView;
       return ok({
         period: "month",
-        clients: budgetView.value.clients.filter((client) => client.status !== "ok")
+        clients: [...budgetView.value.clients.filter((client) => client.status !== "ok")].sort(compareBudgetAlert)
       });
     }
   };

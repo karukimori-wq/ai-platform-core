@@ -1,6 +1,1 @@
-import { createPlatformRuntime } from "@ai-platform-core/sdk";
-
-const runtime = createPlatformRuntime();
-runtime.logger.info("AI Platform Core playground started.", {
-  now: runtime.clock.now().toISOString()
-});
+aW1wb3J0IHsgY3JlYXRlUGxhdGZvcm1SdW50aW1lIH0gZnJvbSAiQGFpLXBsYXRmb3JtLWNvcmUvc2RrIjsKCmNvbnN0IHJ1bnRpbWUgPSBjcmVhdGVQbGF0Zm9ybVJ1bnRpbWUoKTsKcnVudGltZS5sb2dnZXIuaW5mbygiQUkgUGxhdGZvcm0gQ29yZSBwbGF5Z3JvdW5kIHN0YXJ0ZWQuIiwgewogIG5vdzogcnVudGltZS5jbG9jay5ub3coKS50b0lTT1N0cmluZygpCn0pOwo=

@@ -1,8 +1,1 @@
-packages:
-  - "apps/*"
-  - "packages/*"
-
-onlyBuiltDependencies:
-  - esbuild
-allowBuilds:
-  esbuild: true
+cGFja2FnZXM6CiAgLSAiYXBwcy8qIgogIC0gInBhY2thZ2VzLyoiCgpvbmx5QnVpbHREZXBlbmRlbmNpZXM6CiAgLSBlc2J1aWxkCmFsbG93QnVpbGRzOgogIGVzYnVpbGQ6IHRydWUK

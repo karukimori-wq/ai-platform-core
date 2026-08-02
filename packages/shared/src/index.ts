@@ -1,9 +1,1 @@
-export interface Page<T> {
-  readonly items: readonly T[];
-  readonly nextCursor?: string;
-}
-
-export interface Repository<T> {
-  readonly save: (item: T) => Promise<void>;
-  readonly findById: (id: string) => Promise<T | undefined>;
-}
+ZXhwb3J0IGludGVyZmFjZSBQYWdlPFQ+IHsKICByZWFkb25seSBpdGVtczogcmVhZG9ubHkgVFtdOwogIHJlYWRvbmx5IG5leHRDdXJzb3I/OiBzdHJpbmc7Cn0KCmV4cG9ydCBpbnRlcmZhY2UgUmVwb3NpdG9yeTxUPiB7CiAgcmVhZG9ubHkgc2F2ZTogKGl0ZW06IFQpID0+IFByb21pc2U8dm9pZD47CiAgcmVhZG9ubHkgZmluZEJ5SWQ6IChpZDogc3RyaW5nKSA9PiBQcm9taXNlPFQgfCB1bmRlZmluZWQ+Owp9Cg==

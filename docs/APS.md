@@ -1,12 +1,1 @@
-# APS
-
-Architecture Proposal Sheets are lightweight implementation proposals for platform-level changes.
-
-Each APS should include:
-
-- Problem
-- Decision
-- Alternatives
-- Impact
-- Migration
-
+IyBBUFMKCkFyY2hpdGVjdHVyZSBQcm9wb3NhbCBTaGVldHMgYXJlIGxpZ2h0d2VpZ2h0IGltcGxlbWVudGF0aW9uIHByb3Bvc2FscyBmb3IgcGxhdGZvcm0tbGV2ZWwgY2hhbmdlcy4KCkVhY2ggQVBTIHNob3VsZCBpbmNsdWRlOgoKLSBQcm9ibGVtCi0gRGVjaXNpb24KLSBBbHRlcm5hdGl2ZXMKLSBJbXBhY3QKLSBNaWdyYXRpb24KCg==

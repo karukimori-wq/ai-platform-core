@@ -1,15 +1,1 @@
-import { describe, expect, it } from "vitest";
-import { createMemoryKeyValueStore } from "./index.js";
-
-describe("storage", () => {
-  it("stores, reads, lists, and deletes records", async () => {
-    const store = createMemoryKeyValueStore<{ readonly name: string }>();
-    const saved = await store.put("one", { name: "core" });
-    expect(saved.ok && saved.value.version).toBe(1);
-    const updated = await store.put("one", { name: "platform" });
-    expect(updated.ok && updated.value.version).toBe(2);
-    expect((await store.list()).ok).toBe(true);
-    await store.delete("one");
-    expect((await store.get("one")).ok).toBe(false);
-  });
-});
+aW1wb3J0IHsgZGVzY3JpYmUsIGV4cGVjdCwgaXQgfSBmcm9tICJ2aXRlc3QiOwppbXBvcnQgeyBjcmVhdGVNZW1vcnlLZXlWYWx1ZVN0b3JlIH0gZnJvbSAiLi9pbmRleC5qcyI7CgpkZXNjcmliZSgic3RvcmFnZSIsICgpID0+IHsKICBpdCgic3RvcmVzLCByZWFkcywgbGlzdHMsIGFuZCBkZWxldGVzIHJlY29yZHMiLCBhc3luYyAoKSA9PiB7CiAgICBjb25zdCBzdG9yZSA9IGNyZWF0ZU1lbW9yeUtleVZhbHVlU3RvcmU8eyByZWFkb25seSBuYW1lOiBzdHJpbmcgfT4oKTsKICAgIGNvbnN0IHNhdmVkID0gYXdhaXQgc3RvcmUucHV0KCJvbmUiLCB7IG5hbWU6ICJjb3JlIiB9KTsKICAgIGV4cGVjdChzYXZlZC5vayAmJiBzYXZlZC52YWx1ZS52ZXJzaW9uKS50b0JlKDEpOwogICAgY29uc3QgdXBkYXRlZCA9IGF3YWl0IHN0b3JlLnB1dCgib25lIiwgeyBuYW1lOiAicGxhdGZvcm0iIH0pOwogICAgZXhwZWN0KHVwZGF0ZWQub2sgJiYgdXBkYXRlZC52YWx1ZS52ZXJzaW9uKS50b0JlKDIpOwogICAgZXhwZWN0KChhd2FpdCBzdG9yZS5saXN0KCkpLm9rKS50b0JlKHRydWUpOwogICAgYXdhaXQgc3RvcmUuZGVsZXRlKCJvbmUiKTsKICAgIGV4cGVjdCgoYXdhaXQgc3RvcmUuZ2V0KCJvbmUiKSkub2spLnRvQmUoZmFsc2UpOwogIH0pOwp9KTsK

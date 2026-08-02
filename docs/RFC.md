@@ -1,12 +1,1 @@
-# RFC
-
-Request for Comments documents are used for larger platform decisions.
-
-Use RFCs for:
-
-- public SDK changes
-- new runtime engines
-- infrastructure adapters
-- cross-package contracts
-- event schema changes
-
+IyBSRkMKClJlcXVlc3QgZm9yIENvbW1lbnRzIGRvY3VtZW50cyBhcmUgdXNlZCBmb3IgbGFyZ2VyIHBsYXRmb3JtIGRlY2lzaW9ucy4KClVzZSBSRkNzIGZvcjoKCi0gcHVibGljIFNESyBjaGFuZ2VzCi0gbmV3IHJ1bnRpbWUgZW5naW5lcwotIGluZnJhc3RydWN0dXJlIGFkYXB0ZXJzCi0gY3Jvc3MtcGFja2FnZSBjb250cmFjdHMKLSBldmVudCBzY2hlbWEgY2hhbmdlcwoK

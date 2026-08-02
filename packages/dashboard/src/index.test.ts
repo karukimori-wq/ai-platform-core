@@ -291,4 +291,106 @@ describe("dashboard query service", () => {
     expect(alerts.value.clients.find((client) => client.clientId === "exceeded-client")?.reasons).toEqual(["cost-limit"]);
     expect(alerts.value.clients.find((client) => client.clientId === "warning-client")?.reasons).toEqual(["token-warning"]);
   });
+
+  it("filters client budget alerts by status and reason", async () => {
+    const analytics = createMemoryAnalyticsRepository();
+    const clients = createClientRegistry();
+    clients.register({
+      id: "token-warning-client",
+      name: "Token Warning Client",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyTokenLimit: 100 }
+    });
+    clients.register({
+      id: "cost-warning-client",
+      name: "Cost Warning Client",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyCostLimit: 10 }
+    });
+    clients.register({
+      id: "cost-exceeded-client",
+      name: "Cost Exceeded Client",
+      type: "web",
+      version: "0.1.0",
+      capabilities: ["SNS.Generate"],
+      knowledge: [],
+      analytics: true,
+      budget: { monthlyCostLimit: 10 }
+    });
+    await analytics.recordUsage({
+      activityId: "activity-token-warning",
+      client: "token-warning-client",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 40,
+      outputTokens: 40,
+      totalTokens: 80,
+      costAmount: 0,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    await analytics.recordUsage({
+      activityId: "activity-cost-warning",
+      client: "cost-warning-client",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 1,
+      outputTokens: 1,
+      totalTokens: 2,
+      costAmount: 8,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    await analytics.recordUsage({
+      activityId: "activity-cost-exceeded",
+      client: "cost-exceeded-client",
+      capability: "SNS.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 1,
+      outputTokens: 1,
+      totalTokens: 2,
+      costAmount: 10,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    const dashboard = createDashboardQueryService(
+      analytics,
+      { now: () => new Date("2026-08-02T12:00:00.000Z") },
+      clients
+    );
+
+    const alerts = await dashboard.getClientBudgetAlerts({
+      statuses: ["warning"],
+      reasons: ["cost-warning"]
+    });
+
+    expect(alerts.ok).toBe(true);
+    if (!alerts.ok) return;
+    expect(alerts.value.summary).toEqual({
+      total: 1,
+      warning: 1,
+      exceeded: 0,
+      byReason: {
+        "token-limit": 0,
+        "cost-limit": 0,
+        "token-warning": 0,
+        "cost-warning": 1
+      }
+    });
+    expect(alerts.value.clients.map((client) => client.clientId)).toEqual(["cost-warning-client"]);
+  });
 });

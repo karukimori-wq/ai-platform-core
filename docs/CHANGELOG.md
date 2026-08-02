@@ -113,3 +113,9 @@
 - Added Dashboard budget alert reasons.
 - Added token and cost reason values for warning and exceeded alerts.
 - Exposed budget alert reason types through the SDK.
+
+## 0.1.15
+
+- Added Dashboard budget alert summary.
+- Added total, warning, and exceeded counts to budget alert views.
+- Exposed budget alert summary type through the SDK.

@@ -20,6 +20,8 @@ export interface GatewayRunHttpBody {
   readonly messages: readonly AIMessage[];
 }
 
+export type UsageHttpPeriod = "today" | "month" | "year" | "all";
+
 const jsonHeaders = { "content-type": "application/json" };
 
 const jsonResponse = (status: number, body: unknown): Response =>
@@ -27,6 +29,9 @@ const jsonResponse = (status: number, body: unknown): Response =>
 
 const errorResponse = (status: number, error: PlatformError): Response =>
   jsonResponse(status, { ok: false, error });
+
+const isPlatformError = (value: unknown): value is PlatformError =>
+  isRecord(value) && typeof value.code === "string" && typeof value.message === "string";
 
 const isRecord = (value: unknown): value is Readonly<Record<string, unknown>> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
@@ -137,6 +142,27 @@ const runGateway = async (runtime: PlatformRuntime, request: GatewayRequest): Pr
 
 const readSearchString = (url: URL, key: string): string | undefined => url.searchParams.get(key) ?? undefined;
 
+const readUsagePeriod = (url: URL): UsageHttpPeriod | PlatformError => {
+  const value = readSearchString(url, "period") ?? "month";
+  return value === "today" || value === "month" || value === "year" || value === "all"
+    ? value
+    : platformError("HTTP_INVALID_QUERY", "Query parameter 'period' must be today, month, year, or all.");
+};
+
+const startOfDay = (date: Date): Date => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+const startOfMonth = (date: Date): Date => new Date(date.getFullYear(), date.getMonth(), 1);
+const startOfYear = (date: Date): Date => new Date(date.getFullYear(), 0, 1);
+
+const filterByPeriod = <T extends { readonly occurredAt: Date }>(
+  records: readonly T[],
+  period: UsageHttpPeriod,
+  now: Date
+): readonly T[] => {
+  if (period === "all") return records;
+  const start = period === "today" ? startOfDay(now) : period === "month" ? startOfMonth(now) : startOfYear(now);
+  return records.filter((record) => record.occurredAt.getTime() >= start.getTime() && record.occurredAt.getTime() <= now.getTime());
+};
+
 const listUsage = async (
   runtime: PlatformRuntime,
   request: Request,
@@ -153,12 +179,15 @@ const listUsage = async (
   if (!await authorize(request, client)) {
     return errorResponse(403, platformError("HTTP_FORBIDDEN", "Client usage queries must be scoped to the caller."));
   }
+  const period = readUsagePeriod(url);
+  if (isPlatformError(period)) return errorResponse(400, period);
   const usage = await runtime.analytics.listUsage();
   if (!usage.ok) return errorResponse(400, usage.error);
   const capability = readSearchString(url, "capability");
   const provider = readSearchString(url, "provider");
   const model = readSearchString(url, "model");
-  const records = usage.value.filter((record) =>
+  const now = new Date();
+  const records = filterByPeriod(usage.value, period, now).filter((record) =>
     record.client === client &&
     (capability === undefined || record.capability === capability) &&
     (provider === undefined || record.provider === provider) &&
@@ -168,6 +197,7 @@ const listUsage = async (
     ok: true,
     summary: {
       client,
+      period,
       usageCount: records.length,
       totalTokens: records.reduce((sum, record) => sum + record.totalTokens, 0),
       totalCost: records.reduce((sum, record) => sum + record.costAmount, 0)

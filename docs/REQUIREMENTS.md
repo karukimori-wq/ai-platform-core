@@ -210,6 +210,12 @@ Initial metrics:
 - editedCount
 - averageRating
 
+Initial dashboard queries:
+
+- usage dashboard view
+- client monthly budget view
+- client monthly budget alert view
+
 ## Non-Functional Requirements
 
 | Category | Requirement |

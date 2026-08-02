@@ -80,3 +80,10 @@
 - Added Gateway enforcement for Client Manifest monthly cost budgets.
 - Added analytics-backed monthly usage calculation for budget checks.
 - Added Gateway tests for projected monthly budget rejection.
+
+## 0.1.10
+
+- Added Dashboard client monthly budget view.
+- Added remaining token and cost metrics.
+- Added budget usage ratio and limit reached flags.
+- Exposed budget dashboard data through runtime and SDK.

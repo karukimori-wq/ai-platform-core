@@ -1,0 +1,107 @@
+# Application API Server Integration
+
+Applications should call AI Platform Core through a server-side API endpoint.
+Provider API keys must stay on the server, and every AI request should pass
+through the Gateway so usage is recorded by client.
+
+## Minimal Runtime Setup
+
+```ts
+import {
+  createGatewayHttpHandler,
+  createOpenAICompatibleProvider,
+  createPlatform,
+  createSecretReader
+} from "@ai-platform-core/sdk";
+
+const runtime = createPlatform();
+
+await runtime.secrets.set("OPENAI_API_KEY", process.env.OPENAI_API_KEY ?? "");
+runtime.providers.register(createOpenAICompatibleProvider({
+  id: "openai",
+  secretReader: createSecretReader(runtime.secrets),
+  apiKeySecretKey: "OPENAI_API_KEY"
+}));
+
+runtime.clients.register({
+  id: "fortune_teller_a",
+  name: "Fortune Teller A",
+  type: "web",
+  version: "0.1.0",
+  provider: "openai",
+  defaultModel: "gpt-4.1-mini",
+  capabilities: ["report.generate"],
+  knowledge: [],
+  analytics: true,
+  budget: {
+    monthlyTokenLimit: 1000000,
+    monthlyCostLimit: { amount: 100, currency: "USD" }
+  }
+});
+
+export const handleGatewayRequest = createGatewayHttpHandler(runtime);
+```
+
+## Request Shape
+
+```http
+POST /v1/gateway/run
+content-type: application/json
+```
+
+```json
+{
+  "auth": {
+    "clientId": "fortune_teller_a",
+    "permissions": ["report.generate"]
+  },
+  "activity": {
+    "client": "fortune_teller_a",
+    "capability": "report.generate",
+    "workflow": "numerology",
+    "goal": "Create a draft fortune-telling report.",
+    "context": {
+      "app": "Numeria Studio"
+    },
+    "input": {
+      "lifePath": 7
+    }
+  },
+  "messages": [
+    {
+      "role": "user",
+      "content": "Draft the report text."
+    }
+  ]
+}
+```
+
+## Usage Recording
+
+After the request succeeds, usage can be read from analytics:
+
+```ts
+const usage = await runtime.analytics.listUsage();
+```
+
+The usage record includes:
+
+- `client`: which customer or tenant used AI, for example `fortune_teller_a`
+- `capability`: which feature used AI, for example `report.generate`
+- `workflow`: which business flow used AI, for example `numerology`
+- `provider` and `model`
+- input, output, and total tokens
+- cost and latency
+
+This means the platform can answer questions such as "How much AI did Fortune
+Teller A use for report generation this month?" as long as the application sends
+that fortune teller's account ID as `auth.clientId` and `activity.client`.
+
+## Production Notes
+
+- Do not send provider API keys from the browser or mobile app.
+- Resolve the authenticated application user to a platform `clientId` on the server.
+- Register each billable customer, tenant, or fortune teller as a Client Manifest.
+- Keep customer personal data out of prompts where possible; send calculated
+  numbers and non-sensitive context instead.
+- Use dashboard budget queries for monthly token and cost visibility.

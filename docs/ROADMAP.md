@@ -108,3 +108,10 @@
 - ActivityRequest provider and model override support
 - Platform fallback provider and model
 - Gateway tests for route resolution order
+
+## v0.1.9 Client Monthly Budget Enforcement
+
+- Gateway monthly token budget checks from Client Manifest
+- Gateway monthly cost budget checks from Client Manifest
+- Analytics-backed budget usage calculation
+- Gateway tests for projected monthly budget rejection

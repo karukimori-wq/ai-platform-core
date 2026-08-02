@@ -46,6 +46,7 @@ export interface ClientBudgetMetric {
   readonly costUsageRatio?: number;
   readonly tokenLimitReached: boolean;
   readonly costLimitReached: boolean;
+  readonly status: "ok" | "warning" | "exceeded";
 }
 
 export interface ClientBudgetView {
@@ -191,12 +192,17 @@ const createClientBudgetMetric = (
   const budget = readBudget(clientId, clients);
   const usedTokens = records.reduce((sum, record) => sum + record.totalTokens, 0);
   const usedCost = records.reduce((sum, record) => sum + record.costAmount, 0);
+  const tokenLimitReached = budget?.monthlyTokenLimit === undefined ? false : usedTokens >= budget.monthlyTokenLimit;
+  const costLimitReached = budget?.monthlyCostLimit === undefined ? false : usedCost >= budget.monthlyCostLimit;
+  const tokenWarning = budget?.monthlyTokenLimit === undefined ? false : usedTokens / budget.monthlyTokenLimit >= 0.8;
+  const costWarning = budget?.monthlyCostLimit === undefined ? false : usedCost / budget.monthlyCostLimit >= 0.8;
   const metric: ClientBudgetMetric = {
     clientId,
     usedTokens,
     usedCost,
-    tokenLimitReached: budget?.monthlyTokenLimit === undefined ? false : usedTokens >= budget.monthlyTokenLimit,
-    costLimitReached: budget?.monthlyCostLimit === undefined ? false : usedCost >= budget.monthlyCostLimit
+    tokenLimitReached,
+    costLimitReached,
+    status: tokenLimitReached || costLimitReached ? "exceeded" : tokenWarning || costWarning ? "warning" : "ok"
   };
   const withTokenBudget =
     budget?.monthlyTokenLimit === undefined

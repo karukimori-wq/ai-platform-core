@@ -41,6 +41,7 @@ export {
   validateClientManifest
 } from "@ai-platform-core/client";
 export {
+  type ClientBudgetAlertView,
   type ClientBudgetMetric,
   type ClientBudgetView,
   type DashboardMetric,

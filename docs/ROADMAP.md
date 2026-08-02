@@ -154,3 +154,9 @@
 
 - Reason-level counts in budget alert summary
 - Token and cost alert reason totals for Dashboard views
+
+## v0.1.17 Dashboard Alert Filters
+
+- Status filters for budget alert queries
+- Reason filters for budget alert queries
+- Filtered alert summary totals

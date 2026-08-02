@@ -73,10 +73,15 @@ export interface ClientBudgetAlertView {
   readonly clients: readonly ClientBudgetAlert[];
 }
 
+export interface ClientBudgetAlertQuery extends Pick<DashboardQuery, "now"> {
+  readonly statuses?: readonly ClientBudgetMetric["status"][];
+  readonly reasons?: readonly ClientBudgetAlertReason[];
+}
+
 export interface DashboardQueryService {
   readonly getView: (query: DashboardQuery) => Promise<Result<DashboardView>>;
   readonly getClientBudgetView: (query?: Pick<DashboardQuery, "now">) => Promise<Result<ClientBudgetView>>;
-  readonly getClientBudgetAlerts: (query?: Pick<DashboardQuery, "now">) => Promise<Result<ClientBudgetAlertView>>;
+  readonly getClientBudgetAlerts: (query?: ClientBudgetAlertQuery) => Promise<Result<ClientBudgetAlertView>>;
 }
 
 const emptyMetric = (): DashboardMetric => ({
@@ -282,6 +287,12 @@ const createBudgetAlertSummary = (alerts: readonly ClientBudgetAlert[]): ClientB
   }
 });
 
+const matchesBudgetAlertQuery = (alert: ClientBudgetAlert, query?: ClientBudgetAlertQuery): boolean => {
+  const statusMatches = query?.statuses === undefined || query.statuses.includes(alert.status);
+  const reasonMatches = query?.reasons === undefined || query.reasons.some((reason) => alert.reasons.includes(reason));
+  return statusMatches && reasonMatches;
+};
+
 export const createDashboardQueryService = (
   analytics: AnalyticsRepository,
   clock: Clock,
@@ -332,7 +343,8 @@ export const createDashboardQueryService = (
       if (!budgetView.ok) return budgetView;
       const alerts = [...budgetView.value.clients.filter((client) => client.status !== "ok")]
         .sort(compareBudgetAlert)
-        .map(createBudgetAlert);
+        .map(createBudgetAlert)
+        .filter((alert) => matchesBudgetAlertQuery(alert, query));
       return ok({
         period: "month",
         summary: createBudgetAlertSummary(alerts),

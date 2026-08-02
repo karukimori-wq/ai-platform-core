@@ -160,3 +160,9 @@
 - Status filters for budget alert queries
 - Reason filters for budget alert queries
 - Filtered alert summary totals
+
+## v0.1.18 Gateway Retry And Fallback
+
+- Retry policy for provider chat execution
+- Fallback provider policy for failed provider execution
+- SDK exposure for Gateway resilience policy types

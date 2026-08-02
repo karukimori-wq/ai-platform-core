@@ -205,6 +205,7 @@ Initial metrics:
 - budgetAlertReasons
 - budgetAlertSummary
 - budgetAlertReasonCounts
+- budgetAlertFilters
 - outcomeCount
 - averageOutcomeScore
 - averageRoi

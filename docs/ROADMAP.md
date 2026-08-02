@@ -101,3 +101,10 @@
 - Client manifest Knowledge allowlist enforcement
 - ActivityResult.knowledgeUsed population from matched Knowledge records
 - PlatformRuntime Knowledge repository wiring
+
+## v0.1.8 Gateway Provider Model Routing
+
+- Client Manifest default provider and model
+- ActivityRequest provider and model override support
+- Platform fallback provider and model
+- Gateway tests for route resolution order

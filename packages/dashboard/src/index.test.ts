@@ -276,6 +276,6 @@ describe("dashboard query service", () => {
 
     expect(alerts.ok).toBe(true);
     if (!alerts.ok) return;
-    expect(alerts.value.clients.map((client) => client.clientId)).toEqual(["warning-client", "exceeded-client"]);
+    expect(alerts.value.clients.map((client) => client.clientId)).toEqual(["exceeded-client", "warning-client"]);
   });
 });

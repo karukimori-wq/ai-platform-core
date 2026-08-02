@@ -162,6 +162,8 @@ Provider adapters must keep provider-specific request details behind the shared 
 
 Provider API keys and provider secrets must be read from platform-owned SecretReader or SecretStore implementations. Provider adapter config must reference secret keys instead of holding raw provider credentials.
 
+Application API servers may expose the Gateway through fetch-compatible HTTP handlers, but must keep provider credentials server-side and continue routing requests through Gateway usage recording.
+
 ## Activity Events
 
 Activity lifecycle changes must be representable as DomainEvents.

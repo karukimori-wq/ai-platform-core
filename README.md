@@ -38,6 +38,7 @@ Application-specific business logic belongs in separate repositories.
 | `@ai-platform-core/activity` | AI Activity contract, lifecycle, outcome, feedback |
 | `@ai-platform-core/provider` | Provider interface, registry, echo provider for tests |
 | `@ai-platform-core/gateway` | Single AI entrypoint, provider/model routing, allowed knowledge lookup, usage, outcome, and feedback recording |
+| `@ai-platform-core/http` | Fetch-compatible HTTP handlers for application API servers |
 | `@ai-platform-core/analytics` | Usage, outcome, and feedback records with summary APIs |
 | `@ai-platform-core/dashboard` | Dashboard-ready usage, outcome, feedback, and ROI metrics by period and dimension |
 | `@ai-platform-core/event` | Domain events, event bus, dispatcher, memory event store |

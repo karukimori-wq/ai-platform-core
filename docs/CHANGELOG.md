@@ -123,7 +123,7 @@
 ## 0.1.16
 
 - Added reason-level counts to Dashboard budget alert summary.
-- Added token and cost alert reason totals for budget alert views.
+- Added token and cost alert reason totals for Dashboard views.
 
 ## 0.1.17
 
@@ -181,3 +181,8 @@
 
 - Added storage-backed Analytics repository factory for durable usage records.
 - Exposed stored Analytics repository creation through the SDK.
+
+## 0.1.27
+
+- Added PlatformRuntime dependency injection options.
+- Allowed custom Analytics repositories to back Gateway recording and Dashboard queries.

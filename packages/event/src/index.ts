@@ -1,4 +1,4 @@
-import { type Result, type UUID, ok } from "@ai-platform-core/kernel";
+import { type Result, type UUID, err, ok, platformError } from "@ai-platform-core/kernel";
 
 export type PlatformIntegrationEventType =
   | "Lead.Created"
@@ -48,17 +48,40 @@ export type PlatformIntegrationEvent<
 export interface EventStore {
   readonly append: (events: readonly DomainEvent[]) => Promise<Result<void>>;
   readonly load: (aggregateId: UUID) => Promise<Result<readonly DomainEvent[]>>;
+  readonly query: (filter?: EventQuery) => Promise<Result<readonly DomainEvent[]>>;
   readonly all: () => Promise<Result<readonly DomainEvent[]>>;
 }
 
+export interface EventQuery {
+  readonly aggregateId?: UUID;
+  readonly type?: string;
+  readonly types?: readonly string[];
+  readonly from?: Date;
+  readonly to?: Date;
+}
+
 export interface EventSubscriber {
+  readonly id?: string;
   readonly eventType: string;
   readonly handle: (event: DomainEvent) => Promise<Result<void>>;
 }
 
-export interface EventBus {
+export interface EventSubscription {
+  readonly id: string;
+  readonly eventType: string;
+  readonly unsubscribe: () => Result<void>;
+}
+
+export interface EventPublisher {
   readonly publish: (event: DomainEvent) => Promise<Result<void>>;
-  readonly subscribe: (subscriber: EventSubscriber) => Result<void>;
+}
+
+export interface EventSubscriberRegistry {
+  readonly subscribe: (subscriber: EventSubscriber) => Result<EventSubscription>;
+  readonly unsubscribe: (subscriptionId: string) => Result<void>;
+}
+
+export interface EventBus extends EventPublisher, EventSubscriberRegistry {
 }
 
 export const createMemoryEventStore = (): EventStore => {
@@ -70,15 +93,25 @@ export const createMemoryEventStore = (): EventStore => {
     },
     load: async (aggregateId) =>
       ok(events.filter((event) => event.aggregateId.equals(aggregateId))),
+    query: async (filter = {}) =>
+      ok(events.filter((event) => matchesEventQuery(event, filter))),
     all: async () => ok([...events])
   };
 };
 
 export const createEventBus = (): EventBus => {
-  const subscribers: EventSubscriber[] = [];
+  let nextSubscriptionId = 1;
+  const subscribers = new Map<string, EventSubscriber>();
+  const unsubscribe = (subscriptionId: string): Result<void> => {
+    if (!subscribers.delete(subscriptionId)) {
+      return err(platformError("EVENT_SUBSCRIPTION_NOT_FOUND", `Event subscription '${subscriptionId}' was not found.`));
+    }
+    return ok(undefined);
+  };
+
   return {
     publish: async (event) => {
-      const targets = subscribers.filter(
+      const targets = [...subscribers.values()].filter(
         (subscriber) => subscriber.eventType === event.type || subscriber.eventType === "*"
       );
       for (const subscriber of targets) {
@@ -88,9 +121,15 @@ export const createEventBus = (): EventBus => {
       return ok(undefined);
     },
     subscribe: (subscriber) => {
-      subscribers.push(subscriber);
-      return ok(undefined);
-    }
+      const id = subscriber.id ?? `event-subscription-${String(nextSubscriptionId++)}`;
+      subscribers.set(id, subscriber);
+      return ok({
+        id,
+        eventType: subscriber.eventType,
+        unsubscribe: () => unsubscribe(id)
+      });
+    },
+    unsubscribe
   };
 };
 
@@ -112,3 +151,12 @@ export const createEventDispatcher = (
     return ok(undefined);
   }
 });
+
+const matchesEventQuery = (event: DomainEvent, filter: EventQuery): boolean => {
+  if (filter.aggregateId && !event.aggregateId.equals(filter.aggregateId)) return false;
+  if (filter.type && event.type !== filter.type) return false;
+  if (filter.types && !filter.types.includes(event.type)) return false;
+  if (filter.from && event.occurredAt.getTime() < filter.from.getTime()) return false;
+  if (filter.to && event.occurredAt.getTime() > filter.to.getTime()) return false;
+  return true;
+};

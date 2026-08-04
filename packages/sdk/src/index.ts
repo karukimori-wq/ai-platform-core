@@ -57,18 +57,26 @@ export {
 } from "@ai-platform-core/dashboard";
 export {
   type DomainEvent,
+  type DeadLetterEvent,
   type EventBus,
+  type EventCategory,
+  type EventConsumerState,
+  type EventDeliveryPolicy,
+  type EventDeliveryStatus,
   type EventDispatcher,
   type EventPublisher,
   type EventQuery,
+  type EventSchemaValidator,
   type EventSubscriberRegistry,
   type EventSubscription,
   type EventStore,
+  type PlatformEventEnvelope,
   type PlatformIntegrationEvent,
   type PlatformIntegrationEventType,
   createEventBus,
   createEventDispatcher,
   createMemoryEventStore,
+  getPlatformIntegrationEventCategory,
   platformIntegrationEventTypes
 } from "@ai-platform-core/event";
 export {

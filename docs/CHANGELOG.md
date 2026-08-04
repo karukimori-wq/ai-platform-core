@@ -123,7 +123,7 @@
 ## 0.1.16
 
 - Added reason-level counts to Dashboard budget alert summary.
-- Added token and cost alert reason totals for Dashboard views.
+- Added token and cost alert reason totals for budget alert views.
 
 ## 0.1.17
 

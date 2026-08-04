@@ -198,3 +198,11 @@
 - Added Event Engine subscription handles and unsubscribe support.
 - Added filtered EventStore queries by aggregate, event type, and occurrence time.
 - Exposed EventPublisher, EventSubscriberRegistry, EventSubscription, and EventQuery through the SDK.
+
+## 0.1.30
+
+- Clarified API versus Event responsibilities across Growth Engine, Professional Studio, and AI Platform Core.
+- Separated Business Events from AI Activity Events and expanded shared event names.
+- Added platform event envelope, event category, delivery state, schema validation, retry, and dead-letter contracts.
+- Clarified that Customer, Session, Document, reservation, commerce payment, SNS Planner, and business orchestration are outside AI Platform Core ownership.
+- Documented capability-first application integration, AI Usage Billing boundaries, and privacy-minimized external context references.

@@ -37,9 +37,13 @@ common AI foundation
 ```
 
 AI Platform Core owns AI Runtime, Prompt Engine, Knowledge Engine, Usage Engine,
-Billing-ready usage records, and Event Engine primitives. It must not own
+AI Usage Billing records, and Event Engine primitives. It must not own
 customer management, SNS, LINE, reservations, sales, payments, PDF layout, or
 professional-domain business logic.
+
+AI Platform Core is not the business workflow commander. Growth Engine owns
+business decisions and business orchestration, including who to follow up with,
+what to sell, what content to create, and when to execute business actions.
 
 The platform's core value is to turn AI usage into an asset:
 
@@ -60,8 +64,10 @@ The platform's core value is to turn AI usage into an asset:
 - AI Activity First: the managed unit is an AI Activity.
 - Capability First: every executable feature is represented as a Capability.
 - Event First: important changes must be representable as Events.
-- Event Integration First: Growth Engine and Professional Studio integrations should use publish/subscribe events.
+- API/Event Separation: synchronous reads and immediate user operations use APIs; state changes and downstream processing use Events.
+- Event Integration First: Growth Engine and Professional Studio integrations should use publish/subscribe events for asynchronous state-change notifications.
 - Gateway First: all AI usage must pass through the AI Gateway.
+- Privacy Minimalism: AI Platform Core must not receive or retain personal data that is not required for the selected capability.
 - Human Approval: AI proposes; humans decide.
 - Learning Ready: MVP must be extendable toward learning, but not implement learning.
 
@@ -188,6 +194,31 @@ Provider API keys and provider secrets must be read from platform-owned SecretRe
 
 Application API servers may expose the Gateway through fetch-compatible HTTP handlers, but must keep provider credentials server-side and continue routing requests through Gateway usage recording.
 
+Applications must call capabilities instead of sending raw prompt text or model
+names as their primary integration contract. AI Platform Core resolves model,
+Prompt Version, Workflow, Tool, Knowledge, Evaluation, and Usage recording from
+the selected capability.
+
+Initial Professional Studio capabilities may include:
+
+- Reading.Interpret
+- Reading.GenerateDraft
+
+Initial Growth Engine capabilities may include:
+
+- Marketing.AnalyzeConsultationTrends
+- Marketing.AnalyzeFunnel
+- Marketing.DetectBottleneck
+- Marketing.GenerateContentBrief
+- Marketing.RecommendFollowup
+- Marketing.RecommendRepeat
+- Marketing.AnalyzeRevenue
+- Marketing.GenerateNextActions
+
+AI Platform Core executes analysis and generation only. Growth Engine decides
+whether to adopt the recommendation, who receives follow-up, when messages are
+sent, and whether SNS Planner work should be requested.
+
 ## Activity Events
 
 Activity lifecycle changes must be representable as DomainEvents.
@@ -204,39 +235,130 @@ The memory runtime stores these events through EventStore. Future infrastructure
 
 ## Integration Events
 
-Growth Engine, Professional Studio, and other systems should coordinate through
-Event Publish / Subscribe instead of direct cross-application API calls.
+Growth Engine, Professional Studio, and other systems should coordinate state
+changes through Event Publish / Subscribe. Direct synchronous reads and
+immediate screen operations should still use APIs.
 
 AI Platform Core owns the event infrastructure and shared event names. It does
-not own the domain records behind these events.
+not own the domain records behind these events and must not orchestrate business
+workflows from them.
 
-Initial shared integration events:
+Event envelopes must include:
+
+- eventId
+- eventType
+- eventVersion
+- occurredAt
+- workspaceId
+- producer
+- correlationId
+- causationId
+- subjectType
+- subjectId
+- payload
+- optional partitionKey
+
+Event Engine infrastructure must support:
+
+- duplicate detection by eventId
+- consumer-level processing state
+- retry
+- dead letter queue
+- event versioning
+- schema validation
+- audit logs
+- partition keys when ordering is required
+- correlation IDs
+- replay
+
+Initial Business Events:
 
 - Lead.Created
 - Lead.Qualified
+- Lead.Updated
 - Customer.Created
+- Customer.Updated
+- Campaign.Created
+- Content.BriefRequested
+- Content.DraftCreated
+- Content.Published
+- Reservation.Requested
 - Reservation.Created
+- Reservation.Confirmed
 - Reservation.Cancelled
 - Session.Started
 - Session.Completed
 - Document.Generated
 - Payment.Completed
+- Payment.Refunded
+- Followup.Scheduled
 - Followup.Created
+- Followup.Completed
 - Review.Requested
+- Referral.Created
 - Repeat.Booked
+- Professional.RecommendationCreated
 
-Professional Studio concepts are:
+Initial AI Activity Events:
 
-- Customer
-- Session
-- Document
-- AI Request
+- AI.ActivityStarted
+- AI.ActivityCompleted
+- AI.ActivityFailed
+- AI.UsageRecorded
+
+AI Platform Core source-of-truth records are:
+
+- AI Activity
+- Prompt
+- Prompt Version
+- Workflow
+- Agent
+- Tool
+- Knowledge
+- Usage
+- Cost
+- Evaluation
 - Event
+
+External references accepted for tracking context are:
+
+- workspaceId
+- projectId
+- professionalStudioType
+- customerId
+- sessionId
+- documentId
+- reservationId
+
+Customer source of truth belongs to Growth Engine. Session and Document source
+of truth belongs to Professional Studio. AI Platform Core may store IDs for
+usage attribution but must not own Customer, Session, Document, CRM, reservation,
+commerce payment, or PDF layout records.
 
 AI Platform Core must not interpret the business meaning of Session. Numeria
 Studio can treat Session as a fortune-telling session, FP Studio as a meeting,
 and Coach Studio as a coaching session. AI Platform Core only records and
 executes AI Activities.
+
+## Privacy And Retention
+
+AI Platform Core must minimize personal information and content retention:
+
+- Do not receive personal data that is unnecessary for the capability.
+- Treat Customer as an external reference ID.
+- Do not persist prompt text or consultation text unconditionally.
+- Configure storage policies per capability.
+- Mask sensitive information in logs.
+- Separate Usage records from content records.
+- Make retention periods configurable.
+
+## Billing Boundary
+
+AI Platform Core billing means AI Usage Billing only: internal AI cost, token
+usage, plan quotas, and additional AI credit tracking.
+
+Growth Engine billing means Commerce Payment: expert-to-end-customer charges,
+service menus, product payments, refunds, and sales records.
 
 ## Dashboard
 

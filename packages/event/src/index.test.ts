@@ -4,7 +4,9 @@ import {
   createEventBus,
   createEventDispatcher,
   createMemoryEventStore,
+  getPlatformIntegrationEventCategory,
   platformIntegrationEventTypes,
+  type PlatformEventEnvelope,
   type PlatformIntegrationEvent
 } from "./index.js";
 
@@ -41,6 +43,34 @@ describe("event", () => {
     expect(platformIntegrationEventTypes).toContain("Lead.Created");
     expect(platformIntegrationEventTypes).toContain("Payment.Completed");
     expect(seen).toEqual(["Session.Completed"]);
+  });
+
+  it("classifies business and AI activity integration events", () => {
+    expect(platformIntegrationEventTypes).toContain("Content.BriefRequested");
+    expect(platformIntegrationEventTypes).toContain("AI.ActivityCompleted");
+    expect(getPlatformIntegrationEventCategory("Payment.Completed")).toBe("business");
+    expect(getPlatformIntegrationEventCategory("AI.ActivityCompleted")).toBe("ai-activity");
+  });
+
+  it("supports platform event envelope metadata", () => {
+    const envelope: PlatformEventEnvelope<{ readonly activityId: string; readonly customerId: string }> = {
+      eventId: "event-1",
+      eventType: "AI.ActivityCompleted",
+      eventVersion: 1,
+      occurredAt: new Date("2026-01-01T00:00:00.000Z"),
+      workspaceId: "workspace-1",
+      producer: "ai-platform-core",
+      correlationId: "correlation-1",
+      causationId: "causation-1",
+      subjectType: "AIActivity",
+      subjectId: "activity-1",
+      partitionKey: "workspace-1",
+      category: "ai-activity",
+      payload: { activityId: "activity-1", customerId: "customer-1" }
+    };
+
+    expect(envelope.eventVersion).toBe(1);
+    expect(envelope.payload.customerId).toBe("customer-1");
   });
 
   it("unsubscribes event subscribers", async () => {

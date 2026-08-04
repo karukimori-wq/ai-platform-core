@@ -60,9 +60,12 @@ export {
   type EventBus,
   type EventDispatcher,
   type EventStore,
+  type PlatformIntegrationEvent,
+  type PlatformIntegrationEventType,
   createEventBus,
   createEventDispatcher,
-  createMemoryEventStore
+  createMemoryEventStore,
+  platformIntegrationEventTypes
 } from "@ai-platform-core/event";
 export {
   type AIGateway,

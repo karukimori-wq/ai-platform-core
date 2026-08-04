@@ -1,5 +1,34 @@
 import { type Result, type UUID, ok } from "@ai-platform-core/kernel";
 
+export type PlatformIntegrationEventType =
+  | "Lead.Created"
+  | "Lead.Qualified"
+  | "Customer.Created"
+  | "Reservation.Created"
+  | "Reservation.Cancelled"
+  | "Session.Started"
+  | "Session.Completed"
+  | "Document.Generated"
+  | "Payment.Completed"
+  | "Followup.Created"
+  | "Review.Requested"
+  | "Repeat.Booked";
+
+export const platformIntegrationEventTypes = [
+  "Lead.Created",
+  "Lead.Qualified",
+  "Customer.Created",
+  "Reservation.Created",
+  "Reservation.Cancelled",
+  "Session.Started",
+  "Session.Completed",
+  "Document.Generated",
+  "Payment.Completed",
+  "Followup.Created",
+  "Review.Requested",
+  "Repeat.Booked"
+] as const satisfies readonly PlatformIntegrationEventType[];
+
 export interface DomainEvent<TPayload extends Readonly<Record<string, unknown>> = Readonly<Record<string, unknown>>> {
   readonly id: UUID;
   readonly type: string;
@@ -9,6 +38,12 @@ export interface DomainEvent<TPayload extends Readonly<Record<string, unknown>> 
   readonly payload: TPayload;
   readonly metadata: Readonly<Record<string, unknown>>;
 }
+
+export type PlatformIntegrationEvent<
+  TPayload extends Readonly<Record<string, unknown>> = Readonly<Record<string, unknown>>
+> = DomainEvent<TPayload> & {
+  readonly type: PlatformIntegrationEventType;
+};
 
 export interface EventStore {
   readonly append: (events: readonly DomainEvent[]) => Promise<Result<void>>;

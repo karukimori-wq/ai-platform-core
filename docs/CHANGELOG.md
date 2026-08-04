@@ -206,3 +206,8 @@
 - Added platform event envelope, event category, delivery state, schema validation, retry, and dead-letter contracts.
 - Clarified that Customer, Session, Document, reservation, commerce payment, SNS Planner, and business orchestration are outside AI Platform Core ownership.
 - Documented capability-first application integration, AI Usage Billing boundaries, and privacy-minimized external context references.
+
+## 0.1.31
+
+- Added local contracts and integration docs that reference `professional-platform-contracts` as the source of truth.
+- Documented AI Platform Core repository obligations for shared boundaries, APIs, events, capabilities, privacy, and SNS Planner integration.

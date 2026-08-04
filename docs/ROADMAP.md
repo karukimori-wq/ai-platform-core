@@ -229,3 +229,11 @@
 - Event subscription handles and unsubscribe support
 - Filtered EventStore reads for aggregate, type, and time windows
 - SDK exports for publisher, subscriber registry, subscription, and query contracts
+
+## v0.1.30 Growth Engine Boundary Alignment
+
+- API/Event separation for synchronous operations and asynchronous state changes
+- Business Event and AI Activity Event separation
+- Expanded event names and event envelope contracts
+- Capability-first integration for Professional Studio and Growth Engine AI calls
+- AI Usage Billing, privacy, and external reference boundaries

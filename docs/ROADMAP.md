@@ -217,3 +217,9 @@
 
 - PlatformRuntime options for injected runtime dependencies
 - Custom Analytics repository wiring for Gateway and Dashboard
+
+## v0.1.28 Professional Studio Event Boundary
+
+- Shared integration event type names for Growth Engine and Professional Studio.
+- AI Platform Core responsibility boundary documentation.
+- SDK exposure for Professional Studio integration events.

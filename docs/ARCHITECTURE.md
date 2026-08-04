@@ -51,6 +51,13 @@ cross-application calls. AI Platform Core owns generic event primitives and the
 shared integration event names, but it does not interpret professional-domain
 meaning.
 
+The Event Engine boundary is adapter-ready:
+
+- `EventPublisher` publishes events.
+- `EventSubscriberRegistry` registers and unregisters subscribers.
+- `EventStore` appends events and supports filtered reads by aggregate, type, and time.
+- Memory implementations are default infrastructure; external brokers and stores must implement the same interfaces.
+
 Initial integration events:
 
 - `Lead.Created`

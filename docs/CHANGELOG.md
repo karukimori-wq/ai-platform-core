@@ -192,3 +192,9 @@
 - Added shared Professional Studio integration event types.
 - Documented AI Platform Core as the common AI foundation below Professional Studio.
 - Clarified that Growth Engine and Professional Studio business logic is outside AI Platform Core.
+
+## 0.1.29
+
+- Added Event Engine subscription handles and unsubscribe support.
+- Added filtered EventStore queries by aggregate, event type, and occurrence time.
+- Exposed EventPublisher, EventSubscriberRegistry, EventSubscription, and EventQuery through the SDK.

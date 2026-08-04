@@ -114,7 +114,7 @@ export {
   createOpenAICompatibleProvider,
   createProviderRegistry
 } from "@ai-platform-core/provider";
-export { type PlatformRuntime, createPlatformRuntime } from "@ai-platform-core/runtime";
+export { type PlatformRuntime, type PlatformRuntimeOptions, createPlatformRuntime } from "@ai-platform-core/runtime";
 export {
   type SecretReader,
   type SecretStore,

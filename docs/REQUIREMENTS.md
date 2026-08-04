@@ -17,7 +17,29 @@ The original requirements were directionally strong, but implementation would dr
 
 ## Purpose
 
-AI Platform Core is not a framework for a single AI application. It is a common platform for managing, observing, analyzing, and eventually optimizing AI Activities across Web applications, bots, assistants, CLIs, APIs, AI employees, and future AI services.
+AI Platform Core is not a framework for a single AI application. It is the
+common AI foundation used by Professional Studio applications. Professional
+Studio modules, such as Numeria Studio, FP Studio, Coach Studio, Marriage
+Studio, and Counselor Studio, should be replaceable without changing AI
+Platform Core.
+
+The target architecture is:
+
+```text
+Growth Engine
+lead generation and sales
+
+Professional Studio
+customer work, sessions, and documents
+
+AI Platform Core
+common AI foundation
+```
+
+AI Platform Core owns AI Runtime, Prompt Engine, Knowledge Engine, Usage Engine,
+Billing-ready usage records, and Event Engine primitives. It must not own
+customer management, SNS, LINE, reservations, sales, payments, PDF layout, or
+professional-domain business logic.
 
 The platform's core value is to turn AI usage into an asset:
 
@@ -34,9 +56,11 @@ The platform's core value is to turn AI usage into an asset:
 ## Principles
 
 - Platform First: no application-specific business logic.
+- AI Foundation First: provide AI capabilities for replaceable Professional Studio modules.
 - AI Activity First: the managed unit is an AI Activity.
 - Capability First: every executable feature is represented as a Capability.
 - Event First: important changes must be representable as Events.
+- Event Integration First: Growth Engine and Professional Studio integrations should use publish/subscribe events.
 - Gateway First: all AI usage must pass through the AI Gateway.
 - Human Approval: AI proposes; humans decide.
 - Learning Ready: MVP must be extendable toward learning, but not implement learning.
@@ -178,6 +202,42 @@ Initial Activity events:
 
 The memory runtime stores these events through EventStore. Future infrastructure adapters can replace the memory EventStore with PostgreSQL, Redis, Kafka, or another event backend without changing the Activity contract.
 
+## Integration Events
+
+Growth Engine, Professional Studio, and other systems should coordinate through
+Event Publish / Subscribe instead of direct cross-application API calls.
+
+AI Platform Core owns the event infrastructure and shared event names. It does
+not own the domain records behind these events.
+
+Initial shared integration events:
+
+- Lead.Created
+- Lead.Qualified
+- Customer.Created
+- Reservation.Created
+- Reservation.Cancelled
+- Session.Started
+- Session.Completed
+- Document.Generated
+- Payment.Completed
+- Followup.Created
+- Review.Requested
+- Repeat.Booked
+
+Professional Studio concepts are:
+
+- Customer
+- Session
+- Document
+- AI Request
+- Event
+
+AI Platform Core must not interpret the business meaning of Session. Numeria
+Studio can treat Session as a fortune-telling session, FP Studio as a meeting,
+and Coach Studio as a coaching session. AI Platform Core only records and
+executes AI Activities.
+
 ## Dashboard
 
 Dashboard queries must be API-ready and UI-agnostic.
@@ -245,6 +305,8 @@ Initial dashboard queries:
 | Knowledge boundary | Gateway must not attach Knowledge records outside the client manifest allowlist. |
 | Budget boundary | Gateway must enforce both per-Activity budget and Client Manifest monthly budget. |
 | Provider resilience | Gateway retry and fallback behavior must be configurable without changing client request contracts. |
+| System boundary | AI Platform Core must not introduce Growth Engine or Professional Studio business logic. |
+| Exchangeability | New Professional Studio modules must integrate through stable AI and event contracts. |
 
 ## Not Included In MVP
 
@@ -258,6 +320,12 @@ Initial dashboard queries:
 - Blueprint system
 - Development platform
 - GitHub connector
+- Customer management
+- SNS and LINE operations
+- Reservation management
+- Sales and payment processing
+- PDF layout and document design
+- Professional-domain business logic
 - AI employee management
 - Knowledge Graph
 - Pattern Engine

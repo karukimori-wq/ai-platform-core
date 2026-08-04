@@ -212,3 +212,8 @@
 
 - Storage-backed Analytics repository for durable usage records
 - SDK factory for wiring persistent application storage
+
+## v0.1.27 Runtime Dependency Injection
+
+- PlatformRuntime options for injected runtime dependencies
+- Custom Analytics repository wiring for Gateway and Dashboard

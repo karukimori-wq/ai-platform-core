@@ -3,31 +3,71 @@ import { type Result, type UUID, err, ok, platformError } from "@ai-platform-cor
 export type PlatformIntegrationEventType =
   | "Lead.Created"
   | "Lead.Qualified"
+  | "Lead.Updated"
   | "Customer.Created"
+  | "Customer.Updated"
+  | "Campaign.Created"
+  | "Content.BriefRequested"
+  | "Content.DraftCreated"
+  | "Content.Published"
+  | "Reservation.Requested"
   | "Reservation.Created"
+  | "Reservation.Confirmed"
   | "Reservation.Cancelled"
   | "Session.Started"
   | "Session.Completed"
   | "Document.Generated"
   | "Payment.Completed"
+  | "Payment.Refunded"
+  | "Followup.Scheduled"
   | "Followup.Created"
+  | "Followup.Completed"
   | "Review.Requested"
-  | "Repeat.Booked";
+  | "Referral.Created"
+  | "Repeat.Booked"
+  | "Professional.RecommendationCreated"
+  | "AI.ActivityStarted"
+  | "AI.ActivityCompleted"
+  | "AI.ActivityFailed"
+  | "AI.UsageRecorded";
 
 export const platformIntegrationEventTypes = [
   "Lead.Created",
   "Lead.Qualified",
+  "Lead.Updated",
   "Customer.Created",
+  "Customer.Updated",
+  "Campaign.Created",
+  "Content.BriefRequested",
+  "Content.DraftCreated",
+  "Content.Published",
+  "Reservation.Requested",
   "Reservation.Created",
+  "Reservation.Confirmed",
   "Reservation.Cancelled",
   "Session.Started",
   "Session.Completed",
   "Document.Generated",
   "Payment.Completed",
+  "Payment.Refunded",
+  "Followup.Scheduled",
   "Followup.Created",
+  "Followup.Completed",
   "Review.Requested",
-  "Repeat.Booked"
+  "Referral.Created",
+  "Repeat.Booked",
+  "Professional.RecommendationCreated",
+  "AI.ActivityStarted",
+  "AI.ActivityCompleted",
+  "AI.ActivityFailed",
+  "AI.UsageRecorded"
 ] as const satisfies readonly PlatformIntegrationEventType[];
+
+export type EventCategory = "business" | "ai-activity";
+
+export const getPlatformIntegrationEventCategory = (
+  eventType: PlatformIntegrationEventType
+): EventCategory => eventType.startsWith("AI.") ? "ai-activity" : "business";
 
 export interface DomainEvent<TPayload extends Readonly<Record<string, unknown>> = Readonly<Record<string, unknown>>> {
   readonly id: UUID;
@@ -39,11 +79,58 @@ export interface DomainEvent<TPayload extends Readonly<Record<string, unknown>> 
   readonly metadata: Readonly<Record<string, unknown>>;
 }
 
+export interface PlatformEventEnvelope<
+  TPayload extends Readonly<Record<string, unknown>> = Readonly<Record<string, unknown>>
+> {
+  readonly eventId: string;
+  readonly eventType: PlatformIntegrationEventType;
+  readonly eventVersion: number;
+  readonly occurredAt: Date;
+  readonly workspaceId: string;
+  readonly producer: string;
+  readonly correlationId: string;
+  readonly causationId?: string;
+  readonly subjectType: string;
+  readonly subjectId: string;
+  readonly partitionKey?: string;
+  readonly category: EventCategory;
+  readonly payload: TPayload;
+}
+
 export type PlatformIntegrationEvent<
   TPayload extends Readonly<Record<string, unknown>> = Readonly<Record<string, unknown>>
 > = DomainEvent<TPayload> & {
   readonly type: PlatformIntegrationEventType;
 };
+
+export type EventDeliveryStatus = "pending" | "processing" | "succeeded" | "failed" | "dead-lettered";
+
+export interface EventConsumerState {
+  readonly consumerId: string;
+  readonly eventId: string;
+  readonly status: EventDeliveryStatus;
+  readonly attempts: number;
+  readonly lastError?: string;
+  readonly updatedAt: Date;
+}
+
+export interface DeadLetterEvent {
+  readonly event: DomainEvent;
+  readonly consumerId: string;
+  readonly reason: string;
+  readonly failedAt: Date;
+  readonly attempts: number;
+}
+
+export interface EventSchemaValidator {
+  readonly validate: (event: PlatformEventEnvelope) => Result<void>;
+}
+
+export interface EventDeliveryPolicy {
+  readonly maxAttempts: number;
+  readonly retryDelayMs: number;
+  readonly deadLetterAfterAttempts: number;
+}
 
 export interface EventStore {
   readonly append: (events: readonly DomainEvent[]) => Promise<Result<void>>;

@@ -47,6 +47,25 @@ export const handlePlatformRequest = createPlatformHttpHandler(runtime, {
 });
 ```
 
+For durable usage records, pass a storage-backed Analytics repository into the
+runtime:
+
+```ts
+import {
+  createMemoryKeyValueStore,
+  createPlatform,
+  createStoredAnalyticsRepository
+} from "@ai-platform-core/sdk";
+
+const analytics = createStoredAnalyticsRepository({
+  usage: createMemoryKeyValueStore(),
+  outcomes: createMemoryKeyValueStore(),
+  feedback: createMemoryKeyValueStore()
+});
+
+const runtime = createPlatform({ analytics });
+```
+
 ## Request Shape
 
 ```http

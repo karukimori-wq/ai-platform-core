@@ -223,3 +223,9 @@
 - Shared integration event type names for Growth Engine and Professional Studio
 - AI Platform Core responsibility boundary documentation
 - SDK exposure for Professional Studio integration events
+
+## v0.1.29 Event Adapter Boundary
+
+- Event subscription handles and unsubscribe support
+- Filtered EventStore reads for aggregate, type, and time windows
+- SDK exports for publisher, subscriber registry, subscription, and query contracts

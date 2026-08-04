@@ -237,3 +237,9 @@
 - Expanded event names and event envelope contracts
 - Capability-first integration for Professional Studio and Growth Engine AI calls
 - AI Usage Billing, privacy, and external reference boundaries
+
+## v0.1.31 Contracts Repository Adoption
+
+- Local AI Platform Core contracts reference document
+- Local AI Platform Core integration guide
+- Explicit dependency on `professional-platform-contracts` as shared source of truth

@@ -186,3 +186,9 @@
 
 - Added PlatformRuntime dependency injection options.
 - Allowed custom Analytics repositories to back Gateway recording and Dashboard queries.
+
+## 0.1.28
+
+- Added shared Professional Studio integration event types.
+- Documented AI Platform Core as the common AI foundation below Professional Studio.
+- Clarified that Growth Engine and Professional Studio business logic is outside AI Platform Core.

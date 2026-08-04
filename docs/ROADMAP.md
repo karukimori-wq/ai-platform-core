@@ -220,6 +220,6 @@
 
 ## v0.1.28 Professional Studio Event Boundary
 
-- Shared integration event type names for Growth Engine and Professional Studio.
-- AI Platform Core responsibility boundary documentation.
-- SDK exposure for Professional Studio integration events.
+- Shared integration event type names for Growth Engine and Professional Studio
+- AI Platform Core responsibility boundary documentation
+- SDK exposure for Professional Studio integration events

@@ -370,4 +370,60 @@ describe("gateway http handler", () => {
     expect(body.activity.input).toBeUndefined();
     expect(body.activity.context).toBeUndefined();
   });
+
+  it("registers capability manifests through a scoped HTTP endpoint", async () => {
+    const runtime = createPlatformRuntime();
+    const closedHandler = createPlatformHttpHandler(runtime);
+    const handler = createPlatformHttpHandler(runtime, {
+      authorizeUsageRequest: (_request, clientId) => clientId === "platform_admin"
+    });
+    const body = {
+      id: "Report.Generate",
+      name: "Generate Report",
+      description: "Generate a report.",
+      permission: "report.generate",
+      input: "json",
+      output: "json"
+    };
+
+    const hidden = await closedHandler(new Request("https://example.com/v1/capabilities?client=platform_admin", {
+      method: "POST",
+      body: JSON.stringify(body)
+    }));
+    const forbidden = await handler(new Request("https://example.com/v1/capabilities?client=other_client", {
+      method: "POST",
+      body: JSON.stringify(body)
+    }));
+    const invalid = await handler(new Request("https://example.com/v1/capabilities?client=platform_admin", {
+      method: "POST",
+      body: JSON.stringify({ id: "Report.Generate" })
+    }));
+    const response = await handler(new Request("https://example.com/v1/capabilities?client=platform_admin", {
+      method: "POST",
+      body: JSON.stringify(body)
+    }));
+    const method = await handler(new Request("https://example.com/v1/capabilities?client=platform_admin"));
+    const responseBody = await response.json() as Readonly<{
+      ok: boolean;
+      capability: Readonly<Record<string, unknown>>;
+    }>;
+    const registered = runtime.registry.get("Report.Generate");
+    const executed = await runtime.capability.execute("Report.Generate", {}, {
+      actorId: "platform_admin",
+      permissions: ["report.generate"],
+      metadata: {}
+    });
+
+    expect(hidden.status).toBe(404);
+    expect(forbidden.status).toBe(403);
+    expect(invalid.status).toBe(400);
+    expect(response.status).toBe(201);
+    expect(method.status).toBe(405);
+    expect(responseBody.ok).toBe(true);
+    expect(responseBody.capability).toMatchObject(body);
+    expect(registered.ok).toBe(true);
+    expect(executed.ok).toBe(false);
+    if (executed.ok) return;
+    expect(executed.error.code).toBe("CAPABILITY_HTTP_MANIFEST_ONLY");
+  });
 });

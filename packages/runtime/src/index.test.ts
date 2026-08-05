@@ -6,6 +6,7 @@ import { createMemoryKeyValueStore } from "@ai-platform-core/storage";
 import {
   createMemoryPromptTemplateRepository,
   createPlatformRuntime,
+  createPromptBackedCapability,
   createPromptTemplateRuntime,
   createStoredPromptTemplateRepository
 } from "./index";
@@ -147,5 +148,61 @@ describe("platform runtime", () => {
     expect(rendered.ok).toBe(true);
     if (!rendered.ok) return;
     expect(rendered.value).toEqual({ templateId: "report", version: 1, rendered: "Report A" });
+  });
+
+  it("executes a prompt-backed capability through gateway and records usage", async () => {
+    const runtime = createPlatformRuntime();
+    runtime.clients.register({
+      id: "numeria-studio",
+      name: "Numeria Studio",
+      type: "web",
+      version: "0.1.0",
+      provider: "echo",
+      defaultModel: "echo-report-v1",
+      capabilities: ["Report.Generate"],
+      knowledge: [],
+      analytics: true
+    });
+    await runtime.prompt.register({
+      id: "report.generate",
+      version: 1,
+      body: "Create report for life path {{lifePath}}.",
+      retention: "metadata"
+    });
+    runtime.registry.register(createPromptBackedCapability(runtime, {
+      id: "Report.Generate",
+      name: "Generate report",
+      description: "Generates a report draft from a managed prompt template.",
+      permission: "Report.Generate",
+      input: "Prompt template variables.",
+      output: "AI activity result.",
+      templateId: "report.generate",
+      goal: "Generate a report draft.",
+      workflow: "numeria.report"
+    }));
+
+    const result = await runtime.capability.execute("Report.Generate", { lifePath: 7 }, {
+      actorId: "numeria-studio",
+      permissions: ["Report.Generate"],
+      metadata: {
+        workspaceId: "workspace_1",
+        userId: "user_1"
+      }
+    });
+    const usage = await runtime.analytics.listUsage();
+
+    expect(result.ok).toBe(true);
+    expect(usage.ok).toBe(true);
+    if (!usage.ok) return;
+    expect(usage.value).toHaveLength(1);
+    expect(usage.value[0]).toMatchObject({
+      client: "numeria-studio",
+      workspaceId: "workspace_1",
+      userId: "user_1",
+      capability: "Report.Generate",
+      workflow: "numeria.report",
+      provider: "echo",
+      model: "echo-report-v1"
+    });
   });
 });

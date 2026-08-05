@@ -247,6 +247,12 @@
 - `professionalId` kept as a future extension concept
 - Workspace and user scoped usage filtering
 
+## v0.1.36 Dashboard Workspace/User Scope
+
+- Dashboard grouping by workspace
+- Dashboard grouping by signed-in user
+- Dashboard filtering by `workspaceId + userId`
+
 ## v0.1.28 Professional Studio Event Boundary
 
 - Shared integration event type names for Growth Engine and Professional Studio

@@ -61,6 +61,8 @@ export {
   type EventBus,
   type EventCategory,
   type EventConsumerState,
+  type EventAuditAction,
+  type EventAuditRecord,
   type EventDeliveryPolicy,
   type EventDeliveryStatus,
   type EventDispatcher,
@@ -79,6 +81,7 @@ export {
   createEventBus,
   createEventDispatcher,
   createMemoryEventStore,
+  createPlatformEventEnvelopeValidator,
   defaultEventDeliveryPolicy,
   getPlatformIntegrationEventCategory,
   platformIntegrationEventTypes

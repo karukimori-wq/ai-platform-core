@@ -11,6 +11,7 @@ export interface GatewayHttpHandlerOptions {
 export interface PlatformHttpHandlerOptions {
   readonly gatewayRunRoute?: string;
   readonly analyticsUsageRoute?: string;
+  readonly dashboardUsageRoute?: string;
   readonly authorizeUsageRequest?: (request: Request, clientId: string) => Promise<boolean> | boolean;
 }
 
@@ -161,6 +162,24 @@ const readUsagePeriod = (url: URL): UsageHttpPeriod | PlatformError => {
     : platformError("HTTP_INVALID_QUERY", "Query parameter 'period' must be today, month, year, or all.");
 };
 
+const authorizeScopedRead = async (
+  request: Request,
+  url: URL,
+  authorize: PlatformHttpHandlerOptions["authorizeUsageRequest"]
+): Promise<{ readonly client: string } | Response> => {
+  if (authorize === undefined) {
+    return errorResponse(404, platformError("HTTP_NOT_FOUND", `Route '${url.pathname}' was not found.`));
+  }
+  const client = readSearchString(url, "client");
+  if (client === undefined) {
+    return errorResponse(400, platformError("HTTP_INVALID_QUERY", "Query parameter 'client' is required."));
+  }
+  if (!await authorize(request, client)) {
+    return errorResponse(403, platformError("HTTP_FORBIDDEN", "Client usage queries must be scoped to the caller."));
+  }
+  return { client };
+};
+
 const startOfDay = (date: Date): Date => new Date(date.getFullYear(), date.getMonth(), date.getDate());
 const startOfMonth = (date: Date): Date => new Date(date.getFullYear(), date.getMonth(), 1);
 const startOfYear = (date: Date): Date => new Date(date.getFullYear(), 0, 1);
@@ -197,16 +216,9 @@ const listUsage = async (
   url: URL,
   authorize: PlatformHttpHandlerOptions["authorizeUsageRequest"]
 ): Promise<Response> => {
-  if (authorize === undefined) {
-    return errorResponse(404, platformError("HTTP_NOT_FOUND", `Route '${url.pathname}' was not found.`));
-  }
-  const client = readSearchString(url, "client");
-  if (client === undefined) {
-    return errorResponse(400, platformError("HTTP_INVALID_QUERY", "Query parameter 'client' is required."));
-  }
-  if (!await authorize(request, client)) {
-    return errorResponse(403, platformError("HTTP_FORBIDDEN", "Client usage queries must be scoped to the caller."));
-  }
+  const scopedRead = await authorizeScopedRead(request, url, authorize);
+  if (scopedRead instanceof Response) return scopedRead;
+  const { client } = scopedRead;
   const period = readUsagePeriod(url);
   if (isPlatformError(period)) return errorResponse(400, period);
   const usage = await runtime.analytics.listUsage();
@@ -245,6 +257,27 @@ const listUsage = async (
   });
 };
 
+const getDashboardUsage = async (
+  runtime: PlatformRuntime,
+  request: Request,
+  url: URL,
+  authorize: PlatformHttpHandlerOptions["authorizeUsageRequest"]
+): Promise<Response> => {
+  const scopedRead = await authorizeScopedRead(request, url, authorize);
+  if (scopedRead instanceof Response) return scopedRead;
+  const period = readUsagePeriod(url);
+  if (isPlatformError(period)) return errorResponse(400, period);
+  const workspaceId = readSearchString(url, "workspaceId");
+  const userId = readSearchString(url, "userId");
+  const view = await runtime.dashboard.getView({
+    client: scopedRead.client,
+    period,
+    ...(workspaceId === undefined ? {} : { workspaceId }),
+    ...(userId === undefined ? {} : { userId })
+  });
+  return view.ok ? jsonResponse(200, { ok: true, view: view.value }) : errorResponse(400, view.error);
+};
+
 export const createGatewayHttpHandler = (
   runtime: PlatformRuntime,
   options: GatewayHttpHandlerOptions = {}
@@ -271,6 +304,7 @@ export const createPlatformHttpHandler = (
 ): ((request: Request) => Promise<Response>) => {
   const gatewayRunRoute = options.gatewayRunRoute ?? "/v1/gateway/run";
   const analyticsUsageRoute = options.analyticsUsageRoute ?? "/v1/analytics/usage";
+  const dashboardUsageRoute = options.dashboardUsageRoute ?? "/v1/dashboard/usage";
   return async (request) => {
     const url = new URL(request.url);
     if (url.pathname === gatewayRunRoute) {
@@ -279,6 +313,11 @@ export const createPlatformHttpHandler = (
     if (url.pathname === analyticsUsageRoute) {
       return request.method === "GET"
         ? listUsage(runtime, request, url, options.authorizeUsageRequest)
+        : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only GET is supported."));
+    }
+    if (url.pathname === dashboardUsageRoute) {
+      return request.method === "GET"
+        ? getDashboardUsage(runtime, request, url, options.authorizeUsageRequest)
         : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only GET is supported."));
     }
     return errorResponse(404, platformError("HTTP_NOT_FOUND", `Route '${url.pathname}' was not found.`));

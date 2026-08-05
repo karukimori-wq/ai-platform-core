@@ -140,4 +140,68 @@ describe("gateway http handler", () => {
     expect(body.summary.byProvider.echo?.usageCount).toBe(1);
     expect(body.summary.byModel["echo-report-v1"]?.usageCount).toBe(1);
   });
+
+  it("returns scoped dashboard usage views", async () => {
+    const runtime = createPlatformRuntime();
+    runtime.clients.register({
+      id: "fortune_teller_a",
+      name: "Fortune Teller A",
+      type: "web",
+      version: "0.1.0",
+      provider: "echo",
+      defaultModel: "echo-report-v1",
+      capabilities: ["report.generate"],
+      knowledge: [],
+      analytics: true
+    });
+    const handler = createPlatformHttpHandler(runtime, {
+      authorizeUsageRequest: (_request, clientId) => clientId === "fortune_teller_a"
+    });
+
+    await handler(new Request("https://example.com/v1/gateway/run", {
+      method: "POST",
+      body: JSON.stringify({
+        auth: { clientId: "fortune_teller_a", permissions: ["report.generate"] },
+        activity: {
+          client: "fortune_teller_a",
+          workspaceId: "workspace-numeria-a",
+          userId: "user-fortune-teller-a",
+          capability: "report.generate",
+          goal: "Create a report.",
+          context: { app: "Numeria Studio" },
+          input: { lifePath: 7 }
+        },
+        messages: [{ role: "user", content: "Draft a report." }]
+      })
+    }));
+
+    const hidden = await createPlatformHttpHandler(runtime)(
+      new Request("https://example.com/v1/dashboard/usage?client=fortune_teller_a")
+    );
+    const forbidden = await handler(new Request("https://example.com/v1/dashboard/usage?client=other_client"));
+    const invalid = await handler(new Request("https://example.com/v1/dashboard/usage?client=fortune_teller_a&period=week"));
+    const response = await handler(new Request("https://example.com/v1/dashboard/usage?client=fortune_teller_a&period=month&workspaceId=workspace-numeria-a&userId=user-fortune-teller-a"));
+    const body = await response.json() as Readonly<{
+      ok: boolean;
+      view: Readonly<{
+        period: string;
+        metric: Readonly<{ usageCount: number; totalTokens: number }>;
+        byClient: Readonly<Record<string, Readonly<{ usageCount: number }>>>;
+        byWorkspace: Readonly<Record<string, Readonly<{ usageCount: number }>>>;
+        byUser: Readonly<Record<string, Readonly<{ usageCount: number }>>>;
+      }>;
+    }>;
+
+    expect(hidden.status).toBe(404);
+    expect(forbidden.status).toBe(403);
+    expect(invalid.status).toBe(400);
+    expect(response.status).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(body.view.period).toBe("month");
+    expect(body.view.metric.usageCount).toBe(1);
+    expect(body.view.metric.totalTokens).toBeGreaterThan(0);
+    expect(body.view.byClient.fortune_teller_a?.usageCount).toBe(1);
+    expect(body.view.byWorkspace["workspace-numeria-a"]?.usageCount).toBe(1);
+    expect(body.view.byUser["user-fortune-teller-a"]?.usageCount).toBe(1);
+  });
 });

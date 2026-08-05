@@ -5,6 +5,9 @@ import type { KeyValueStore } from "@ai-platform-core/storage";
 export interface UsageRecord {
   readonly activityId: string;
   readonly client: string;
+  readonly workspaceId?: string;
+  readonly userId?: string;
+  readonly ownerUserId?: string;
   readonly capability: string;
   readonly workflow?: string;
   readonly provider: string;
@@ -24,6 +27,8 @@ export interface AnalyticsSummary {
   readonly totalCost: number;
   readonly averageLatencyMs: number;
   readonly byClient: Readonly<Record<string, number>>;
+  readonly byWorkspace: Readonly<Record<string, number>>;
+  readonly byUser: Readonly<Record<string, number>>;
   readonly byCapability: Readonly<Record<string, number>>;
   readonly byProvider: Readonly<Record<string, number>>;
   readonly byModel: Readonly<Record<string, number>>;
@@ -42,6 +47,9 @@ export interface AnalyticsRepository {
 interface StoredUsageRecord extends Readonly<Record<string, unknown>> {
   readonly activityId: string;
   readonly client: string;
+  readonly workspaceId?: string;
+  readonly userId?: string;
+  readonly ownerUserId?: string;
   readonly capability: string;
   readonly workflow?: string;
   readonly provider: string;
@@ -83,6 +91,8 @@ const summarizeUsage = (usage: readonly UsageRecord[]): AnalyticsSummary => {
     totalCost: usage.reduce((sum, record) => sum + record.costAmount, 0),
     averageLatencyMs: usage.length === 0 ? 0 : latencyTotal / usage.length,
     byClient: usage.reduce((acc, record) => increment(acc, record.client), {}),
+    byWorkspace: usage.reduce((acc, record) => record.workspaceId === undefined ? acc : increment(acc, record.workspaceId), {}),
+    byUser: usage.reduce((acc, record) => record.userId === undefined ? acc : increment(acc, record.userId), {}),
     byCapability: usage.reduce((acc, record) => increment(acc, record.capability), {}),
     byProvider: usage.reduce((acc, record) => increment(acc, record.provider), {}),
     byModel: usage.reduce((acc, record) => increment(acc, record.model), {})
@@ -92,7 +102,14 @@ const summarizeUsage = (usage: readonly UsageRecord[]): AnalyticsSummary => {
 export const createUsageRecord = (
   activity: {
     readonly id: { readonly value: string };
-    readonly request: { readonly client: string; readonly capability: string; readonly workflow?: string };
+    readonly request: {
+      readonly client: string;
+      readonly workspaceId?: string;
+      readonly userId?: string;
+      readonly ownerUserId?: string;
+      readonly capability: string;
+      readonly workflow?: string;
+    };
   },
   result: ActivityResult,
   occurredAt: Date
@@ -111,7 +128,10 @@ export const createUsageRecord = (
     latencyMs: result.latencyMs,
     occurredAt
   };
-  return activity.request.workflow === undefined ? base : { ...base, workflow: activity.request.workflow };
+  const withWorkspace = activity.request.workspaceId === undefined ? base : { ...base, workspaceId: activity.request.workspaceId };
+  const withUser = activity.request.userId === undefined ? withWorkspace : { ...withWorkspace, userId: activity.request.userId };
+  const withOwner = activity.request.ownerUserId === undefined ? withUser : { ...withUser, ownerUserId: activity.request.ownerUserId };
+  return activity.request.workflow === undefined ? withOwner : { ...withOwner, workflow: activity.request.workflow };
 };
 
 export const createMemoryAnalyticsRepository = (): AnalyticsRepository => {
@@ -153,7 +173,10 @@ const toStoredUsageRecord = (usage: UsageRecord): StoredUsageRecord => {
     latencyMs: usage.latencyMs,
     occurredAt: usage.occurredAt.toISOString()
   };
-  return usage.workflow === undefined ? base : { ...base, workflow: usage.workflow };
+  const withWorkspace = usage.workspaceId === undefined ? base : { ...base, workspaceId: usage.workspaceId };
+  const withUser = usage.userId === undefined ? withWorkspace : { ...withWorkspace, userId: usage.userId };
+  const withOwner = usage.ownerUserId === undefined ? withUser : { ...withUser, ownerUserId: usage.ownerUserId };
+  return usage.workflow === undefined ? withOwner : { ...withOwner, workflow: usage.workflow };
 };
 
 const fromStoredUsageRecord = (usage: StoredUsageRecord): UsageRecord => {
@@ -171,7 +194,10 @@ const fromStoredUsageRecord = (usage: StoredUsageRecord): UsageRecord => {
     latencyMs: usage.latencyMs,
     occurredAt: new Date(usage.occurredAt)
   };
-  return usage.workflow === undefined ? base : { ...base, workflow: usage.workflow };
+  const withWorkspace = usage.workspaceId === undefined ? base : { ...base, workspaceId: usage.workspaceId };
+  const withUser = usage.userId === undefined ? withWorkspace : { ...withWorkspace, userId: usage.userId };
+  const withOwner = usage.ownerUserId === undefined ? withUser : { ...withUser, ownerUserId: usage.ownerUserId };
+  return usage.workflow === undefined ? withOwner : { ...withOwner, workflow: usage.workflow };
 };
 
 const toStoredActivityOutcome = (outcome: ActivityOutcome): StoredActivityOutcome => {

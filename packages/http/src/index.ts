@@ -116,11 +116,17 @@ const parseGatewayRunBody = (value: unknown): GatewayRunHttpBody | PlatformError
   }
 
   const workflow = readString(activity, "workflow");
+  const workspaceId = readString(activity, "workspaceId");
+  const userId = readString(activity, "userId");
+  const ownerUserId = readString(activity, "ownerUserId");
   const budget = readBudget(activity, "budget");
   const provider = readString(activity, "provider");
   const model = readString(activity, "model");
   const activityRequest: ActivityRequest = {
     client,
+    ...(workspaceId === undefined ? {} : { workspaceId }),
+    ...(userId === undefined ? {} : { userId }),
+    ...(ownerUserId === undefined ? {} : { ownerUserId }),
     capability,
     goal,
     context,
@@ -206,11 +212,15 @@ const listUsage = async (
   const usage = await runtime.analytics.listUsage();
   if (!usage.ok) return errorResponse(400, usage.error);
   const capability = readSearchString(url, "capability");
+  const workspaceId = readSearchString(url, "workspaceId");
+  const userId = readSearchString(url, "userId");
   const provider = readSearchString(url, "provider");
   const model = readSearchString(url, "model");
   const now = new Date();
   const records = filterByPeriod(usage.value, period, now).filter((record) =>
     record.client === client &&
+    (workspaceId === undefined || record.workspaceId === workspaceId) &&
+    (userId === undefined || record.userId === userId) &&
     (capability === undefined || record.capability === capability) &&
     (provider === undefined || record.provider === provider) &&
     (model === undefined || record.model === model)
@@ -219,6 +229,8 @@ const listUsage = async (
     ok: true,
     summary: {
       client,
+      ...(workspaceId === undefined ? {} : { workspaceId }),
+      ...(userId === undefined ? {} : { userId }),
       period,
       usageCount: records.length,
       totalTokens: records.reduce((sum, record) => sum + record.totalTokens, 0),

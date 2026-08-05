@@ -223,3 +223,8 @@
 
 - Added managed memory EventBus support for consumer state, idempotent delivery, retry, dead-letter recording, and replay.
 - Exposed managed EventBus contracts and defaults through the SDK.
+
+## 0.1.34
+
+- Added Event Engine audit records for publish, delivery, dead-letter, and replay actions.
+- Added a standard Platform Event envelope validator for required fields, event versions, allowed event types, and category consistency.

@@ -123,7 +123,7 @@
 ## 0.1.16
 
 - Added reason-level counts to Dashboard budget alert summary.
-- Added token and cost alert reason totals for budget alert views.
+- Added token and cost alert reason totals for Dashboard views.
 
 ## 0.1.17
 
@@ -204,10 +204,17 @@
 - Clarified API versus Event responsibilities across Growth Engine, Professional Studio, and AI Platform Core.
 - Separated Business Events from AI Activity Events and expanded shared event names.
 - Added platform event envelope, event category, delivery state, schema validation, retry, and dead-letter contracts.
-- Clarified that Customer, Session, Document, reservation, commerce payment, SNS Planner, and business orchestration are outside AI Platform Core ownership.
+- Clarified that Customer, Session, Report, reservation, commerce payment, SNS Planner, and business orchestration are outside AI Platform Core ownership.
 - Documented capability-first application integration, AI Usage Billing boundaries, and privacy-minimized external context references.
 
 ## 0.1.31
 
 - Added local contracts and integration docs that reference `professional-platform-contracts` as the source of truth.
 - Documented AI Platform Core repository obligations for shared boundaries, APIs, events, capabilities, privacy, and SNS Planner integration.
+
+## 0.1.32
+
+- Aligned platform integration event types with the versioned `professional-platform-contracts` event catalog.
+- Standardized external Professional Studio deliverable references on `Report` and `reportId`.
+- Kept `studio.recommendation.created.v1` pending-only and excluded it from stable integration event types.
+- Documented SNS Planner request inputs while keeping business targeting, offer, and CTA decisions in Growth Engine.

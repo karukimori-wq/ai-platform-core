@@ -183,6 +183,26 @@ content-type: application/json
 Prompt rendering accepts only string, number, or boolean variables. Rendering is
 separate from AI execution and does not record raw consultation text by itself.
 
+For durable Prompt Templates, inject a storage-backed Prompt Template repository
+when composing the runtime:
+
+```ts
+import {
+  createMemoryKeyValueStore,
+  createPlatformRuntime,
+  createPromptTemplateRuntime,
+  createStoredPromptTemplateRepository
+} from "@ai-platform-core/sdk";
+
+const promptTemplates = createStoredPromptTemplateRepository(createMemoryKeyValueStore());
+const runtime = createPlatformRuntime({
+  prompt: createPromptTemplateRuntime(promptTemplates)
+});
+```
+
+The memory store above is only a local adapter example. Production deployments
+should pass a durable `KeyValueStore` implementation.
+
 Platform Admin can read a minimal operational health view:
 
 ```http

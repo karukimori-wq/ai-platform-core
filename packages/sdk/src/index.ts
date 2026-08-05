@@ -146,6 +146,9 @@ export {
 export {
   type PlatformRuntime,
   type PlatformRuntimeOptions,
+  type PromptCapabilityDefinition,
+  type PromptCapabilityInput,
+  type PromptCapabilityInputValue,
   type PromptTemplate,
   type PromptTemplateRenderRequest,
   type PromptTemplateRenderResult,
@@ -153,6 +156,7 @@ export {
   type PromptTemplateRuntime,
   createMemoryPromptTemplateRepository,
   createPlatformRuntime,
+  createPromptBackedCapability,
   createPromptTemplateRuntime,
   createStoredPromptTemplateRepository
 } from "@ai-platform-core/runtime";

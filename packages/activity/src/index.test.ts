@@ -8,6 +8,8 @@ describe("activity runtime", () => {
     const runtime = createActivityRuntime(createMemoryActivityRepository(), createCryptoIdGenerator(), systemClock());
     const created = await runtime.create({
       client: "test-client",
+      workspaceId: "workspace-1",
+      userId: "user-1",
       capability: "Estimate.Create",
       goal: "Create an estimate",
       context: {},
@@ -40,6 +42,9 @@ describe("activity runtime", () => {
     );
     const created = await runtime.create({
       client: "test-client",
+      workspaceId: "workspace-1",
+      userId: "user-1",
+      ownerUserId: "user-1",
       capability: "Estimate.Create",
       goal: "Create an estimate",
       context: {},
@@ -52,5 +57,10 @@ describe("activity runtime", () => {
     expect(events.ok).toBe(true);
     if (!events.ok) return;
     expect(events.value.map((event) => event.type)).toEqual(["ActivityCreated", "ActivityStatusChanged"]);
+    expect(events.value[0]?.payload).toMatchObject({
+      workspaceId: "workspace-1",
+      userId: "user-1",
+      ownerUserId: "user-1"
+    });
   });
 });

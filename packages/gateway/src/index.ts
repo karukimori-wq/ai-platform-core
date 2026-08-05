@@ -276,6 +276,9 @@ export const createAIGateway = (
       input: request.activity.input,
       metadata: {
         activityId: created.value.id.value,
+        workspaceId: request.activity.workspaceId,
+        userId: request.activity.userId,
+        ownerUserId: request.activity.ownerUserId,
         capability: request.activity.capability,
         workflow: request.activity.workflow,
         ...knowledgeContext.value.metadata

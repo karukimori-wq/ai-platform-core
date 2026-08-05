@@ -11,15 +11,23 @@ ownership, API operation names, event names, and shared schemas.
 
 Read these files before changing cross-product behavior:
 
+- `docs/contracts/app-responsibilities.md`
 - `docs/contracts/platform-boundaries.md`
 - `docs/contracts/shared-glossary.md`
+- `docs/contracts/identity-contract.md`
 - `docs/contracts/api-catalog.md`
 - `docs/contracts/event-catalog.md`
 - `docs/contracts/data-ownership.md`
+- `docs/repositories/platform-admin.md`
 - `docs/repositories/ai-platform-core.md`
 - `docs/repositories/numeria-studio.md`
 - `docs/repositories/sns-planner.md`
 - `docs/adoption-guide.md`
+
+`docs/contracts/app-responsibilities.md` is the controlling source for app
+responsibility boundaries. If a local AI Platform Core assumption conflicts
+with that document, update the local implementation or update the contracts
+repository before changing product behavior.
 
 ## AI Platform Core Responsibility
 
@@ -47,6 +55,9 @@ AI Platform Core must not own:
 - SNS campaign objective selection
 - SNS Planner business state
 - Growth Engine business workflow decisions
+- Stripe payment state or execution
+- Sales ledger
+- Public site publishing
 
 ## Data Ownership
 

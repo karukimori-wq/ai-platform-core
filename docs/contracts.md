@@ -63,6 +63,8 @@ but those references do not transfer ownership.
 Allowed references include:
 
 - `workspaceId`
+- `userId`
+- `ownerUserId`
 - `projectId`
 - `customerId`
 - `sessionId`
@@ -70,6 +72,14 @@ Allowed references include:
 - `reservationId`
 - `activityId`
 - `capabilityId`
+
+MVP identity scope:
+
+- AI Platform Core Activity, Usage, and Capability execution history are scoped
+  by `workspaceId + userId`.
+- `ownerUserId` may be recorded when ownership attribution is required.
+- `professionalId` is a future extension concept and is not a required MVP
+  field.
 
 ## External Naming Rules
 

@@ -8,6 +8,8 @@ export type DashboardPeriod = "today" | "month" | "year" | "all";
 export interface DashboardQuery {
   readonly period: DashboardPeriod;
   readonly now?: Date;
+  readonly workspaceId?: string;
+  readonly userId?: string;
 }
 
 export interface DashboardMetric {
@@ -28,6 +30,8 @@ export interface DashboardView {
   readonly period: DashboardPeriod;
   readonly metric: DashboardMetric;
   readonly byClient: Readonly<Record<string, DashboardMetric>>;
+  readonly byWorkspace: Readonly<Record<string, DashboardMetric>>;
+  readonly byUser: Readonly<Record<string, DashboardMetric>>;
   readonly byCapability: Readonly<Record<string, DashboardMetric>>;
   readonly byProvider: Readonly<Record<string, DashboardMetric>>;
   readonly byModel: Readonly<Record<string, DashboardMetric>>;
@@ -186,6 +190,15 @@ const filterByPeriod = (
   return records.filter((record) => record.occurredAt.getTime() >= start.getTime() && record.occurredAt.getTime() <= now.getTime());
 };
 
+const filterByScope = (
+  records: readonly UsageRecord[],
+  query: Pick<DashboardQuery, "workspaceId" | "userId">
+): readonly UsageRecord[] =>
+  records.filter((record) =>
+    (query.workspaceId === undefined || record.workspaceId === query.workspaceId) &&
+    (query.userId === undefined || record.userId === query.userId)
+  );
+
 const createActivitySignals = (
   activityId: string,
   outcomesByActivityId: ReadonlyMap<string, ActivityOutcome>,
@@ -307,7 +320,7 @@ export const createDashboardQueryService = (
       const feedback = await analytics.listFeedback();
       if (!feedback.ok) return feedback;
       const now = query.now ?? clock.now();
-      const records = filterByPeriod(usage.value, query.period, now);
+      const records = filterByScope(filterByPeriod(usage.value, query.period, now), query);
       const outcomesByActivityId = new Map(outcomes.value.map((outcome) => [outcome.activityId, outcome]));
       const feedbackByActivityId = new Map(feedback.value.map((item) => [item.activityId, item]));
       const signalsByActivityId = new Map<string, ActivitySignals>(
@@ -320,6 +333,8 @@ export const createDashboardQueryService = (
         period: query.period,
         metric: records.reduce((metric, record) => addRecord(metric, record, signalsByActivityId.get(record.activityId) ?? {}), emptyAccumulator()).metric,
         byClient: toMetrics(groupBy(records, signalsByActivityId, (record) => record.client)),
+        byWorkspace: toMetrics(groupBy(records.filter((record) => record.workspaceId !== undefined), signalsByActivityId, (record) => record.workspaceId ?? "")),
+        byUser: toMetrics(groupBy(records.filter((record) => record.userId !== undefined), signalsByActivityId, (record) => record.userId ?? "")),
         byCapability: toMetrics(groupBy(records, signalsByActivityId, (record) => record.capability)),
         byProvider: toMetrics(groupBy(records, signalsByActivityId, (record) => record.provider)),
         byModel: toMetrics(groupBy(records, signalsByActivityId, (record) => record.model))

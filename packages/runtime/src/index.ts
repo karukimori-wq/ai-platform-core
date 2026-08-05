@@ -1,9 +1,11 @@
-import { createActivityRuntime, createMemoryActivityRepository, type ActivityRuntime } from "@ai-platform-core/activity";
+import { createActivityRuntime, createMemoryActivityRepository, type ActivityResult, type ActivityRuntime } from "@ai-platform-core/activity";
 import { createMemoryAnalyticsRepository, type AnalyticsRepository } from "@ai-platform-core/analytics";
 import {
   createCapabilityRegistry,
   createCapabilityRuntime,
   createPermissionChecker,
+  type Capability,
+  type CapabilityContext,
   type CapabilityRuntime
 } from "@ai-platform-core/capability";
 import { createClientRegistry, type ClientRegistry } from "@ai-platform-core/client";
@@ -30,6 +32,7 @@ import {
 import { createAIGateway, createAllowAllAuthenticator, type AIGateway } from "@ai-platform-core/gateway";
 import { createMemoryKnowledgeRepository, type KnowledgeRepository } from "@ai-platform-core/knowledge";
 import { createPluginRuntime, type PluginRuntime } from "@ai-platform-core/plugin";
+import type { AIMessage } from "@ai-platform-core/provider";
 import { createEchoProvider, createProviderRegistry, type ProviderRegistry } from "@ai-platform-core/provider";
 import { createMemorySecretStore, type SecretStore } from "@ai-platform-core/secrets";
 import { createMemoryKeyValueStore, type KeyValueStore } from "@ai-platform-core/storage";
@@ -74,6 +77,27 @@ interface StoredPromptTemplate extends Readonly<Record<string, unknown>> {
 export interface PromptTemplateRuntime {
   readonly register: (template: PromptTemplate) => Promise<Result<PromptTemplate>>;
   readonly render: (request: PromptTemplateRenderRequest) => Promise<Result<PromptTemplateRenderResult>>;
+}
+
+export type PromptCapabilityInputValue = string | number | boolean;
+
+export type PromptCapabilityInput = Readonly<Record<string, PromptCapabilityInputValue>>;
+
+export interface PromptCapabilityDefinition {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  readonly permission: string;
+  readonly input: string;
+  readonly output: string;
+  readonly templateId: string;
+  readonly templateVersion?: number;
+  readonly goal: string;
+  readonly workflow?: string;
+  readonly clientId?: string;
+  readonly provider?: string;
+  readonly model?: string;
+  readonly messageRole?: AIMessage["role"];
 }
 
 const promptTemplateStorageKey = (id: string, version: number): string => `${id}@${String(version)}`;
@@ -162,6 +186,61 @@ const renderTemplateBody = (
     ? err(platformError("PROMPT_TEMPLATE_VARIABLE_MISSING", `Missing template variables: ${[...missing].join(", ")}.`))
     : ok(rendered);
 };
+
+const readMetadataString = (metadata: Readonly<Record<string, unknown>>, key: string): string | undefined => {
+  const value = metadata[key];
+  return typeof value === "string" ? value : undefined;
+};
+
+const withOptionalString = <T extends Readonly<Record<string, unknown>>>(
+  source: T,
+  key: string,
+  value: string | undefined
+): T => value === undefined ? source : { ...source, [key]: value };
+
+export const createPromptBackedCapability = (
+  runtime: Pick<PlatformRuntime, "gateway" | "prompt">,
+  definition: PromptCapabilityDefinition
+): Capability<PromptCapabilityInput, ActivityResult> => ({
+  id: definition.id,
+  name: definition.name,
+  description: definition.description,
+  permission: definition.permission,
+  input: definition.input,
+  output: definition.output,
+  execute: async (input: PromptCapabilityInput, context: CapabilityContext) => {
+    const rendered = await runtime.prompt.render({
+      templateId: definition.templateId,
+      ...(definition.templateVersion === undefined ? {} : { version: definition.templateVersion }),
+      variables: input
+    });
+    if (!rendered.ok) return rendered;
+
+    const clientId = definition.clientId ?? readMetadataString(context.metadata, "clientId") ?? context.actorId;
+    const baseActivity = {
+      client: clientId,
+      capability: definition.id,
+      goal: definition.goal,
+      context: {
+        promptTemplateId: rendered.value.templateId,
+        promptTemplateVersion: rendered.value.version
+      },
+      input
+    };
+    const activityWithWorkspace = withOptionalString(baseActivity, "workspaceId", readMetadataString(context.metadata, "workspaceId"));
+    const activityWithUser = withOptionalString(activityWithWorkspace, "userId", readMetadataString(context.metadata, "userId"));
+    const activityWithOwner = withOptionalString(activityWithUser, "ownerUserId", readMetadataString(context.metadata, "ownerUserId"));
+    const activityWithWorkflow = withOptionalString(activityWithOwner, "workflow", definition.workflow);
+    const activityWithProvider = withOptionalString(activityWithWorkflow, "provider", definition.provider);
+    const activity = withOptionalString(activityWithProvider, "model", definition.model);
+
+    return runtime.gateway.run({
+      auth: { clientId, permissions: context.permissions },
+      activity,
+      messages: [{ role: definition.messageRole ?? "user", content: rendered.value.rendered }]
+    });
+  }
+});
 
 export interface PlatformRuntime {
   readonly registry: ReturnType<typeof createCapabilityRegistry>;

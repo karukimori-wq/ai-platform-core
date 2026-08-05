@@ -218,6 +218,13 @@
 - PlatformRuntime options for injected runtime dependencies
 - Custom Analytics repository wiring for Gateway and Dashboard
 
+## v0.1.32 Contract Event Alignment
+
+- Versioned integration event names from `professional-platform-contracts`
+- `Report` terminology for external Professional Studio deliverables
+- Pending recommendation event excluded from stable contracts
+- SNS Planner input boundary documented
+
 ## v0.1.28 Professional Studio Event Boundary
 
 - Shared integration event type names for Growth Engine and Professional Studio

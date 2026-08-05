@@ -130,6 +130,16 @@ Dashboard-ready usage views are also available:
 GET /v1/dashboard/usage?client=fortune_teller_a&period=month&workspaceId=workspace-numeria-a&userId=user-fortune-teller-a
 ```
 
+Individual AI Activity status can be read with the same client scope:
+
+```http
+GET /v1/activities/{activityId}?client=fortune_teller_a&workspaceId=workspace-numeria-a&userId=user-fortune-teller-a
+```
+
+The activity view returns execution metadata, status, provider/model, token
+usage, cost, and timestamps. It does not return raw Activity `input`, `context`,
+prompts, messages, or consultation text.
+
 Platform Admin can read a minimal operational health view:
 
 ```http

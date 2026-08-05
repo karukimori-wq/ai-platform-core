@@ -118,6 +118,38 @@ describe("gateway http handler", () => {
     expect(body.health.contract.requiredReferences).toContain("docs/repositories/platform-admin.md");
   });
 
+  it("returns a Platform Admin compatible contract status view", async () => {
+    const runtime = createPlatformRuntime({ clock: { now: () => new Date("2026-08-05T12:30:00.000Z") } });
+    const handler = createPlatformHttpHandler(runtime);
+
+    const response = await handler(new Request("https://example.com/v1/contracts/status"));
+    const method = await handler(new Request("https://example.com/v1/contracts/status", { method: "POST" }));
+    const body = await response.json() as Readonly<{
+      ok: boolean;
+      status: Readonly<{
+        app: string;
+        status: string;
+        checkedAt: string;
+        implementedApis: readonly string[];
+        publishedEvents: readonly string[];
+        pendingEventsExcluded: readonly string[];
+      }>;
+    }>;
+
+    expect(response.status).toBe(200);
+    expect(method.status).toBe(405);
+    expect(body.ok).toBe(true);
+    expect(body.status).toMatchObject({
+      app: "ai-platform-core",
+      status: "compatible",
+      checkedAt: "2026-08-05T12:30:00.000Z"
+    });
+    expect(body.status.implementedApis).toContain("Activity.Create");
+    expect(body.status.implementedApis).toContain("Usage.List");
+    expect(body.status.publishedEvents).toContain("ai.activity.completed.v1");
+    expect(body.status.pendingEventsExcluded).toContain("studio.recommendation.created.v1");
+  });
+
   it("returns scoped usage totals", async () => {
     const runtime = createPlatformRuntime();
     runtime.clients.register({

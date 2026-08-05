@@ -1,6 +1,6 @@
 import type { Activity, ActivityBudget, ActivityRequest, ActivityStatus } from "@ai-platform-core/activity";
 import type { GatewayAuthContext, GatewayRequest } from "@ai-platform-core/gateway";
-import { type PlatformError, platformError } from "@ai-platform-core/kernel";
+import { type PlatformError, err, platformError } from "@ai-platform-core/kernel";
 import type { AIMessage } from "@ai-platform-core/provider";
 import type { PlatformRuntime } from "@ai-platform-core/runtime";
 
@@ -15,6 +15,7 @@ export interface PlatformHttpHandlerOptions {
   readonly healthRoute?: string;
   readonly contractStatusRoute?: string;
   readonly activityRoutePrefix?: string;
+  readonly capabilityRegisterRoute?: string;
   readonly authorizeUsageRequest?: (request: Request, clientId: string) => Promise<boolean> | boolean;
 }
 
@@ -22,6 +23,24 @@ export interface GatewayRunHttpBody {
   readonly auth: GatewayAuthContext;
   readonly activity: ActivityRequest;
   readonly messages: readonly AIMessage[];
+}
+
+export interface CapabilityRegisterHttpBody {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  readonly permission: string;
+  readonly input: string;
+  readonly output: string;
+}
+
+export interface CapabilityHttpView {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  readonly permission: string;
+  readonly input: string;
+  readonly output: string;
 }
 
 export type UsageHttpPeriod = "today" | "month" | "year" | "all";
@@ -208,6 +227,29 @@ const parseGatewayRunBody = (value: unknown): GatewayRunHttpBody | PlatformError
   };
 };
 
+const parseCapabilityRegisterBody = (value: unknown): CapabilityRegisterHttpBody | PlatformError => {
+  if (!isRecord(value)) {
+    return platformError("HTTP_INVALID_BODY", "Request body must be a JSON object.");
+  }
+  const id = readString(value, "id");
+  const name = readString(value, "name");
+  const description = readString(value, "description");
+  const permission = readString(value, "permission");
+  const input = readString(value, "input");
+  const output = readString(value, "output");
+  if (
+    id === undefined ||
+    name === undefined ||
+    description === undefined ||
+    permission === undefined ||
+    input === undefined ||
+    output === undefined
+  ) {
+    return platformError("HTTP_INVALID_BODY", "Request body has invalid capability fields.");
+  }
+  return { id, name, description, permission, input, output };
+};
+
 const runGateway = async (runtime: PlatformRuntime, request: GatewayRequest): Promise<Response> => {
   const result = await runtime.gateway.run(request);
   return result.ok ? jsonResponse(200, { ok: true, result: result.value }) : errorResponse(400, result.error);
@@ -336,6 +378,36 @@ const getDashboardUsage = async (
     ...(userId === undefined ? {} : { userId })
   });
   return view.ok ? jsonResponse(200, { ok: true, view: view.value }) : errorResponse(400, view.error);
+};
+
+const toCapabilityHttpView = (capability: CapabilityRegisterHttpBody): CapabilityHttpView => ({
+  id: capability.id,
+  name: capability.name,
+  description: capability.description,
+  permission: capability.permission,
+  input: capability.input,
+  output: capability.output
+});
+
+const registerCapability = async (
+  runtime: PlatformRuntime,
+  request: Request,
+  url: URL,
+  authorize: PlatformHttpHandlerOptions["authorizeUsageRequest"]
+): Promise<Response> => {
+  const scopedRead = await authorizeScopedRead(request, url, authorize);
+  if (scopedRead instanceof Response) return scopedRead;
+  const parsed = parseCapabilityRegisterBody(await request.json().catch(() => undefined));
+  if (isPlatformError(parsed)) return errorResponse(400, parsed);
+  const registered = runtime.registry.register({
+    ...parsed,
+    execute: async () => err(platformError(
+      "CAPABILITY_HTTP_MANIFEST_ONLY",
+      `Capability '${parsed.id}' was registered as an HTTP manifest and has no local executor.`
+    ))
+  });
+  if (!registered.ok) return errorResponse(400, registered.error);
+  return jsonResponse(201, { ok: true, capability: toCapabilityHttpView(parsed) });
 };
 
 const toActivityHttpView = (activity: Activity): ActivityHttpView => ({
@@ -481,6 +553,7 @@ export const createPlatformHttpHandler = (
   const healthRoute = options.healthRoute ?? "/v1/health";
   const contractStatusRoute = options.contractStatusRoute ?? "/v1/contracts/status";
   const activityRoutePrefix = options.activityRoutePrefix ?? "/v1/activities";
+  const capabilityRegisterRoute = options.capabilityRegisterRoute ?? "/v1/capabilities";
   return async (request) => {
     const url = new URL(request.url);
     if (url.pathname === healthRoute) {
@@ -505,6 +578,11 @@ export const createPlatformHttpHandler = (
       return request.method === "GET"
         ? getDashboardUsage(runtime, request, url, options.authorizeUsageRequest)
         : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only GET is supported."));
+    }
+    if (url.pathname === capabilityRegisterRoute) {
+      return request.method === "POST"
+        ? registerCapability(runtime, request, url, options.authorizeUsageRequest)
+        : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only POST is supported."));
     }
     if (url.pathname.startsWith(`${activityRoutePrefix}/`)) {
       return request.method === "GET"

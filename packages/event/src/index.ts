@@ -143,6 +143,24 @@ export interface EventSubscriberRegistry {
 export interface EventBus extends EventPublisher, EventSubscriberRegistry {
 }
 
+export interface ManagedEventBus extends EventBus {
+  readonly consumerStates: () => readonly EventConsumerState[];
+  readonly deadLetters: () => readonly DeadLetterEvent[];
+  readonly replay: (filter?: EventQuery) => Promise<Result<void>>;
+}
+
+export interface ManagedEventBusOptions {
+  readonly store?: EventStore;
+  readonly deliveryPolicy?: EventDeliveryPolicy;
+  readonly now?: () => Date;
+}
+
+export const defaultEventDeliveryPolicy: EventDeliveryPolicy = {
+  maxAttempts: 3,
+  retryDelayMs: 0,
+  deadLetterAfterAttempts: 3
+};
+
 export const createMemoryEventStore = (): EventStore => {
   const events: DomainEvent[] = [];
   return {
@@ -155,6 +173,116 @@ export const createMemoryEventStore = (): EventStore => {
     query: async (filter = {}) =>
       ok(events.filter((event) => matchesEventQuery(event, filter))),
     all: async () => ok([...events])
+  };
+};
+
+export const createManagedEventBus = (options: ManagedEventBusOptions = {}): ManagedEventBus => {
+  let nextSubscriptionId = 1;
+  const subscribers = new Map<string, EventSubscriber>();
+  const consumerStates = new Map<string, EventConsumerState>();
+  const deadLetters: DeadLetterEvent[] = [];
+  const deliveryPolicy = options.deliveryPolicy ?? defaultEventDeliveryPolicy;
+  const now = options.now ?? (() => new Date());
+
+  const unsubscribe = (subscriptionId: string): Result<void> => {
+    if (!subscribers.delete(subscriptionId)) {
+      return err(platformError("EVENT_SUBSCRIPTION_NOT_FOUND", `Event subscription '${subscriptionId}' was not found.`));
+    }
+    return ok(undefined);
+  };
+
+  const updateConsumerState = (
+    consumerId: string,
+    event: DomainEvent,
+    status: EventDeliveryStatus,
+    attempts: number,
+    lastError?: string
+  ): EventConsumerState => {
+    const state: EventConsumerState = {
+      consumerId,
+      eventId: event.id.value,
+      status,
+      attempts,
+      updatedAt: now(),
+      ...(lastError === undefined ? {} : { lastError })
+    };
+    consumerStates.set(toConsumerStateKey(consumerId, event), state);
+    return state;
+  };
+
+  const deliverToSubscriber = async (subscriber: EventSubscriber, event: DomainEvent): Promise<Result<void>> => {
+    const consumerId = subscriber.id ?? subscriber.eventType;
+    const stateKey = toConsumerStateKey(consumerId, event);
+    const existing = consumerStates.get(stateKey);
+    if (existing?.status === "succeeded" || existing?.status === "dead-lettered") {
+      return ok(undefined);
+    }
+
+    let attempts = existing?.attempts ?? 0;
+    while (attempts < deliveryPolicy.maxAttempts) {
+      attempts += 1;
+      updateConsumerState(consumerId, event, "processing", attempts);
+      const handled = await subscriber.handle(event);
+      if (handled.ok) {
+        updateConsumerState(consumerId, event, "succeeded", attempts);
+        return ok(undefined);
+      }
+
+      if (attempts >= deliveryPolicy.deadLetterAfterAttempts || attempts >= deliveryPolicy.maxAttempts) {
+        const state = updateConsumerState(consumerId, event, "dead-lettered", attempts, handled.error.message);
+        deadLetters.push({
+          event,
+          consumerId,
+          reason: state.lastError ?? "Event delivery failed.",
+          failedAt: state.updatedAt,
+          attempts
+        });
+        return ok(undefined);
+      }
+
+      updateConsumerState(consumerId, event, "failed", attempts, handled.error.message);
+    }
+
+    return ok(undefined);
+  };
+
+  const publish = async (event: DomainEvent): Promise<Result<void>> => {
+    const targets = [...subscribers.values()].filter(
+      (subscriber) => subscriber.eventType === event.type || subscriber.eventType === "*"
+    );
+    for (const subscriber of targets) {
+      const delivered = await deliverToSubscriber(subscriber, event);
+      if (!delivered.ok) return delivered;
+    }
+    return ok(undefined);
+  };
+
+  return {
+    publish,
+    subscribe: (subscriber) => {
+      const id = subscriber.id ?? `event-subscription-${String(nextSubscriptionId++)}`;
+      subscribers.set(id, { ...subscriber, id });
+      return ok({
+        id,
+        eventType: subscriber.eventType,
+        unsubscribe: () => unsubscribe(id)
+      });
+    },
+    unsubscribe,
+    consumerStates: () => [...consumerStates.values()],
+    deadLetters: () => [...deadLetters],
+    replay: async (filter = {}) => {
+      if (!options.store) {
+        return err(platformError("EVENT_STORE_NOT_CONFIGURED", "Managed event replay requires an EventStore."));
+      }
+      const events = await options.store.query(filter);
+      if (!events.ok) return events;
+      for (const event of events.value) {
+        const delivered = await publish(event);
+        if (!delivered.ok) return delivered;
+      }
+      return ok(undefined);
+    }
   };
 };
 
@@ -210,6 +338,8 @@ export const createEventDispatcher = (
     return ok(undefined);
   }
 });
+
+const toConsumerStateKey = (consumerId: string, event: DomainEvent): string => `${consumerId}:${event.id.value}`;
 
 const matchesEventQuery = (event: DomainEvent, filter: EventQuery): boolean => {
   if (filter.aggregateId && !event.aggregateId.equals(filter.aggregateId)) return false;

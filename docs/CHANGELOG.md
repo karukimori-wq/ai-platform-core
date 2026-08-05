@@ -5,6 +5,7 @@
 - Updated local contract references to include `app-responsibilities.md`, `identity-contract.md`, and `platform-admin.md`.
 - Clarified that `app-responsibilities.md` controls cross-app responsibility boundaries.
 - Documented that Platform Admin observes AI Platform Core operational state but does not execute AI Activities or own Usage.
+- Added a Platform Admin compatible HTTP health view at `/v1/health`.
 
 ## 0.1.0
 

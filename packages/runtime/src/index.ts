@@ -20,6 +20,11 @@ import { createCryptoIdGenerator, createNoopLogger, systemClock, type Clock, typ
 import { createAIGateway, createAllowAllAuthenticator, type AIGateway } from "@ai-platform-core/gateway";
 import { createMemoryKnowledgeRepository, type KnowledgeRepository } from "@ai-platform-core/knowledge";
 import { createPluginRuntime, type PluginRuntime } from "@ai-platform-core/plugin";
+import {
+  createMemoryPromptTemplateRepository,
+  createPromptTemplateRuntime,
+  type PromptTemplateRuntime
+} from "@ai-platform-core/prompt";
 import { createEchoProvider, createProviderRegistry, type ProviderRegistry } from "@ai-platform-core/provider";
 import { createMemorySecretStore, type SecretStore } from "@ai-platform-core/secrets";
 import { createMemoryKeyValueStore, type KeyValueStore } from "@ai-platform-core/storage";
@@ -44,6 +49,7 @@ export interface PlatformRuntime {
   readonly providers: ProviderRegistry;
   readonly workflow: WorkflowRuntime;
   readonly plugin: PluginRuntime;
+  readonly prompt: PromptTemplateRuntime;
   readonly secrets: SecretStore;
   readonly storage: KeyValueStore<Readonly<Record<string, unknown>>>;
   readonly ai?: AIRuntime;
@@ -61,6 +67,7 @@ export interface PlatformRuntimeOptions {
   readonly knowledge?: KnowledgeRepository;
   readonly logger?: Logger;
   readonly providers?: ProviderRegistry;
+  readonly prompt?: PromptTemplateRuntime;
   readonly secrets?: SecretStore;
   readonly storage?: KeyValueStore<Readonly<Record<string, unknown>>>;
 }
@@ -94,6 +101,7 @@ export const createPlatformRuntime = (options: PlatformRuntimeOptions = {}): Pla
     providers,
     workflow: createWorkflowRuntime(capability),
     plugin: createPluginRuntime(),
+    prompt: options.prompt ?? createPromptTemplateRuntime(createMemoryPromptTemplateRepository()),
     secrets: options.secrets ?? createMemorySecretStore(),
     storage: options.storage ?? createMemoryKeyValueStore(),
     clock,

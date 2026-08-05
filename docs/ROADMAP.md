@@ -239,6 +239,14 @@
 - Category consistency checks
 - Managed EventBus audit log records
 
+## v0.1.35 MVP Identity Scope Alignment
+
+- Activity attribution by `workspaceId + userId`
+- Usage attribution by `workspaceId + userId`
+- Optional `ownerUserId` ownership reference
+- `professionalId` kept as a future extension concept
+- Workspace and user scoped usage filtering
+
 ## v0.1.28 Professional Studio Event Boundary
 
 - Shared integration event type names for Growth Engine and Professional Studio

@@ -1,7 +1,6 @@
 # Integration
 
-AI Platform Core integrates with Growth Engine, Professional Studio, and SNS
-Planner through the shared contracts repository:
+AI Platform Core integrates with Growth Engine, Professional Studio, and SNS Planner through the shared contracts repository:
 
 https://github.com/karukimori-wq/professional-platform-contracts.git
 
@@ -14,7 +13,7 @@ Growth Engine
   acquisition, sales, customer nurturing, business workflow state
 
 Professional Studio
-  professional work, sessions, reports, documents, domain records
+  professional work, sessions, reports, domain records
 
 AI Platform Core
   AI runtime, capabilities, prompts, tools, workflows, usage, AI events
@@ -23,9 +22,7 @@ SNS Planner
   SNS post draft creation requested by Growth Engine
 ```
 
-AI Platform Core is not the business workflow orchestrator. It executes AI
-capabilities and records AI usage. Growth Engine decides business actions.
-Professional Studio owns domain work. SNS Planner creates post drafts.
+AI Platform Core is not the business workflow orchestrator. It executes AI capabilities and records AI usage. Growth Engine decides business actions. Professional Studio owns domain work and Reports. SNS Planner creates post drafts.
 
 ## API Versus Event
 
@@ -39,24 +36,26 @@ Use APIs when the caller needs an immediate result:
 
 Use events when a state change already happened:
 
+- AI Activity created
 - AI Activity completed
+- AI Activity failed
 - Usage recorded
 - Professional session completed
 - Report generated
 - Customer created in Growth Engine
 
-Events are notifications, not commands. AI Platform Core must not treat a
-business event as permission to decide the next Growth Engine action.
+Events are notifications, not commands. AI Platform Core must not treat a business event as permission to decide the next Growth Engine action.
 
 ## Capability Entry Point
 
-Applications should call AI Platform Core by capability name. They should not
-depend on prompt bodies, provider-specific request shapes, or model names.
+Applications should call AI Platform Core by capability name. They should not depend on prompt bodies, provider-specific request shapes, or model names.
 
 Examples:
 
 - `Reading.Interpret`
 - `Reading.GenerateDraft`
+- `Report.Generate`
+- `Report.GenerateSection`
 - `Marketing.AnalyzeConsultationTrends`
 - `Marketing.AnalyzeFunnel`
 - `Marketing.DetectBottleneck`
@@ -79,28 +78,24 @@ AI Platform Core resolves the internal implementation:
 
 ## External References
 
-AI Platform Core may receive stable IDs from other systems for attribution and
-traceability:
+AI Platform Core may receive stable IDs from other systems for attribution and traceability:
 
 - `workspaceId`
 - `projectId`
 - `customerId`
 - `sessionId`
-- `documentId`
+- `reportId`
 - `reservationId`
 - `activityId`
 - `capabilityId`
 
 These IDs are references, not ownership transfers.
 
-Customer source of truth remains in Growth Engine. Session and Document source
-of truth remain in Professional Studio. AI Platform Core should store only the
-minimum context required for AI execution, usage attribution, and audit.
+Customer source of truth remains in Growth Engine. Session and Report source of truth remain in Professional Studio. AI Platform Core should store only the minimum context required for AI execution, usage attribution, and audit.
 
 ## Event Handling
 
-AI Platform Core uses the contracts repository event envelope. Implementations
-must support:
+AI Platform Core uses the contracts repository event envelope. Implementations must support:
 
 - Idempotency by `eventId`
 - Versioned event types
@@ -113,8 +108,14 @@ must support:
 - Audit logs
 - Partition keys where ordering matters
 
-AI Platform Core publishes AI events with the `ai.*` prefix. Other event
-prefixes remain owned by their source systems.
+AI Platform Core publishes AI events with the `ai.*` prefix. Other event prefixes remain owned by their source systems.
+
+Approved AI events:
+
+- `ai.activity.created.v1`
+- `ai.activity.completed.v1`
+- `ai.activity.failed.v1`
+- `ai.usage.recorded.v1`
 
 ## SNS Planner Integration
 
@@ -158,4 +159,4 @@ Before adding or changing an integration:
 - Use API for immediate operations and Event for state-change notification.
 - Use capability names as the app-facing AI entry point.
 - Keep Growth Engine business decisions out of AI Platform Core.
-- Keep Customer, Session, Document, and Commerce Payment ownership outside AI Platform Core.
+- Keep Customer, Session, Report, and commerce payment ownership outside AI Platform Core.

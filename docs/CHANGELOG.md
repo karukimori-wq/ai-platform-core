@@ -8,6 +8,7 @@
 - Added a Platform Admin compatible HTTP health view at `/v1/health`.
 - Added a Platform Admin compatible HTTP contract status view at `/v1/contracts/status`.
 - Added a scoped HTTP Activity status view at `/v1/activities/{activityId}` without exposing raw input or context.
+- Added scoped HTTP Capability manifest registration at `/v1/capabilities`.
 
 ## 0.1.0
 

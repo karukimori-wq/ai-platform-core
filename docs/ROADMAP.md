@@ -232,6 +232,13 @@
 - Retry and dead-letter behavior
 - Event replay through stored events
 
+## v0.1.34 Event Validation And Audit
+
+- Platform Event envelope validation
+- Allowed event type validation
+- Category consistency checks
+- Managed EventBus audit log records
+
 ## v0.1.28 Professional Studio Event Boundary
 
 - Shared integration event type names for Growth Engine and Professional Studio

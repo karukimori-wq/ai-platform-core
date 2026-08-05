@@ -5,6 +5,7 @@ import {
   createEventDispatcher,
   createManagedEventBus,
   createMemoryEventStore,
+  createPlatformEventEnvelopeValidator,
   getPlatformIntegrationEventCategory,
   platformIntegrationEventTypes,
   type PlatformEventEnvelope,
@@ -150,6 +151,11 @@ describe("event", () => {
     expect(bus.consumerStates()).toMatchObject([
       { consumerId: "consumer-a", eventId: id.value, status: "succeeded", attempts: 1 }
     ]);
+    expect(bus.auditLogs().map((record) => record.action)).toEqual([
+      "published",
+      "delivery_succeeded",
+      "published"
+    ]);
   });
 
   it("retries managed consumers before succeeding", async () => {
@@ -211,6 +217,11 @@ describe("event", () => {
     expect(bus.deadLetters()).toMatchObject([
       { consumerId: "failing-consumer", reason: "Consumer failed.", attempts: 2 }
     ]);
+    expect(bus.auditLogs().map((record) => record.action)).toEqual([
+      "published",
+      "delivery_failed",
+      "dead_lettered"
+    ]);
   });
 
   it("replays stored events through managed consumers", async () => {
@@ -240,5 +251,31 @@ describe("event", () => {
     expect((await bus.replay({ types: ["sns.post_draft.created.v1"] })).ok).toBe(true);
 
     expect(seen).toEqual(["sns.post_draft.created.v1"]);
+    expect(bus.auditLogs().map((record) => record.action)).toEqual([
+      "replayed",
+      "published",
+      "delivery_succeeded"
+    ]);
+  });
+
+  it("validates platform event envelopes", () => {
+    const validator = createPlatformEventEnvelopeValidator();
+    const valid: PlatformEventEnvelope = {
+      eventId: "event-1",
+      eventType: "studio.report.generated.v1",
+      eventVersion: 1,
+      occurredAt: new Date("2026-01-01T00:00:00.000Z"),
+      workspaceId: "workspace-1",
+      producer: "numeria-studio",
+      correlationId: "correlation-1",
+      subjectType: "Report",
+      subjectId: "report-1",
+      category: "business",
+      payload: {}
+    };
+
+    expect(validator.validate(valid).ok).toBe(true);
+    expect(validator.validate({ ...valid, category: "ai-activity" }).ok).toBe(false);
+    expect(validator.validate({ ...valid, eventVersion: 0 }).ok).toBe(false);
   });
 });

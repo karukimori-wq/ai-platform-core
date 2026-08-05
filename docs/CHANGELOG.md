@@ -6,6 +6,7 @@
 - Clarified that `app-responsibilities.md` controls cross-app responsibility boundaries.
 - Documented that Platform Admin observes AI Platform Core operational state but does not execute AI Activities or own Usage.
 - Added a Platform Admin compatible HTTP health view at `/v1/health`.
+- Added a Platform Admin compatible HTTP contract status view at `/v1/contracts/status`.
 
 ## 0.1.0
 
@@ -36,7 +37,6 @@
 
 - Added client package with Client Manifest types, validation, and registry.
 - Added Gateway validation for registered client capability access.
-- Added Gateway token and cost budget checks.
 - Exposed client manifest APIs through the SDK.
 - Updated runtime composition to include the client registry.
 
@@ -106,7 +106,7 @@
 
 - Added Dashboard client budget alert query.
 - Added alert filtering for warning and exceeded client budget status.
-- Exposed client budget alert view through the SDK.
+- Exposed budget alert view through the SDK.
 - Added Dashboard tests for budget alert filtering.
 
 ## 0.1.13

@@ -140,6 +140,16 @@ The health view contains app status, contract references, and component counts.
 It does not execute AI Activities or expose Customer, Session, Report, Payment,
 Sales, or SNS draft records.
 
+Platform Admin can also read AI Platform Core contract status:
+
+```http
+GET /v1/contracts/status
+```
+
+The contract status view reports supported AI Platform Core API operation names,
+published AI event names, and Pending events that remain excluded from stable
+implementation.
+
 The usage endpoint is disabled unless `authorizeUsageRequest` is configured.
 The callback must bind the request to a trusted server-side session or token and
 return true only when that identity can read the requested `client`. The endpoint

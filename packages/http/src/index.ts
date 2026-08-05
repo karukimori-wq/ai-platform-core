@@ -13,6 +13,7 @@ export interface PlatformHttpHandlerOptions {
   readonly analyticsUsageRoute?: string;
   readonly dashboardUsageRoute?: string;
   readonly healthRoute?: string;
+  readonly contractStatusRoute?: string;
   readonly authorizeUsageRequest?: (request: Request, clientId: string) => Promise<boolean> | boolean;
 }
 
@@ -44,6 +45,21 @@ export interface PlatformHealthView {
     readonly capabilities: number;
     readonly providers: number;
   };
+}
+
+export interface PlatformContractStatusView {
+  readonly app: "ai-platform-core";
+  readonly status: "compatible";
+  readonly checkedAt: string;
+  readonly contract: {
+    readonly repository: "karukimori-wq/professional-platform-contracts";
+    readonly responsibilitySource: "docs/contracts/app-responsibilities.md";
+    readonly apiCatalog: "docs/contracts/api-catalog.md";
+    readonly eventCatalog: "docs/contracts/event-catalog.md";
+  };
+  readonly implementedApis: readonly string[];
+  readonly publishedEvents: readonly string[];
+  readonly pendingEventsExcluded: readonly string[];
 }
 
 const jsonHeaders = { "content-type": "application/json" };
@@ -323,6 +339,43 @@ const getHealth = (runtime: PlatformRuntime): Response => {
   return jsonResponse(200, { ok: true, health });
 };
 
+const implementedAiCoreApis = [
+  "Capability.Register",
+  "Activity.Create",
+  "Activity.Get",
+  "Usage.List",
+  "PromptTemplate.Render"
+] as const;
+
+const publishedAiCoreEvents = [
+  "ai.activity.created.v1",
+  "ai.activity.completed.v1",
+  "ai.activity.failed.v1",
+  "ai.usage.recorded.v1"
+] as const;
+
+const pendingEventsExcluded = [
+  "studio.recommendation.created.v1"
+] as const;
+
+const getContractStatus = (runtime: PlatformRuntime): Response => {
+  const status: PlatformContractStatusView = {
+    app: "ai-platform-core",
+    status: "compatible",
+    checkedAt: runtime.clock.now().toISOString(),
+    contract: {
+      repository: "karukimori-wq/professional-platform-contracts",
+      responsibilitySource: "docs/contracts/app-responsibilities.md",
+      apiCatalog: "docs/contracts/api-catalog.md",
+      eventCatalog: "docs/contracts/event-catalog.md"
+    },
+    implementedApis: implementedAiCoreApis,
+    publishedEvents: publishedAiCoreEvents,
+    pendingEventsExcluded
+  };
+  return jsonResponse(200, { ok: true, status });
+};
+
 export const createGatewayHttpHandler = (
   runtime: PlatformRuntime,
   options: GatewayHttpHandlerOptions = {}
@@ -351,11 +404,17 @@ export const createPlatformHttpHandler = (
   const analyticsUsageRoute = options.analyticsUsageRoute ?? "/v1/analytics/usage";
   const dashboardUsageRoute = options.dashboardUsageRoute ?? "/v1/dashboard/usage";
   const healthRoute = options.healthRoute ?? "/v1/health";
+  const contractStatusRoute = options.contractStatusRoute ?? "/v1/contracts/status";
   return async (request) => {
     const url = new URL(request.url);
     if (url.pathname === healthRoute) {
       return request.method === "GET"
         ? getHealth(runtime)
+        : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only GET is supported."));
+    }
+    if (url.pathname === contractStatusRoute) {
+      return request.method === "GET"
+        ? getContractStatus(runtime)
         : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only GET is supported."));
     }
     if (url.pathname === gatewayRunRoute) {

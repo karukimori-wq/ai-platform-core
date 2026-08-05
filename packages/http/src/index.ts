@@ -12,6 +12,7 @@ export interface PlatformHttpHandlerOptions {
   readonly gatewayRunRoute?: string;
   readonly analyticsUsageRoute?: string;
   readonly dashboardUsageRoute?: string;
+  readonly healthRoute?: string;
   readonly authorizeUsageRequest?: (request: Request, clientId: string) => Promise<boolean> | boolean;
 }
 
@@ -27,6 +28,22 @@ interface UsageHttpBreakdownItem {
   readonly usageCount: number;
   readonly totalTokens: number;
   readonly totalCost: number;
+}
+
+export interface PlatformHealthView {
+  readonly app: "ai-platform-core";
+  readonly status: "ok";
+  readonly checkedAt: string;
+  readonly contract: {
+    readonly repository: "karukimori-wq/professional-platform-contracts";
+    readonly responsibilitySource: "docs/contracts/app-responsibilities.md";
+    readonly requiredReferences: readonly string[];
+  };
+  readonly components: {
+    readonly clients: number;
+    readonly capabilities: number;
+    readonly providers: number;
+  };
 }
 
 const jsonHeaders = { "content-type": "application/json" };
@@ -278,6 +295,34 @@ const getDashboardUsage = async (
   return view.ok ? jsonResponse(200, { ok: true, view: view.value }) : errorResponse(400, view.error);
 };
 
+const requiredContractReferences = [
+  "docs/contracts/app-responsibilities.md",
+  "docs/contracts/identity-contract.md",
+  "docs/contracts/data-ownership.md",
+  "docs/contracts/api-catalog.md",
+  "docs/contracts/event-catalog.md",
+  "docs/repositories/platform-admin.md"
+] as const;
+
+const getHealth = (runtime: PlatformRuntime): Response => {
+  const health: PlatformHealthView = {
+    app: "ai-platform-core",
+    status: "ok",
+    checkedAt: runtime.clock.now().toISOString(),
+    contract: {
+      repository: "karukimori-wq/professional-platform-contracts",
+      responsibilitySource: "docs/contracts/app-responsibilities.md",
+      requiredReferences: requiredContractReferences
+    },
+    components: {
+      clients: runtime.clients.list().length,
+      capabilities: runtime.registry.list().length,
+      providers: runtime.providers.list().length
+    }
+  };
+  return jsonResponse(200, { ok: true, health });
+};
+
 export const createGatewayHttpHandler = (
   runtime: PlatformRuntime,
   options: GatewayHttpHandlerOptions = {}
@@ -305,8 +350,14 @@ export const createPlatformHttpHandler = (
   const gatewayRunRoute = options.gatewayRunRoute ?? "/v1/gateway/run";
   const analyticsUsageRoute = options.analyticsUsageRoute ?? "/v1/analytics/usage";
   const dashboardUsageRoute = options.dashboardUsageRoute ?? "/v1/dashboard/usage";
+  const healthRoute = options.healthRoute ?? "/v1/health";
   return async (request) => {
     const url = new URL(request.url);
+    if (url.pathname === healthRoute) {
+      return request.method === "GET"
+        ? getHealth(runtime)
+        : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only GET is supported."));
+    }
     if (url.pathname === gatewayRunRoute) {
       return createGatewayHttpHandler(runtime, { route: gatewayRunRoute })(request);
     }

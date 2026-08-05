@@ -8,6 +8,7 @@ export type DashboardPeriod = "today" | "month" | "year" | "all";
 export interface DashboardQuery {
   readonly period: DashboardPeriod;
   readonly now?: Date;
+  readonly client?: string;
   readonly workspaceId?: string;
   readonly userId?: string;
 }
@@ -192,9 +193,10 @@ const filterByPeriod = (
 
 const filterByScope = (
   records: readonly UsageRecord[],
-  query: Pick<DashboardQuery, "workspaceId" | "userId">
+  query: Pick<DashboardQuery, "client" | "workspaceId" | "userId">
 ): readonly UsageRecord[] =>
   records.filter((record) =>
+    (query.client === undefined || record.client === query.client) &&
     (query.workspaceId === undefined || record.workspaceId === query.workspaceId) &&
     (query.userId === undefined || record.userId === query.userId)
   );

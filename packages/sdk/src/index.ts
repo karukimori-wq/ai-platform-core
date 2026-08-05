@@ -133,15 +133,6 @@ export {
 } from "@ai-platform-core/knowledge";
 export { type PluginManifest, type PluginRuntime, createPluginRuntime } from "@ai-platform-core/plugin";
 export {
-  type PromptTemplate,
-  type PromptTemplateRenderRequest,
-  type PromptTemplateRenderResult,
-  type PromptTemplateRepository,
-  type PromptTemplateRuntime,
-  createMemoryPromptTemplateRepository,
-  createPromptTemplateRuntime
-} from "@ai-platform-core/prompt";
-export {
   type AIMessage,
   type AIProvider,
   type AIProviderRequest,
@@ -152,7 +143,18 @@ export {
   createOpenAICompatibleProvider,
   createProviderRegistry
 } from "@ai-platform-core/provider";
-export { type PlatformRuntime, type PlatformRuntimeOptions, createPlatformRuntime } from "@ai-platform-core/runtime";
+export {
+  type PlatformRuntime,
+  type PlatformRuntimeOptions,
+  type PromptTemplate,
+  type PromptTemplateRenderRequest,
+  type PromptTemplateRenderResult,
+  type PromptTemplateRepository,
+  type PromptTemplateRuntime,
+  createMemoryPromptTemplateRepository,
+  createPlatformRuntime,
+  createPromptTemplateRuntime
+} from "@ai-platform-core/runtime";
 export {
   type SecretReader,
   type SecretStore,

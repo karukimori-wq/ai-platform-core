@@ -91,7 +91,7 @@
 ## 0.1.11
 
 - Added Dashboard budget status values for client budget metrics.
-- Added warning status at 80 percent token and cost usage.
+- Added warning status at 80 percent token or cost usage.
 - Added exceeded status when token or cost budget limit is reached.
 - Added Dashboard tests for budget status calculation.
 

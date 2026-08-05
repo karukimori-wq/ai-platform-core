@@ -78,6 +78,8 @@ AI Platform Core resolves internal implementation details:
 AI Platform Core may receive reference IDs for traceability:
 
 - `workspaceId`
+- `userId`
+- `ownerUserId`
 - `projectId`
 - `customerId`
 - `sessionId`
@@ -87,6 +89,12 @@ AI Platform Core may receive reference IDs for traceability:
 - `capabilityId`
 
 These IDs are references, not ownership transfers.
+
+For MVP requests, applications should send `workspaceId + userId` with AI
+Activity execution requests so AI Platform Core can attribute Activity, Usage,
+and Capability execution history to the correct workspace and signed-in
+professional. `ownerUserId` is optional and should be used when ownership differs
+from the acting user. Do not make `professionalId` mandatory for MVP.
 
 Customer source of truth remains in Growth Engine. Session and Report source of
 truth remain in Professional Studio. AI Platform Core stores only the minimum

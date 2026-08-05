@@ -124,6 +124,12 @@ For MVP workspace/user attribution:
 GET /v1/analytics/usage?client=fortune_teller_a&period=month&workspaceId=workspace-numeria-a&userId=user-fortune-teller-a
 ```
 
+Dashboard-ready usage views are also available:
+
+```http
+GET /v1/dashboard/usage?client=fortune_teller_a&period=month&workspaceId=workspace-numeria-a&userId=user-fortune-teller-a
+```
+
 The usage endpoint is disabled unless `authorizeUsageRequest` is configured.
 The callback must bind the request to a trusted server-side session or token and
 return true only when that identity can read the requested `client`. The endpoint

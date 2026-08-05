@@ -8,6 +8,8 @@ describe("analytics repository", () => {
     await analytics.recordUsage({
       activityId: "activity-1",
       client: "client-a",
+      workspaceId: "workspace-1",
+      userId: "user-1",
       capability: "SNS.Generate",
       provider: "echo",
       model: "test",
@@ -23,6 +25,8 @@ describe("analytics repository", () => {
     expect(summary.ok).toBe(true);
     if (!summary.ok) return;
     expect(summary.value.totalTokens).toBe(3);
+    expect(summary.value.byWorkspace["workspace-1"]).toBe(1);
+    expect(summary.value.byUser["user-1"]).toBe(1);
     expect(summary.value.byCapability["SNS.Generate"]).toBe(1);
   });
 
@@ -30,6 +34,9 @@ describe("analytics repository", () => {
     const usageStore = createMemoryKeyValueStore<{
       readonly activityId: string;
       readonly client: string;
+      readonly workspaceId?: string;
+      readonly userId?: string;
+      readonly ownerUserId?: string;
       readonly capability: string;
       readonly provider: string;
       readonly model: string;
@@ -50,6 +57,9 @@ describe("analytics repository", () => {
     await analytics.recordUsage({
       activityId: "activity-1",
       client: "fortune_teller_a",
+      workspaceId: "workspace-numeria-a",
+      userId: "user-fortune-teller-a",
+      ownerUserId: "user-fortune-teller-a",
       capability: "report.generate",
       workflow: "numerology",
       provider: "openai",
@@ -70,9 +80,13 @@ describe("analytics repository", () => {
     expect(stored.ok).toBe(true);
     if (!stored.ok) return;
     expect(stored.value.value.occurredAt).toBe("2026-08-01T00:00:00.000Z");
+    expect(stored.value.value.workspaceId).toBe("workspace-numeria-a");
+    expect(stored.value.value.userId).toBe("user-fortune-teller-a");
     expect(usage.ok).toBe(true);
     if (!usage.ok) return;
     expect(usage.value[0]?.occurredAt).toEqual(new Date("2026-08-01T00:00:00.000Z"));
+    expect(usage.value[0]?.workspaceId).toBe("workspace-numeria-a");
+    expect(usage.value[0]?.userId).toBe("user-fortune-teller-a");
     expect(summary.ok).toBe(true);
     if (!summary.ok) return;
     expect(summary.value.byClient.fortune_teller_a).toBe(1);

@@ -30,7 +30,7 @@ Growth Engine
 lead generation and sales
 
 Professional Studio
-customer work, sessions, and documents
+customer work, sessions, and reports
 
 AI Platform Core
 common AI foundation
@@ -273,38 +273,27 @@ Event Engine infrastructure must support:
 
 Initial Business Events:
 
-- Lead.Created
-- Lead.Qualified
-- Lead.Updated
-- Customer.Created
-- Customer.Updated
-- Campaign.Created
-- Content.BriefRequested
-- Content.DraftCreated
-- Content.Published
-- Reservation.Requested
-- Reservation.Created
-- Reservation.Confirmed
-- Reservation.Cancelled
-- Session.Started
-- Session.Completed
-- Document.Generated
-- Payment.Completed
-- Payment.Refunded
-- Followup.Scheduled
-- Followup.Created
-- Followup.Completed
-- Review.Requested
-- Referral.Created
-- Repeat.Booked
-- Professional.RecommendationCreated
+- growth.customer.created.v1
+- growth.customer.updated.v1
+- growth.lead.converted.v1
+- growth.reservation.created.v1
+- growth.reservation.cancelled.v1
+- sns.post_draft.created.v1
+- sns.post_draft.updated.v1
+- studio.session.started.v1
+- studio.session.completed.v1
+- studio.report.generated.v1
+- studio.service_reference.updated.v1
+
+studio.recommendation.created.v1 is pending in the contracts repository and
+must not be implemented as a stable integration event until promoted there.
 
 Initial AI Activity Events:
 
-- AI.ActivityStarted
-- AI.ActivityCompleted
-- AI.ActivityFailed
-- AI.UsageRecorded
+- ai.activity.created.v1
+- ai.activity.completed.v1
+- ai.activity.failed.v1
+- ai.usage.recorded.v1
 
 AI Platform Core source-of-truth records are:
 
@@ -327,12 +316,12 @@ External references accepted for tracking context are:
 - professionalStudioType
 - customerId
 - sessionId
-- documentId
+- reportId
 - reservationId
 
-Customer source of truth belongs to Growth Engine. Session and Document source
+Customer source of truth belongs to Growth Engine. Session and Report source
 of truth belongs to Professional Studio. AI Platform Core may store IDs for
-usage attribution but must not own Customer, Session, Document, CRM, reservation,
+usage attribution but must not own Customer, Session, Report, CRM, reservation,
 commerce payment, or PDF layout records.
 
 AI Platform Core must not interpret the business meaning of Session. Numeria
@@ -446,7 +435,7 @@ Initial dashboard queries:
 - SNS and LINE operations
 - Reservation management
 - Sales and payment processing
-- PDF layout and document design
+- PDF layout and report design
 - Professional-domain business logic
 - AI employee management
 - Knowledge Graph

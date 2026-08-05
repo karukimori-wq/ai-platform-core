@@ -1,4 +1,4 @@
-import type { ActivityBudget, ActivityRequest } from "@ai-platform-core/activity";
+import type { Activity, ActivityBudget, ActivityRequest, ActivityStatus } from "@ai-platform-core/activity";
 import type { GatewayAuthContext, GatewayRequest } from "@ai-platform-core/gateway";
 import { type PlatformError, platformError } from "@ai-platform-core/kernel";
 import type { AIMessage } from "@ai-platform-core/provider";
@@ -14,6 +14,7 @@ export interface PlatformHttpHandlerOptions {
   readonly dashboardUsageRoute?: string;
   readonly healthRoute?: string;
   readonly contractStatusRoute?: string;
+  readonly activityRoutePrefix?: string;
   readonly authorizeUsageRequest?: (request: Request, clientId: string) => Promise<boolean> | boolean;
 }
 
@@ -24,6 +25,32 @@ export interface GatewayRunHttpBody {
 }
 
 export type UsageHttpPeriod = "today" | "month" | "year" | "all";
+
+export interface ActivityHttpView {
+  readonly id: string;
+  readonly client: string;
+  readonly workspaceId?: string;
+  readonly userId?: string;
+  readonly ownerUserId?: string;
+  readonly capability: string;
+  readonly workflow?: string;
+  readonly status: ActivityStatus;
+  readonly provider?: string;
+  readonly model?: string;
+  readonly tokens?: {
+    readonly input: number;
+    readonly output: number;
+    readonly total: number;
+  };
+  readonly cost?: {
+    readonly amount: number;
+    readonly currency: string;
+  };
+  readonly latencyMs?: number;
+  readonly knowledgeUsed?: readonly string[];
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}
 
 interface UsageHttpBreakdownItem {
   readonly usageCount: number;
@@ -311,6 +338,54 @@ const getDashboardUsage = async (
   return view.ok ? jsonResponse(200, { ok: true, view: view.value }) : errorResponse(400, view.error);
 };
 
+const toActivityHttpView = (activity: Activity): ActivityHttpView => ({
+  id: activity.id.value,
+  client: activity.request.client,
+  ...(activity.request.workspaceId === undefined ? {} : { workspaceId: activity.request.workspaceId }),
+  ...(activity.request.userId === undefined ? {} : { userId: activity.request.userId }),
+  ...(activity.request.ownerUserId === undefined ? {} : { ownerUserId: activity.request.ownerUserId }),
+  capability: activity.request.capability,
+  ...(activity.request.workflow === undefined ? {} : { workflow: activity.request.workflow }),
+  status: activity.status,
+  ...(activity.result?.provider === undefined ? {} : { provider: activity.result.provider }),
+  ...(activity.result?.model === undefined ? {} : { model: activity.result.model }),
+  ...(activity.result?.tokens === undefined ? {} : { tokens: activity.result.tokens }),
+  ...(activity.result?.cost === undefined ? {} : { cost: activity.result.cost }),
+  ...(activity.result?.latencyMs === undefined ? {} : { latencyMs: activity.result.latencyMs }),
+  ...(activity.result?.knowledgeUsed === undefined ? {} : { knowledgeUsed: activity.result.knowledgeUsed }),
+  createdAt: activity.createdAt.toISOString(),
+  updatedAt: activity.updatedAt.toISOString()
+});
+
+const getActivity = async (
+  runtime: PlatformRuntime,
+  request: Request,
+  url: URL,
+  authorize: PlatformHttpHandlerOptions["authorizeUsageRequest"],
+  activityRoutePrefix: string
+): Promise<Response> => {
+  const scopedRead = await authorizeScopedRead(request, url, authorize);
+  if (scopedRead instanceof Response) return scopedRead;
+  const activityId = url.pathname.slice(activityRoutePrefix.length + 1);
+  if (activityId.length === 0 || activityId.includes("/")) {
+    return errorResponse(404, platformError("HTTP_NOT_FOUND", `Route '${url.pathname}' was not found.`));
+  }
+  const activity = await runtime.activity.get(activityId);
+  if (!activity.ok) return errorResponse(404, activity.error);
+  if (activity.value.request.client !== scopedRead.client) {
+    return errorResponse(403, platformError("HTTP_FORBIDDEN", "Activity reads must be scoped to the caller."));
+  }
+  const workspaceId = readSearchString(url, "workspaceId");
+  const userId = readSearchString(url, "userId");
+  if (
+    (workspaceId !== undefined && activity.value.request.workspaceId !== workspaceId) ||
+    (userId !== undefined && activity.value.request.userId !== userId)
+  ) {
+    return errorResponse(404, platformError("ACTIVITY_NOT_FOUND", `Activity '${activityId}' was not found.`));
+  }
+  return jsonResponse(200, { ok: true, activity: toActivityHttpView(activity.value) });
+};
+
 const requiredContractReferences = [
   "docs/contracts/app-responsibilities.md",
   "docs/contracts/identity-contract.md",
@@ -405,6 +480,7 @@ export const createPlatformHttpHandler = (
   const dashboardUsageRoute = options.dashboardUsageRoute ?? "/v1/dashboard/usage";
   const healthRoute = options.healthRoute ?? "/v1/health";
   const contractStatusRoute = options.contractStatusRoute ?? "/v1/contracts/status";
+  const activityRoutePrefix = options.activityRoutePrefix ?? "/v1/activities";
   return async (request) => {
     const url = new URL(request.url);
     if (url.pathname === healthRoute) {
@@ -428,6 +504,11 @@ export const createPlatformHttpHandler = (
     if (url.pathname === dashboardUsageRoute) {
       return request.method === "GET"
         ? getDashboardUsage(runtime, request, url, options.authorizeUsageRequest)
+        : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only GET is supported."));
+    }
+    if (url.pathname.startsWith(`${activityRoutePrefix}/`)) {
+      return request.method === "GET"
+        ? getActivity(runtime, request, url, options.authorizeUsageRequest, activityRoutePrefix)
         : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only GET is supported."));
     }
     return errorResponse(404, platformError("HTTP_NOT_FOUND", `Route '${url.pathname}' was not found.`));

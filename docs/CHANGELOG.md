@@ -91,7 +91,7 @@
 ## 0.1.11
 
 - Added Dashboard budget status values for client budget metrics.
-- Added warning status at 80 percent token or cost usage.
+- Added warning status at 80 percent token and cost usage.
 - Added exceeded status when token or cost budget limit is reached.
 - Added Dashboard tests for budget status calculation.
 
@@ -228,3 +228,10 @@
 
 - Added Event Engine audit records for publish, delivery, dead-letter, and replay actions.
 - Added a standard Platform Event envelope validator for required fields, event versions, allowed event types, and category consistency.
+
+## 0.1.35
+
+- Added MVP identity attribution fields to Activity requests and Usage records: `workspaceId`, `userId`, and optional `ownerUserId`.
+- Added Usage summary grouping by workspace and user.
+- Added HTTP usage filtering by `workspaceId` and `userId`.
+- Documented that `professionalId` is a future extension concept, not a required MVP field.

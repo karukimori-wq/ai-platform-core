@@ -225,6 +225,13 @@
 - Pending recommendation event excluded from stable contracts
 - SNS Planner input boundary documented
 
+## v0.1.33 Managed Event Delivery
+
+- Consumer delivery state tracking
+- Idempotent memory event delivery
+- Retry and dead-letter behavior
+- Event replay through stored events
+
 ## v0.1.28 Professional Studio Event Boundary
 
 - Shared integration event type names for Growth Engine and Professional Studio

@@ -10,11 +10,11 @@ through the Gateway so usage is recorded by client.
 import {
   createOpenAICompatibleProvider,
   createPlatformHttpHandler,
-  createPlatform,
+  createPlatformRuntime,
   createSecretReader
 } from "@ai-platform-core/sdk";
 
-const runtime = createPlatform();
+const runtime = createPlatformRuntime();
 
 await runtime.secrets.set("OPENAI_API_KEY", process.env.OPENAI_API_KEY ?? "");
 runtime.providers.register(createOpenAICompatibleProvider({
@@ -35,7 +35,8 @@ runtime.clients.register({
   analytics: true,
   budget: {
     monthlyTokenLimit: 1000000,
-    monthlyCostLimit: { amount: 100, currency: "USD" }
+    monthlyCostLimit: 100,
+    currency: "USD"
   }
 });
 
@@ -81,6 +82,9 @@ content-type: application/json
   },
   "activity": {
     "client": "fortune_teller_a",
+    "workspaceId": "workspace-numeria-a",
+    "userId": "user-fortune-teller-a",
+    "ownerUserId": "user-fortune-teller-a",
     "capability": "report.generate",
     "workflow": "numerology",
     "goal": "Create a draft fortune-telling report.",
@@ -114,6 +118,12 @@ Applications can also expose the built-in usage endpoint:
 GET /v1/analytics/usage?client=fortune_teller_a&period=month
 ```
 
+For MVP workspace/user attribution:
+
+```http
+GET /v1/analytics/usage?client=fortune_teller_a&period=month&workspaceId=workspace-numeria-a&userId=user-fortune-teller-a
+```
+
 The usage endpoint is disabled unless `authorizeUsageRequest` is configured.
 The callback must bind the request to a trusted server-side session or token and
 return true only when that identity can read the requested `client`. The endpoint
@@ -126,6 +136,8 @@ Example response:
   "ok": true,
   "summary": {
     "client": "fortune_teller_a",
+    "workspaceId": "workspace-numeria-a",
+    "userId": "user-fortune-teller-a",
     "period": "month",
     "usageCount": 12,
     "totalTokens": 18400,
@@ -168,6 +180,9 @@ the endpoint uses `month`.
 The usage record includes:
 
 - `client`: which customer or tenant used AI, for example `fortune_teller_a`
+- `workspaceId`: which business workspace used AI
+- `userId`: which signed-in professional operated the AI request
+- `ownerUserId`: which user owns the workspace, when ownership differs from the acting user
 - `capability`: which feature used AI, for example `report.generate`
 - `workflow`: which business flow used AI, for example `numerology`
 - `provider` and `model`
@@ -176,7 +191,8 @@ The usage record includes:
 
 This means the platform can answer questions such as "How much AI did Fortune
 Teller A use for report generation this month?" as long as the application sends
-that fortune teller's account ID as `auth.clientId` and `activity.client`.
+that fortune teller's account ID as `auth.clientId` and `activity.client`, and
+the MVP attribution scope as `activity.workspaceId` and `activity.userId`.
 
 ## Production Notes
 

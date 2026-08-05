@@ -8,7 +8,7 @@ and Counselor Studio.
 
 ```mermaid
 flowchart TD
-  GE[Growth Engine\nlead generation, sales, CRM] --> PS[Professional Studio\ncustomer work, sessions, documents]
+  GE[Growth Engine\nlead generation, sales, CRM] --> PS[Professional Studio\ncustomer work, sessions, reports]
   PS --> AIP[AI Platform Core\nAI runtime, prompt, knowledge, usage, events]
 ```
 
@@ -79,38 +79,27 @@ their schemas and responsibilities separate.
 
 Initial Business Events:
 
-- `Lead.Created`
-- `Lead.Qualified`
-- `Lead.Updated`
-- `Customer.Created`
-- `Customer.Updated`
-- `Campaign.Created`
-- `Content.BriefRequested`
-- `Content.DraftCreated`
-- `Content.Published`
-- `Reservation.Requested`
-- `Reservation.Created`
-- `Reservation.Confirmed`
-- `Reservation.Cancelled`
-- `Session.Started`
-- `Session.Completed`
-- `Document.Generated`
-- `Payment.Completed`
-- `Payment.Refunded`
-- `Followup.Scheduled`
-- `Followup.Created`
-- `Followup.Completed`
-- `Review.Requested`
-- `Referral.Created`
-- `Repeat.Booked`
-- `Professional.RecommendationCreated`
+- `growth.customer.created.v1`
+- `growth.customer.updated.v1`
+- `growth.lead.converted.v1`
+- `growth.reservation.created.v1`
+- `growth.reservation.cancelled.v1`
+- `sns.post_draft.created.v1`
+- `sns.post_draft.updated.v1`
+- `studio.session.started.v1`
+- `studio.session.completed.v1`
+- `studio.report.generated.v1`
+- `studio.service_reference.updated.v1`
+
+`studio.recommendation.created.v1` is pending in the contracts repository and
+must not be implemented as a stable integration event until promoted there.
 
 Initial AI Activity Events:
 
-- `AI.ActivityStarted`
-- `AI.ActivityCompleted`
-- `AI.ActivityFailed`
-- `AI.UsageRecorded`
+- `ai.activity.created.v1`
+- `ai.activity.completed.v1`
+- `ai.activity.failed.v1`
+- `ai.usage.recorded.v1`
 
 ## Event Sourcing
 
@@ -125,14 +114,17 @@ Prompt, Prompt Version, Workflow, Agent, Tool, Knowledge, Usage, Cost,
 Evaluation, and Event.
 
 Business entities remain outside AI Platform Core. Customer source of truth is
-Growth Engine. Session and Document source of truth is Professional Studio. AI
+Growth Engine. Session and Report source of truth is Professional Studio. AI
 Platform Core may record external reference IDs such as `workspaceId`,
-`projectId`, `professionalStudioType`, `customerId`, `sessionId`, `documentId`,
-and `reservationId`, but it must not own CRM, session, or document records.
+`projectId`, `professionalStudioType`, `customerId`, `sessionId`, `reportId`,
+and `reservationId`, but it must not own CRM, session, or report records.
 
 SNS Planner is operated by Growth Engine. AI Platform Core may execute a
 capability such as `Marketing.GenerateContentBrief` and return the result to
 Growth Engine; Growth Engine decides whether and how to request SNS Planner work.
+SNS Planner receives post creation inputs such as `purpose`, `targetAudience`,
+`cta`, `channel`, `tone`, and `constraints`; it does not own business targeting,
+offer, or CTA decisions.
 
 ## Capability Runtime
 

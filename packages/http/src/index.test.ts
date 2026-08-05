@@ -426,4 +426,61 @@ describe("gateway http handler", () => {
     if (executed.ok) return;
     expect(executed.error.code).toBe("CAPABILITY_HTTP_MANIFEST_ONLY");
   });
+
+  it("renders prompt templates through a scoped HTTP endpoint", async () => {
+    const runtime = createPlatformRuntime();
+    await runtime.prompt.register({
+      id: "Report.Generate",
+      version: 1,
+      body: "Report for {{name}} with number {{number}}.",
+      retention: "metadata"
+    });
+    const closedHandler = createPlatformHttpHandler(runtime);
+    const handler = createPlatformHttpHandler(runtime, {
+      authorizeUsageRequest: (_request, clientId) => clientId === "platform_admin"
+    });
+    const requestBody = {
+      templateId: "Report.Generate",
+      variables: { name: "A", number: 7 }
+    };
+
+    const hidden = await closedHandler(new Request("https://example.com/v1/prompt-templates/render?client=platform_admin", {
+      method: "POST",
+      body: JSON.stringify(requestBody)
+    }));
+    const forbidden = await handler(new Request("https://example.com/v1/prompt-templates/render?client=other_client", {
+      method: "POST",
+      body: JSON.stringify(requestBody)
+    }));
+    const invalid = await handler(new Request("https://example.com/v1/prompt-templates/render?client=platform_admin", {
+      method: "POST",
+      body: JSON.stringify({ templateId: "Report.Generate", variables: { nested: { value: true } } })
+    }));
+    const missing = await handler(new Request("https://example.com/v1/prompt-templates/render?client=platform_admin", {
+      method: "POST",
+      body: JSON.stringify({ templateId: "Report.Generate", variables: { name: "A" } })
+    }));
+    const response = await handler(new Request("https://example.com/v1/prompt-templates/render?client=platform_admin", {
+      method: "POST",
+      body: JSON.stringify(requestBody)
+    }));
+    const method = await handler(new Request("https://example.com/v1/prompt-templates/render?client=platform_admin"));
+    const body = await response.json() as Readonly<{
+      ok: boolean;
+      prompt: Readonly<Record<string, unknown>>;
+    }>;
+
+    expect(hidden.status).toBe(404);
+    expect(forbidden.status).toBe(403);
+    expect(invalid.status).toBe(400);
+    expect(missing.status).toBe(400);
+    expect(response.status).toBe(200);
+    expect(method.status).toBe(405);
+    expect(body.ok).toBe(true);
+    expect(body.prompt).toMatchObject({
+      templateId: "Report.Generate",
+      version: 1,
+      rendered: "Report for A with number 7."
+    });
+  });
 });

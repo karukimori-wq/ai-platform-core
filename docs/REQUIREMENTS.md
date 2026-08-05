@@ -114,6 +114,9 @@ MVP must capture:
 `ActivityRequest` includes:
 
 - client
+- workspaceId
+- userId
+- ownerUserId
 - capability
 - workflow
 - goal
@@ -312,6 +315,8 @@ AI Platform Core source-of-truth records are:
 External references accepted for tracking context are:
 
 - workspaceId
+- userId
+- ownerUserId
 - projectId
 - professionalStudioType
 - customerId
@@ -323,6 +328,12 @@ Customer source of truth belongs to Growth Engine. Session and Report source
 of truth belongs to Professional Studio. AI Platform Core may store IDs for
 usage attribution but must not own Customer, Session, Report, CRM, reservation,
 commerce payment, or PDF layout records.
+
+For MVP, AI Activity, Usage, and Capability execution history are scoped by
+`workspaceId + userId`. `ownerUserId` may be recorded for ownership attribution.
+`professionalId` is not a required MVP field and should be treated as a future
+extension concept for multi-brand, multi-professional, or staff operation
+models.
 
 AI Platform Core must not interpret the business meaning of Session. Numeria
 Studio can treat Session as a fortune-telling session, FP Studio as a meeting,
@@ -363,6 +374,8 @@ Initial dashboard periods:
 Initial dashboard dimensions:
 
 - client
+- workspace
+- user
 - capability
 - provider
 - model

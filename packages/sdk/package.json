@@ -26,6 +26,7 @@
     "@ai-platform-core/kernel": "workspace:*",
     "@ai-platform-core/knowledge": "workspace:*",
     "@ai-platform-core/plugin": "workspace:*",
+    "@ai-platform-core/prompt": "workspace:*",
     "@ai-platform-core/provider": "workspace:*",
     "@ai-platform-core/runtime": "workspace:*",
     "@ai-platform-core/secrets": "workspace:*",

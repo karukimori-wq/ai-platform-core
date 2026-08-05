@@ -116,8 +116,17 @@ Evaluation, and Event.
 Business entities remain outside AI Platform Core. Customer source of truth is
 Growth Engine. Session and Report source of truth is Professional Studio. AI
 Platform Core may record external reference IDs such as `workspaceId`,
-`projectId`, `professionalStudioType`, `customerId`, `sessionId`, `reportId`,
-and `reservationId`, but it must not own CRM, session, or report records.
+`userId`, `ownerUserId`, `projectId`, `professionalStudioType`, `customerId`,
+`sessionId`, `reportId`, and `reservationId`, but it must not own CRM,
+session, or report records.
+
+For MVP attribution, AI Activity, Usage, and Capability execution history use
+`workspaceId + userId` as the primary scope. `workspaceId` represents the
+professional's business workspace, `userId` represents the signed-in
+professional operating the AI request, and `ownerUserId` may identify the
+workspace owner when needed. `professionalId` is not required for MVP and should
+be treated only as a future extension point for multi-brand, multi-professional,
+or staff operation models.
 
 SNS Planner is operated by Growth Engine. AI Platform Core may execute a
 capability such as `Marketing.GenerateContentBrief` and return the result to

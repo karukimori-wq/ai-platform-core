@@ -107,6 +107,8 @@ export {
   type PlatformContractStatusView,
   type PlatformHttpHandlerOptions,
   type PlatformHealthView,
+  type PromptTemplateRenderHttpBody,
+  type PromptTemplateRenderHttpView,
   type UsageHttpPeriod,
   createGatewayHttpHandler,
   createPlatformHttpHandler
@@ -130,6 +132,15 @@ export {
   createMemoryKnowledgeRepository
 } from "@ai-platform-core/knowledge";
 export { type PluginManifest, type PluginRuntime, createPluginRuntime } from "@ai-platform-core/plugin";
+export {
+  type PromptTemplate,
+  type PromptTemplateRenderRequest,
+  type PromptTemplateRenderResult,
+  type PromptTemplateRepository,
+  type PromptTemplateRuntime,
+  createMemoryPromptTemplateRepository,
+  createPromptTemplateRuntime
+} from "@ai-platform-core/prompt";
 export {
   type AIMessage,
   type AIProvider,

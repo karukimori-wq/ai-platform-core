@@ -1,73 +1,45 @@
 import { type Result, type UUID, err, ok, platformError } from "@ai-platform-core/kernel";
 
 export type PlatformIntegrationEventType =
-  | "Lead.Created"
-  | "Lead.Qualified"
-  | "Lead.Updated"
-  | "Customer.Created"
-  | "Customer.Updated"
-  | "Campaign.Created"
-  | "Content.BriefRequested"
-  | "Content.DraftCreated"
-  | "Content.Published"
-  | "Reservation.Requested"
-  | "Reservation.Created"
-  | "Reservation.Confirmed"
-  | "Reservation.Cancelled"
-  | "Session.Started"
-  | "Session.Completed"
-  | "Document.Generated"
-  | "Payment.Completed"
-  | "Payment.Refunded"
-  | "Followup.Scheduled"
-  | "Followup.Created"
-  | "Followup.Completed"
-  | "Review.Requested"
-  | "Referral.Created"
-  | "Repeat.Booked"
-  | "Professional.RecommendationCreated"
-  | "AI.ActivityStarted"
-  | "AI.ActivityCompleted"
-  | "AI.ActivityFailed"
-  | "AI.UsageRecorded";
+  | "growth.customer.created.v1"
+  | "growth.customer.updated.v1"
+  | "growth.lead.converted.v1"
+  | "growth.reservation.created.v1"
+  | "growth.reservation.cancelled.v1"
+  | "studio.session.started.v1"
+  | "studio.session.completed.v1"
+  | "studio.report.generated.v1"
+  | "studio.service_reference.updated.v1"
+  | "ai.activity.created.v1"
+  | "ai.activity.completed.v1"
+  | "ai.activity.failed.v1"
+  | "ai.usage.recorded.v1"
+  | "sns.post_draft.created.v1"
+  | "sns.post_draft.updated.v1";
 
 export const platformIntegrationEventTypes = [
-  "Lead.Created",
-  "Lead.Qualified",
-  "Lead.Updated",
-  "Customer.Created",
-  "Customer.Updated",
-  "Campaign.Created",
-  "Content.BriefRequested",
-  "Content.DraftCreated",
-  "Content.Published",
-  "Reservation.Requested",
-  "Reservation.Created",
-  "Reservation.Confirmed",
-  "Reservation.Cancelled",
-  "Session.Started",
-  "Session.Completed",
-  "Document.Generated",
-  "Payment.Completed",
-  "Payment.Refunded",
-  "Followup.Scheduled",
-  "Followup.Created",
-  "Followup.Completed",
-  "Review.Requested",
-  "Referral.Created",
-  "Repeat.Booked",
-  "Professional.RecommendationCreated",
-  "AI.ActivityStarted",
-  "AI.ActivityCompleted",
-  "AI.ActivityFailed",
-  "AI.UsageRecorded"
+  "growth.customer.created.v1",
+  "growth.customer.updated.v1",
+  "growth.lead.converted.v1",
+  "growth.reservation.created.v1",
+  "growth.reservation.cancelled.v1",
+  "studio.session.started.v1",
+  "studio.session.completed.v1",
+  "studio.report.generated.v1",
+  "studio.service_reference.updated.v1",
+  "ai.activity.created.v1",
+  "ai.activity.completed.v1",
+  "ai.activity.failed.v1",
+  "ai.usage.recorded.v1",
+  "sns.post_draft.created.v1",
+  "sns.post_draft.updated.v1"
 ] as const satisfies readonly PlatformIntegrationEventType[];
 
 export type EventCategory = "business" | "ai-activity";
 
 export const getPlatformIntegrationEventCategory = (
   eventType: PlatformIntegrationEventType
-): EventCategory => eventType.startsWith("AI.") ? "ai-activity" : "business";
+): EventCategory => eventType.startsWith("ai.") ? "ai-activity" : "business";
 
 export interface DomainEvent<TPayload extends Readonly<Record<string, unknown>> = Readonly<Record<string, unknown>>> {
   readonly id: UUID;

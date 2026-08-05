@@ -70,12 +70,16 @@ export {
   type EventSubscriberRegistry,
   type EventSubscription,
   type EventStore,
+  type ManagedEventBus,
+  type ManagedEventBusOptions,
   type PlatformEventEnvelope,
   type PlatformIntegrationEvent,
   type PlatformIntegrationEventType,
+  createManagedEventBus,
   createEventBus,
   createEventDispatcher,
   createMemoryEventStore,
+  defaultEventDeliveryPolicy,
   getPlatformIntegrationEventCategory,
   platformIntegrationEventTypes
 } from "@ai-platform-core/event";

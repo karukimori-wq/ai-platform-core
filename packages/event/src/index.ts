@@ -94,6 +94,22 @@ export interface DeadLetterEvent {
   readonly attempts: number;
 }
 
+export type EventAuditAction =
+  | "published"
+  | "delivery_succeeded"
+  | "delivery_failed"
+  | "dead_lettered"
+  | "replayed";
+
+export interface EventAuditRecord {
+  readonly action: EventAuditAction;
+  readonly eventId: string;
+  readonly eventType: string;
+  readonly occurredAt: Date;
+  readonly consumerId?: string;
+  readonly details: Readonly<Record<string, unknown>>;
+}
+
 export interface EventSchemaValidator {
   readonly validate: (event: PlatformEventEnvelope) => Result<void>;
 }
@@ -146,6 +162,7 @@ export interface EventBus extends EventPublisher, EventSubscriberRegistry {
 export interface ManagedEventBus extends EventBus {
   readonly consumerStates: () => readonly EventConsumerState[];
   readonly deadLetters: () => readonly DeadLetterEvent[];
+  readonly auditLogs: () => readonly EventAuditRecord[];
   readonly replay: (filter?: EventQuery) => Promise<Result<void>>;
 }
 
@@ -181,6 +198,7 @@ export const createManagedEventBus = (options: ManagedEventBusOptions = {}): Man
   const subscribers = new Map<string, EventSubscriber>();
   const consumerStates = new Map<string, EventConsumerState>();
   const deadLetters: DeadLetterEvent[] = [];
+  const auditLogs: EventAuditRecord[] = [];
   const deliveryPolicy = options.deliveryPolicy ?? defaultEventDeliveryPolicy;
   const now = options.now ?? (() => new Date());
 
@@ -210,6 +228,22 @@ export const createManagedEventBus = (options: ManagedEventBusOptions = {}): Man
     return state;
   };
 
+  const appendAuditLog = (
+    action: EventAuditAction,
+    event: DomainEvent,
+    consumerId?: string,
+    details: Readonly<Record<string, unknown>> = {}
+  ): void => {
+    auditLogs.push({
+      action,
+      eventId: event.id.value,
+      eventType: event.type,
+      occurredAt: now(),
+      details,
+      ...(consumerId === undefined ? {} : { consumerId })
+    });
+  };
+
   const deliverToSubscriber = async (subscriber: EventSubscriber, event: DomainEvent): Promise<Result<void>> => {
     const consumerId = subscriber.id ?? subscriber.eventType;
     const stateKey = toConsumerStateKey(consumerId, event);
@@ -225,6 +259,7 @@ export const createManagedEventBus = (options: ManagedEventBusOptions = {}): Man
       const handled = await subscriber.handle(event);
       if (handled.ok) {
         updateConsumerState(consumerId, event, "succeeded", attempts);
+        appendAuditLog("delivery_succeeded", event, consumerId, { attempts });
         return ok(undefined);
       }
 
@@ -237,16 +272,25 @@ export const createManagedEventBus = (options: ManagedEventBusOptions = {}): Man
           failedAt: state.updatedAt,
           attempts
         });
+        appendAuditLog("dead_lettered", event, consumerId, {
+          attempts,
+          reason: state.lastError ?? "Event delivery failed."
+        });
         return ok(undefined);
       }
 
       updateConsumerState(consumerId, event, "failed", attempts, handled.error.message);
+      appendAuditLog("delivery_failed", event, consumerId, {
+        attempts,
+        reason: handled.error.message
+      });
     }
 
     return ok(undefined);
   };
 
   const publish = async (event: DomainEvent): Promise<Result<void>> => {
+    appendAuditLog("published", event);
     const targets = [...subscribers.values()].filter(
       (subscriber) => subscriber.eventType === event.type || subscriber.eventType === "*"
     );
@@ -271,6 +315,7 @@ export const createManagedEventBus = (options: ManagedEventBusOptions = {}): Man
     unsubscribe,
     consumerStates: () => [...consumerStates.values()],
     deadLetters: () => [...deadLetters],
+    auditLogs: () => [...auditLogs],
     replay: async (filter = {}) => {
       if (!options.store) {
         return err(platformError("EVENT_STORE_NOT_CONFIGURED", "Managed event replay requires an EventStore."));
@@ -278,6 +323,7 @@ export const createManagedEventBus = (options: ManagedEventBusOptions = {}): Man
       const events = await options.store.query(filter);
       if (!events.ok) return events;
       for (const event of events.value) {
+        appendAuditLog("replayed", event, undefined, { filter });
         const delivered = await publish(event);
         if (!delivered.ok) return delivered;
       }
@@ -285,6 +331,41 @@ export const createManagedEventBus = (options: ManagedEventBusOptions = {}): Man
     }
   };
 };
+
+export const createPlatformEventEnvelopeValidator = (
+  allowedEventTypes: readonly PlatformIntegrationEventType[] = platformIntegrationEventTypes
+): EventSchemaValidator => ({
+  validate: (event) => {
+    if (!isNonEmptyString(event.eventId)) {
+      return err(platformError("INVALID_EVENT_ENVELOPE", "Event envelope requires eventId."));
+    }
+    if (!allowedEventTypes.includes(event.eventType)) {
+      return err(platformError("INVALID_EVENT_TYPE", `Event type '${event.eventType}' is not allowed.`));
+    }
+    if (!Number.isInteger(event.eventVersion) || event.eventVersion < 1) {
+      return err(platformError("INVALID_EVENT_VERSION", "Event version must be a positive integer."));
+    }
+    if (Number.isNaN(event.occurredAt.getTime())) {
+      return err(platformError("INVALID_EVENT_OCCURRED_AT", "Event occurredAt must be a valid Date."));
+    }
+    if (!isNonEmptyString(event.workspaceId)) {
+      return err(platformError("INVALID_EVENT_ENVELOPE", "Event envelope requires workspaceId."));
+    }
+    if (!isNonEmptyString(event.producer)) {
+      return err(platformError("INVALID_EVENT_ENVELOPE", "Event envelope requires producer."));
+    }
+    if (!isNonEmptyString(event.correlationId)) {
+      return err(platformError("INVALID_EVENT_ENVELOPE", "Event envelope requires correlationId."));
+    }
+    if (!isNonEmptyString(event.subjectType) || !isNonEmptyString(event.subjectId)) {
+      return err(platformError("INVALID_EVENT_ENVELOPE", "Event envelope requires subjectType and subjectId."));
+    }
+    if (event.category !== getPlatformIntegrationEventCategory(event.eventType)) {
+      return err(platformError("INVALID_EVENT_CATEGORY", "Event category does not match eventType."));
+    }
+    return ok(undefined);
+  }
+});
 
 export const createEventBus = (): EventBus => {
   let nextSubscriptionId = 1;
@@ -340,6 +421,8 @@ export const createEventDispatcher = (
 });
 
 const toConsumerStateKey = (consumerId: string, event: DomainEvent): string => `${consumerId}:${event.id.value}`;
+
+const isNonEmptyString = (value: string): boolean => value.trim().length > 0;
 
 const matchesEventQuery = (event: DomainEvent, filter: EventQuery): boolean => {
   if (filter.aggregateId && !event.aggregateId.equals(filter.aggregateId)) return false;

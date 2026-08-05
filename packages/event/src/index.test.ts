@@ -27,11 +27,11 @@ describe("event", () => {
   it("publishes platform integration events", async () => {
     const bus = createEventBus();
     const seen: string[] = [];
-    bus.subscribe({ eventType: "Session.Completed", handle: async (event) => { seen.push(event.type); return ok(undefined); } });
+    bus.subscribe({ eventType: "studio.session.completed.v1", handle: async (event) => { seen.push(event.type); return ok(undefined); } });
     const event: PlatformIntegrationEvent<{ readonly sessionId: string; readonly studio: string }> = {
       id,
       aggregateId: id,
-      type: "Session.Completed",
+      type: "studio.session.completed.v1",
       version: 1,
       occurredAt: new Date(),
       payload: { sessionId: "session-1", studio: "numeria" },
@@ -40,22 +40,25 @@ describe("event", () => {
 
     await bus.publish(event);
 
-    expect(platformIntegrationEventTypes).toContain("Lead.Created");
-    expect(platformIntegrationEventTypes).toContain("Payment.Completed");
-    expect(seen).toEqual(["Session.Completed"]);
+    expect(platformIntegrationEventTypes).toContain("growth.customer.created.v1");
+    expect(platformIntegrationEventTypes).toContain("growth.reservation.created.v1");
+    expect(platformIntegrationEventTypes).toContain("studio.report.generated.v1");
+    expect(platformIntegrationEventTypes).toContain("sns.post_draft.updated.v1");
+    expect(platformIntegrationEventTypes).not.toContain("studio.recommendation.created.v1");
+    expect(seen).toEqual(["studio.session.completed.v1"]);
   });
 
   it("classifies business and AI activity integration events", () => {
-    expect(platformIntegrationEventTypes).toContain("Content.BriefRequested");
-    expect(platformIntegrationEventTypes).toContain("AI.ActivityCompleted");
-    expect(getPlatformIntegrationEventCategory("Payment.Completed")).toBe("business");
-    expect(getPlatformIntegrationEventCategory("AI.ActivityCompleted")).toBe("ai-activity");
+    expect(platformIntegrationEventTypes).toContain("sns.post_draft.created.v1");
+    expect(platformIntegrationEventTypes).toContain("ai.activity.completed.v1");
+    expect(getPlatformIntegrationEventCategory("studio.report.generated.v1")).toBe("business");
+    expect(getPlatformIntegrationEventCategory("ai.activity.completed.v1")).toBe("ai-activity");
   });
 
   it("supports platform event envelope metadata", () => {
     const envelope: PlatformEventEnvelope<{ readonly activityId: string; readonly customerId: string }> = {
       eventId: "event-1",
-      eventType: "AI.ActivityCompleted",
+      eventType: "ai.activity.completed.v1",
       eventVersion: 1,
       occurredAt: new Date("2026-01-01T00:00:00.000Z"),
       workspaceId: "workspace-1",
@@ -77,7 +80,7 @@ describe("event", () => {
     const bus = createEventBus();
     const seen: string[] = [];
     const subscription = bus.subscribe({
-      eventType: "Session.Completed",
+      eventType: "studio.session.completed.v1",
       handle: async (event) => { seen.push(event.type); return ok(undefined); }
     });
     expect(subscription.ok).toBe(true);
@@ -87,7 +90,7 @@ describe("event", () => {
     await bus.publish({
       id,
       aggregateId: id,
-      type: "Session.Completed",
+      type: "studio.session.completed.v1",
       version: 1,
       occurredAt: new Date(),
       payload: {},
@@ -103,17 +106,17 @@ describe("event", () => {
     const first = new Date("2026-01-01T00:00:00.000Z");
     const second = new Date("2026-01-02T00:00:00.000Z");
     await store.append([
-      { id, aggregateId: id, type: "Lead.Created", version: 1, occurredAt: first, payload: {}, metadata: {} },
-      { id: otherId, aggregateId: otherId, type: "Lead.Created", version: 1, occurredAt: first, payload: {}, metadata: {} },
-      { id, aggregateId: id, type: "Session.Completed", version: 2, occurredAt: second, payload: {}, metadata: {} }
+      { id, aggregateId: id, type: "growth.customer.created.v1", version: 1, occurredAt: first, payload: {}, metadata: {} },
+      { id: otherId, aggregateId: otherId, type: "growth.customer.created.v1", version: 1, occurredAt: first, payload: {}, metadata: {} },
+      { id, aggregateId: id, type: "studio.session.completed.v1", version: 2, occurredAt: second, payload: {}, metadata: {} }
     ]);
 
     const result = await store.query({
       aggregateId: id,
-      types: ["Session.Completed"],
+      types: ["studio.session.completed.v1"],
       from: new Date("2026-01-01T12:00:00.000Z")
     });
 
-    expect(result.value.map((event) => event.type)).toEqual(["Session.Completed"]);
+    expect(result.value.map((event) => event.type)).toEqual(["studio.session.completed.v1"]);
   });
 });

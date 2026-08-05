@@ -1,6 +1,7 @@
 import type { Activity, ActivityBudget, ActivityRequest, ActivityStatus } from "@ai-platform-core/activity";
 import type { GatewayAuthContext, GatewayRequest } from "@ai-platform-core/gateway";
 import { type PlatformError, err, platformError } from "@ai-platform-core/kernel";
+import type { PromptTemplateRenderRequest, PromptTemplateRenderResult } from "@ai-platform-core/prompt";
 import type { AIMessage } from "@ai-platform-core/provider";
 import type { PlatformRuntime } from "@ai-platform-core/runtime";
 
@@ -16,6 +17,7 @@ export interface PlatformHttpHandlerOptions {
   readonly contractStatusRoute?: string;
   readonly activityRoutePrefix?: string;
   readonly capabilityRegisterRoute?: string;
+  readonly promptTemplateRenderRoute?: string;
   readonly authorizeUsageRequest?: (request: Request, clientId: string) => Promise<boolean> | boolean;
 }
 
@@ -42,6 +44,10 @@ export interface CapabilityHttpView {
   readonly input: string;
   readonly output: string;
 }
+
+export type PromptTemplateRenderHttpBody = PromptTemplateRenderRequest;
+
+export type PromptTemplateRenderHttpView = PromptTemplateRenderResult;
 
 export type UsageHttpPeriod = "today" | "month" | "year" | "all";
 
@@ -250,6 +256,26 @@ const parseCapabilityRegisterBody = (value: unknown): CapabilityRegisterHttpBody
   return { id, name, description, permission, input, output };
 };
 
+const parsePromptTemplateRenderBody = (value: unknown): PromptTemplateRenderHttpBody | PlatformError => {
+  if (!isRecord(value)) {
+    return platformError("HTTP_INVALID_BODY", "Request body must be a JSON object.");
+  }
+  const templateId = readString(value, "templateId");
+  const variables = readRecord(value, "variables");
+  if (templateId === undefined || variables === undefined) {
+    return platformError("HTTP_INVALID_BODY", "Request body has invalid prompt template fields.");
+  }
+  const version = typeof value.version === "number" ? value.version : undefined;
+  const renderVariables: Record<string, string | number | boolean> = {};
+  for (const [key, item] of Object.entries(variables)) {
+    if (typeof item !== "string" && typeof item !== "number" && typeof item !== "boolean") {
+      return platformError("HTTP_INVALID_BODY", "Prompt template variables must be strings, numbers, or booleans.");
+    }
+    renderVariables[key] = item;
+  }
+  return { templateId, ...(version === undefined ? {} : { version }), variables: renderVariables };
+};
+
 const runGateway = async (runtime: PlatformRuntime, request: GatewayRequest): Promise<Response> => {
   const result = await runtime.gateway.run(request);
   return result.ok ? jsonResponse(200, { ok: true, result: result.value }) : errorResponse(400, result.error);
@@ -410,6 +436,22 @@ const registerCapability = async (
   return jsonResponse(201, { ok: true, capability: toCapabilityHttpView(parsed) });
 };
 
+const renderPromptTemplate = async (
+  runtime: PlatformRuntime,
+  request: Request,
+  url: URL,
+  authorize: PlatformHttpHandlerOptions["authorizeUsageRequest"]
+): Promise<Response> => {
+  const scopedRead = await authorizeScopedRead(request, url, authorize);
+  if (scopedRead instanceof Response) return scopedRead;
+  const parsed = parsePromptTemplateRenderBody(await request.json().catch(() => undefined));
+  if (isPlatformError(parsed)) return errorResponse(400, parsed);
+  const rendered = await runtime.prompt.render(parsed);
+  return rendered.ok
+    ? jsonResponse(200, { ok: true, prompt: rendered.value })
+    : errorResponse(400, rendered.error);
+};
+
 const toActivityHttpView = (activity: Activity): ActivityHttpView => ({
   id: activity.id.value,
   client: activity.request.client,
@@ -554,6 +596,7 @@ export const createPlatformHttpHandler = (
   const contractStatusRoute = options.contractStatusRoute ?? "/v1/contracts/status";
   const activityRoutePrefix = options.activityRoutePrefix ?? "/v1/activities";
   const capabilityRegisterRoute = options.capabilityRegisterRoute ?? "/v1/capabilities";
+  const promptTemplateRenderRoute = options.promptTemplateRenderRoute ?? "/v1/prompt-templates/render";
   return async (request) => {
     const url = new URL(request.url);
     if (url.pathname === healthRoute) {
@@ -582,6 +625,11 @@ export const createPlatformHttpHandler = (
     if (url.pathname === capabilityRegisterRoute) {
       return request.method === "POST"
         ? registerCapability(runtime, request, url, options.authorizeUsageRequest)
+        : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only POST is supported."));
+    }
+    if (url.pathname === promptTemplateRenderRoute) {
+      return request.method === "POST"
+        ? renderPromptTemplate(runtime, request, url, options.authorizeUsageRequest)
         : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only POST is supported."));
     }
     if (url.pathname.startsWith(`${activityRoutePrefix}/`)) {

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.39
+
+- Updated local contract references to include `app-responsibilities.md`, `identity-contract.md`, and `platform-admin.md`.
+- Clarified that `app-responsibilities.md` controls cross-app responsibility boundaries.
+- Documented that Platform Admin observes AI Platform Core operational state but does not execute AI Activities or own Usage.
+
 ## 0.1.0
 
 - Initialized pnpm/Turborepo monorepo.

@@ -245,3 +245,8 @@
 
 - Updated API server integration docs for `createPlatformRuntime`, budget shape, and MVP workspace/user attribution.
 - Updated requirements docs to include `workspaceId`, `userId`, optional `ownerUserId`, and Dashboard workspace/user dimensions.
+
+## 0.1.38
+
+- Added HTTP Dashboard usage view endpoint at `/v1/dashboard/usage`.
+- Added client, workspace, and user scoped Dashboard HTTP tests.

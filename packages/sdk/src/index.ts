@@ -102,6 +102,7 @@ export {
   type GatewayHttpHandlerOptions,
   type GatewayRunHttpBody,
   type PlatformHttpHandlerOptions,
+  type PlatformHealthView,
   type UsageHttpPeriod,
   createGatewayHttpHandler,
   createPlatformHttpHandler

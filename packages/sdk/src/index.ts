@@ -153,7 +153,8 @@ export {
   type PromptTemplateRuntime,
   createMemoryPromptTemplateRepository,
   createPlatformRuntime,
-  createPromptTemplateRuntime
+  createPromptTemplateRuntime,
+  createStoredPromptTemplateRepository
 } from "@ai-platform-core/runtime";
 export {
   type SecretReader,

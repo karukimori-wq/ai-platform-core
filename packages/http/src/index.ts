@@ -1,9 +1,8 @@
 import type { Activity, ActivityBudget, ActivityRequest, ActivityStatus } from "@ai-platform-core/activity";
 import type { GatewayAuthContext, GatewayRequest } from "@ai-platform-core/gateway";
 import { type PlatformError, err, platformError } from "@ai-platform-core/kernel";
-import type { PromptTemplateRenderRequest, PromptTemplateRenderResult } from "@ai-platform-core/prompt";
 import type { AIMessage } from "@ai-platform-core/provider";
-import type { PlatformRuntime } from "@ai-platform-core/runtime";
+import type { PlatformRuntime, PromptTemplateRenderRequest, PromptTemplateRenderResult } from "@ai-platform-core/runtime";
 
 export interface GatewayHttpHandlerOptions {
   readonly route?: string;

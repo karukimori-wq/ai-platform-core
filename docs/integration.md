@@ -5,6 +5,18 @@ Planner through the shared contracts repository:
 
 - https://github.com/karukimori-wq/professional-platform-contracts
 
+Before changing cross-app behavior, read the latest main branch contracts:
+
+- `docs/contracts/app-responsibilities.md`
+- `docs/contracts/identity-contract.md`
+- `docs/contracts/data-ownership.md`
+- `docs/contracts/api-catalog.md`
+- `docs/contracts/event-catalog.md`
+- `docs/repositories/platform-admin.md`
+
+`app-responsibilities.md` is the controlling responsibility matrix for all
+apps. AI Platform Core changes must preserve those boundaries.
+
 ## Integration Position
 
 AI Platform Core is the AI execution platform. It is not the business workflow
@@ -23,6 +35,10 @@ SNS Planner
 AI Platform Core
   -> capabilities, activities, prompts, tools, workflows, usage
 ```
+
+Platform Admin observes AI Platform Core health, contract compliance, API logs,
+event logs, and AI logs by reference. It must not execute AI Activities or
+become the Usage source of truth.
 
 ## API Versus Event
 
@@ -162,6 +178,7 @@ This keeps SNS strategy and campaign decisions in Growth Engine.
 
 Before merging integration changes:
 
+- Read the latest `app-responsibilities.md`.
 - Confirm the shared contract exists in `professional-platform-contracts`.
 - Confirm the source-of-truth owner is unchanged.
 - Use `Report`, not `Document`, externally.

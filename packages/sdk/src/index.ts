@@ -100,6 +100,8 @@ export {
 } from "@ai-platform-core/gateway";
 export {
   type ActivityHttpView,
+  type CapabilityHttpView,
+  type CapabilityRegisterHttpBody,
   type GatewayHttpHandlerOptions,
   type GatewayRunHttpBody,
   type PlatformContractStatusView,

@@ -24,6 +24,9 @@ describe("gateway http handler", () => {
         auth: { clientId: "fortune_teller_a", permissions: ["report.generate"] },
         activity: {
           client: "fortune_teller_a",
+          workspaceId: "workspace-numeria-a",
+          userId: "user-fortune-teller-a",
+          ownerUserId: "user-fortune-teller-a",
           capability: "report.generate",
           workflow: "numerology",
           goal: "Create a report.",
@@ -42,6 +45,8 @@ describe("gateway http handler", () => {
     if (!usage.ok) return;
     expect(usage.value[0]).toMatchObject({
       client: "fortune_teller_a",
+      workspaceId: "workspace-numeria-a",
+      userId: "user-fortune-teller-a",
       capability: "report.generate",
       workflow: "numerology",
       provider: "echo",
@@ -82,6 +87,8 @@ describe("gateway http handler", () => {
         auth: { clientId: "fortune_teller_a", permissions: ["report.generate"] },
         activity: {
           client: "fortune_teller_a",
+          workspaceId: "workspace-numeria-a",
+          userId: "user-fortune-teller-a",
           capability: "report.generate",
           workflow: "numerology",
           goal: "Create a report.",
@@ -96,6 +103,7 @@ describe("gateway http handler", () => {
     const forbidden = await handler(new Request("https://example.com/v1/analytics/usage?client=other_client"));
     const invalid = await handler(new Request("https://example.com/v1/analytics/usage?client=fortune_teller_a&period=week"));
     const response = await handler(new Request("https://example.com/v1/analytics/usage?client=fortune_teller_a&period=month"));
+    const scoped = await handler(new Request("https://example.com/v1/analytics/usage?client=fortune_teller_a&period=month&workspaceId=workspace-numeria-a&userId=user-fortune-teller-a"));
     const body = await response.json() as Readonly<{
       ok: boolean;
       summary: Readonly<{
@@ -109,12 +117,20 @@ describe("gateway http handler", () => {
         byModel: Readonly<Record<string, Readonly<{ usageCount: number; totalTokens: number }>>>;
       }>;
     }>;
+    const scopedBody = await scoped.json() as Readonly<{
+      ok: boolean;
+      summary: Readonly<{ workspaceId: string; userId: string; usageCount: number }>;
+    }>;
 
     expect(hidden.status).toBe(404);
     expect(forbidden.status).toBe(403);
     expect(invalid.status).toBe(400);
     expect(response.status).toBe(200);
+    expect(scoped.status).toBe(200);
     expect(body.ok).toBe(true);
+    expect(scopedBody.summary.workspaceId).toBe("workspace-numeria-a");
+    expect(scopedBody.summary.userId).toBe("user-fortune-teller-a");
+    expect(scopedBody.summary.usageCount).toBe(1);
     expect(body.summary.client).toBe("fortune_teller_a");
     expect(body.summary.period).toBe("month");
     expect(body.summary.usageCount).toBe(1);

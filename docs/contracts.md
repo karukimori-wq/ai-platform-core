@@ -12,13 +12,11 @@ AI Platform Core implementers must read these contract documents before changing
 
 - `docs/contracts/platform-boundaries.md`
 - `docs/contracts/shared-glossary.md`
-- `docs/contracts/api-contract.md`
-- `docs/contracts/event-contract.md`
-- `docs/contracts/data-ownership.md`
-- `docs/contracts/identity-contract.md`
 - `docs/contracts/api-catalog.md`
 - `docs/contracts/event-catalog.md`
+- `docs/contracts/data-ownership.md`
 - `docs/repositories/ai-platform-core.md`
+- `docs/adoption-guide.md`
 - `schemas/entities/activity.schema.json`
 - `schemas/events/event-envelope.schema.json`
 - `schemas/events/ai.activity.completed.v1.schema.json`
@@ -61,6 +59,34 @@ AI Platform Core must not own:
 - Keep AI usage billing separate from Growth Engine commerce payment.
 - Never make AI Platform Core the business workflow orchestrator for Growth Engine.
 
+## Approved Cross-System Names
+
+Use `Report`, not `Document`, for generated Professional Studio deliverables in external contracts.
+
+Approved Professional Studio APIs:
+
+- `Session.Start`
+- `Session.Complete`
+- `Report.Generate`
+- `Report.Preview`
+- `Report.ExportPdf`
+- `ServiceReference.List`
+
+Approved Professional Studio events:
+
+- `studio.session.started.v1`
+- `studio.session.completed.v1`
+- `studio.report.generated.v1`
+- `studio.service_reference.updated.v1`
+
+Do not use these legacy names in cross-system contracts:
+
+- `Session.Started`
+- `Session.Completed`
+- `Document.Generated`
+
+Do not implement `studio.recommendation.created.v1` as a stable event. It is pending in the contracts repository.
+
 ## Event Contract
 
 AI Platform Core publishes and consumes events according to the contracts repository event envelope and naming rules.
@@ -96,14 +122,14 @@ AI Platform Core may support internal routes or SDK methods, but external naming
 
 Applications should call AI Platform Core by capability name. Product repositories must not depend on raw prompt names, provider-specific request bodies, or model-specific contracts.
 
-Approved capability examples include:
+Capability names may support product-specific work, but they must not move ownership into AI Platform Core.
 
-- `Customer.Find`
+Examples aligned to current contracts:
+
 - `Report.Generate`
 - `PostDraft.Generate`
 - `Usage.List`
-
-Product-specific capability additions should be registered explicitly and must not move business ownership into AI Platform Core.
+- `Customer.Find`
 
 ## Change Process
 

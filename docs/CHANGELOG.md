@@ -240,3 +240,8 @@
 
 - Added Dashboard grouping by `workspaceId` and `userId`.
 - Added Dashboard filtering by `workspaceId` and `userId`.
+
+## 0.1.37
+
+- Updated API server integration docs for `createPlatformRuntime`, budget shape, and MVP workspace/user attribution.
+- Updated requirements docs to include `workspaceId`, `userId`, optional `ownerUserId`, and Dashboard workspace/user dimensions.

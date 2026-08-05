@@ -3,7 +3,12 @@ import { createOpenAICompatibleProvider } from "@ai-platform-core/provider";
 import { createSecretReader } from "@ai-platform-core/secrets";
 import { createStoredAnalyticsRepository } from "@ai-platform-core/analytics";
 import { createMemoryKeyValueStore } from "@ai-platform-core/storage";
-import { createMemoryPromptTemplateRepository, createPlatformRuntime, createPromptTemplateRuntime } from "./index";
+import {
+  createMemoryPromptTemplateRepository,
+  createPlatformRuntime,
+  createPromptTemplateRuntime,
+  createStoredPromptTemplateRepository
+} from "./index";
 
 describe("platform runtime", () => {
   it("runs a secret-backed OpenAI-compatible provider through the gateway", async () => {
@@ -129,5 +134,18 @@ describe("platform runtime", () => {
     expect(rendered.ok).toBe(false);
     if (rendered.ok) return;
     expect(rendered.error.code).toBe("PROMPT_TEMPLATE_VARIABLE_MISSING");
+  });
+
+  it("renders prompt templates from a storage-backed repository", async () => {
+    const store = createMemoryKeyValueStore();
+    const writer = createPromptTemplateRuntime(createStoredPromptTemplateRepository(store));
+
+    await writer.register({ id: "report", version: 1, body: "Report {{name}}", retention: "metadata" });
+    const reader = createPromptTemplateRuntime(createStoredPromptTemplateRepository(store));
+    const rendered = await reader.render({ templateId: "report", variables: { name: "A" } });
+
+    expect(rendered.ok).toBe(true);
+    if (!rendered.ok) return;
+    expect(rendered.value).toEqual({ templateId: "report", version: 1, rendered: "Report A" });
   });
 });

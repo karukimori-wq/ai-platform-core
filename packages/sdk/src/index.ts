@@ -99,6 +99,7 @@ export {
   createAllowAllAuthenticator
 } from "@ai-platform-core/gateway";
 export {
+  type ActivityHttpView,
   type GatewayHttpHandlerOptions,
   type GatewayRunHttpBody,
   type PlatformContractStatusView,

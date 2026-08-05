@@ -19,6 +19,9 @@ export interface ActivityBudget {
 
 export interface ActivityRequest {
   readonly client: string;
+  readonly workspaceId?: string;
+  readonly userId?: string;
+  readonly ownerUserId?: string;
   readonly capability: string;
   readonly workflow?: string;
   readonly goal: string;
@@ -87,6 +90,9 @@ export type ActivityEventType =
 export type ActivityEventPayload = Readonly<{
   activityId: string;
   client: string;
+  workspaceId?: string;
+  userId?: string;
+  ownerUserId?: string;
   capability: string;
   workflow?: string;
   status?: ActivityStatus;
@@ -204,7 +210,10 @@ const activityPayload = (activity: Activity): ActivityEventPayload => {
     capability: activity.request.capability,
     status: activity.status
   };
-  const withWorkflow = activity.request.workflow === undefined ? base : { ...base, workflow: activity.request.workflow };
+  const withWorkspace = activity.request.workspaceId === undefined ? base : { ...base, workspaceId: activity.request.workspaceId };
+  const withUser = activity.request.userId === undefined ? withWorkspace : { ...withWorkspace, userId: activity.request.userId };
+  const withOwner = activity.request.ownerUserId === undefined ? withUser : { ...withUser, ownerUserId: activity.request.ownerUserId };
+  const withWorkflow = activity.request.workflow === undefined ? withOwner : { ...withOwner, workflow: activity.request.workflow };
   const withProvider = activity.result?.provider === undefined ? withWorkflow : { ...withWorkflow, provider: activity.result.provider };
   return activity.result?.model === undefined ? withProvider : { ...withProvider, model: activity.result.model };
 };

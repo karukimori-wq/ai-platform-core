@@ -64,31 +64,72 @@ export interface PromptTemplateRepository {
   readonly list: () => Promise<Result<readonly PromptTemplate[]>>;
 }
 
+interface StoredPromptTemplate extends Readonly<Record<string, unknown>> {
+  readonly id: string;
+  readonly version: number;
+  readonly body: string;
+  readonly retention: PromptTemplate["retention"];
+}
+
 export interface PromptTemplateRuntime {
   readonly register: (template: PromptTemplate) => Promise<Result<PromptTemplate>>;
   readonly render: (request: PromptTemplateRenderRequest) => Promise<Result<PromptTemplateRenderResult>>;
 }
 
+const promptTemplateStorageKey = (id: string, version: number): string => `${id}@${String(version)}`;
+
+const promptTemplateNotFound = (id: string): Result<PromptTemplate> =>
+  err(platformError("PROMPT_TEMPLATE_NOT_FOUND", `Prompt template '${id}' was not found.`));
+
+const selectPromptTemplate = (
+  templates: readonly PromptTemplate[],
+  id: string,
+  version?: number
+): Result<PromptTemplate> => {
+  const candidates = templates
+    .filter((template) => template.id === id && (version === undefined || template.version === version))
+    .sort((a, b) => b.version - a.version);
+  const template = candidates[0];
+  return template === undefined ? promptTemplateNotFound(id) : ok(template);
+};
+
+const toStoredPromptTemplate = (template: PromptTemplate): StoredPromptTemplate => ({
+  id: template.id,
+  version: template.version,
+  body: template.body,
+  retention: template.retention
+});
+
 export const createMemoryPromptTemplateRepository = (): PromptTemplateRepository => {
   const templates = new Map<string, PromptTemplate>();
-  const key = (id: string, version: number): string => `${id}@${String(version)}`;
   return {
     save: async (template) => {
-      templates.set(key(template.id, template.version), template);
+      templates.set(promptTemplateStorageKey(template.id, template.version), template);
       return ok(template);
     },
-    get: async (id, version) => {
-      const candidates = [...templates.values()]
-        .filter((template) => template.id === id && (version === undefined || template.version === version))
-        .sort((a, b) => b.version - a.version);
-      const template = candidates[0];
-      return template === undefined
-        ? err(platformError("PROMPT_TEMPLATE_NOT_FOUND", `Prompt template '${id}' was not found.`))
-        : ok(template);
-    },
+    get: async (id, version) => selectPromptTemplate([...templates.values()], id, version),
     list: async () => ok([...templates.values()])
   };
 };
+
+export const createStoredPromptTemplateRepository = (
+  store: KeyValueStore<StoredPromptTemplate>
+): PromptTemplateRepository => ({
+  save: async (template) => {
+    const saved = await store.put(promptTemplateStorageKey(template.id, template.version), toStoredPromptTemplate(template));
+    return saved.ok ? ok(template) : err(saved.error);
+  },
+  get: async (id, version) => {
+    const records = await store.list();
+    return records.ok
+      ? selectPromptTemplate(records.value.map((record) => record.value), id, version)
+      : err(records.error);
+  },
+  list: async () => {
+    const records = await store.list();
+    return records.ok ? ok(records.value.map((record) => record.value)) : err(records.error);
+  }
+});
 
 export const createPromptTemplateRuntime = (
   repository: PromptTemplateRepository

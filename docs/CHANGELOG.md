@@ -37,6 +37,7 @@
 
 - Added client package with Client Manifest types, validation, and registry.
 - Added Gateway validation for registered client capability access.
+- Added Gateway token and cost budget checks.
 - Exposed client manifest APIs through the SDK.
 - Updated runtime composition to include the client registry.
 
@@ -106,7 +107,7 @@
 
 - Added Dashboard client budget alert query.
 - Added alert filtering for warning and exceeded client budget status.
-- Exposed budget alert view through the SDK.
+- Exposed client budget alert view through the SDK.
 - Added Dashboard tests for budget alert filtering.
 
 ## 0.1.13

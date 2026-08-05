@@ -3,7 +3,7 @@ import { createOpenAICompatibleProvider } from "@ai-platform-core/provider";
 import { createSecretReader } from "@ai-platform-core/secrets";
 import { createStoredAnalyticsRepository } from "@ai-platform-core/analytics";
 import { createMemoryKeyValueStore } from "@ai-platform-core/storage";
-import { createPlatformRuntime } from "./index";
+import { createMemoryPromptTemplateRepository, createPlatformRuntime, createPromptTemplateRuntime } from "./index";
 
 describe("platform runtime", () => {
   it("runs a secret-backed OpenAI-compatible provider through the gateway", async () => {
@@ -106,5 +106,28 @@ describe("platform runtime", () => {
     expect(dashboard.ok).toBe(true);
     if (!dashboard.ok) return;
     expect(dashboard.value.metric.usageCount).toBe(1);
+  });
+
+  it("renders the latest prompt template version", async () => {
+    const runtime = createPromptTemplateRuntime(createMemoryPromptTemplateRepository());
+
+    await runtime.register({ id: "report", version: 1, body: "Old {{name}}", retention: "metadata" });
+    await runtime.register({ id: "report", version: 2, body: "New {{name}} {{score}}", retention: "metadata" });
+    const rendered = await runtime.render({ templateId: "report", variables: { name: "A", score: 7 } });
+
+    expect(rendered.ok).toBe(true);
+    if (!rendered.ok) return;
+    expect(rendered.value).toEqual({ templateId: "report", version: 2, rendered: "New A 7" });
+  });
+
+  it("rejects prompt template renders with missing variables", async () => {
+    const runtime = createPromptTemplateRuntime(createMemoryPromptTemplateRepository());
+
+    await runtime.register({ id: "report", version: 1, body: "Hello {{name}}", retention: "metadata" });
+    const rendered = await runtime.render({ templateId: "report", variables: {} });
+
+    expect(rendered.ok).toBe(false);
+    if (rendered.ok) return;
+    expect(rendered.error.code).toBe("PROMPT_TEMPLATE_VARIABLE_MISSING");
   });
 });

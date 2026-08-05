@@ -140,6 +140,28 @@ The activity view returns execution metadata, status, provider/model, token
 usage, cost, and timestamps. It does not return raw Activity `input`, `context`,
 prompts, messages, or consultation text.
 
+Capability manifests can be registered through the API server:
+
+```http
+POST /v1/capabilities?client=platform_admin
+content-type: application/json
+```
+
+```json
+{
+  "id": "Report.Generate",
+  "name": "Generate Report",
+  "description": "Generate a report.",
+  "permission": "report.generate",
+  "input": "json",
+  "output": "json"
+}
+```
+
+HTTP capability registration records the capability contract only. It does not
+upload executable code or prompt internals. Runtime execution should still be
+wired by the server-side application or platform package.
+
 Platform Admin can read a minimal operational health view:
 
 ```http

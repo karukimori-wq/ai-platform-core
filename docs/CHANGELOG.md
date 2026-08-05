@@ -218,3 +218,8 @@
 - Standardized external Professional Studio deliverable references on `Report` and `reportId`.
 - Kept `studio.recommendation.created.v1` pending-only and excluded it from stable integration event types.
 - Documented SNS Planner request inputs while keeping business targeting, offer, and CTA decisions in Growth Engine.
+
+## 0.1.33
+
+- Added managed memory EventBus support for consumer state, idempotent delivery, retry, dead-letter recording, and replay.
+- Exposed managed EventBus contracts and defaults through the SDK.

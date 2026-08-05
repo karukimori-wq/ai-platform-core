@@ -18,6 +18,7 @@
     "@ai-platform-core/activity": "workspace:*",
     "@ai-platform-core/gateway": "workspace:*",
     "@ai-platform-core/kernel": "workspace:*",
+    "@ai-platform-core/prompt": "workspace:*",
     "@ai-platform-core/provider": "workspace:*",
     "@ai-platform-core/runtime": "workspace:*"
   }

@@ -162,6 +162,27 @@ HTTP capability registration records the capability contract only. It does not
 upload executable code or prompt internals. Runtime execution should still be
 wired by the server-side application or platform package.
 
+Prompt Templates can be rendered through the API server:
+
+```http
+POST /v1/prompt-templates/render?client=platform_admin
+content-type: application/json
+```
+
+```json
+{
+  "templateId": "Report.Generate",
+  "version": 1,
+  "variables": {
+    "name": "A",
+    "number": 7
+  }
+}
+```
+
+Prompt rendering accepts only string, number, or boolean variables. Rendering is
+separate from AI execution and does not record raw consultation text by itself.
+
 Platform Admin can read a minimal operational health view:
 
 ```http

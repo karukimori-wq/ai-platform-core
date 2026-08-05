@@ -130,6 +130,16 @@ Dashboard-ready usage views are also available:
 GET /v1/dashboard/usage?client=fortune_teller_a&period=month&workspaceId=workspace-numeria-a&userId=user-fortune-teller-a
 ```
 
+Platform Admin can read a minimal operational health view:
+
+```http
+GET /v1/health
+```
+
+The health view contains app status, contract references, and component counts.
+It does not execute AI Activities or expose Customer, Session, Report, Payment,
+Sales, or SNS draft records.
+
 The usage endpoint is disabled unless `authorizeUsageRequest` is configured.
 The callback must bind the request to a trusted server-side session or token and
 return true only when that identity can read the requested `client`. The endpoint

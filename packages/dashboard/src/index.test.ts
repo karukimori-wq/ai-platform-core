@@ -9,6 +9,8 @@ describe("dashboard query service", () => {
     await analytics.recordUsage({
       activityId: "activity-1",
       client: "client-a",
+      workspaceId: "workspace-1",
+      userId: "user-1",
       capability: "SNS.Generate",
       provider: "echo",
       model: "test",
@@ -46,7 +48,55 @@ describe("dashboard query service", () => {
     expect(view.value.metric.editedCount).toBe(1);
     expect(view.value.metric.averageRating).toBe(4);
     expect(view.value.byClient["client-a"]?.usageCount).toBe(1);
+    expect(view.value.byWorkspace["workspace-1"]?.usageCount).toBe(1);
+    expect(view.value.byUser["user-1"]?.usageCount).toBe(1);
     expect(view.value.byCapability["SNS.Generate"]?.acceptedCount).toBe(1);
+  });
+
+  it("filters dashboard metrics by workspace and user", async () => {
+    const analytics = createMemoryAnalyticsRepository();
+    await analytics.recordUsage({
+      activityId: "activity-1",
+      client: "client-a",
+      workspaceId: "workspace-1",
+      userId: "user-1",
+      capability: "Report.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 5,
+      outputTokens: 5,
+      totalTokens: 10,
+      costAmount: 0.1,
+      costCurrency: "USD",
+      latencyMs: 100,
+      occurredAt: new Date("2026-08-02T10:00:00.000Z")
+    });
+    await analytics.recordUsage({
+      activityId: "activity-2",
+      client: "client-a",
+      workspaceId: "workspace-1",
+      userId: "user-2",
+      capability: "Report.Generate",
+      provider: "echo",
+      model: "test",
+      inputTokens: 10,
+      outputTokens: 10,
+      totalTokens: 20,
+      costAmount: 0.2,
+      costCurrency: "USD",
+      latencyMs: 200,
+      occurredAt: new Date("2026-08-02T11:00:00.000Z")
+    });
+    const dashboard = createDashboardQueryService(analytics, { now: () => new Date("2026-08-02T12:00:00.000Z") });
+
+    const view = await dashboard.getView({ period: "today", workspaceId: "workspace-1", userId: "user-1" });
+
+    expect(view.ok).toBe(true);
+    if (!view.ok) return;
+    expect(view.value.metric.usageCount).toBe(1);
+    expect(view.value.metric.totalTokens).toBe(10);
+    expect(view.value.byUser["user-1"]?.usageCount).toBe(1);
+    expect(view.value.byUser["user-2"]).toBeUndefined();
   });
 
   it("builds monthly client budget metrics from manifests and usage", async () => {

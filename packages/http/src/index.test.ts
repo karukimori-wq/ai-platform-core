@@ -291,4 +291,83 @@ describe("gateway http handler", () => {
     expect(body.view.byWorkspace["workspace-numeria-a"]?.usageCount).toBe(1);
     expect(body.view.byUser["user-fortune-teller-a"]?.usageCount).toBe(1);
   });
+
+  it("returns scoped activity status without raw input or context", async () => {
+    const runtime = createPlatformRuntime();
+    runtime.clients.register({
+      id: "fortune_teller_a",
+      name: "Fortune Teller A",
+      type: "web",
+      version: "0.1.0",
+      provider: "echo",
+      defaultModel: "echo-report-v1",
+      capabilities: ["report.generate"],
+      knowledge: [],
+      analytics: true
+    });
+    const handler = createPlatformHttpHandler(runtime, {
+      authorizeUsageRequest: (_request, clientId) => clientId === "fortune_teller_a"
+    });
+
+    const runResponse = await handler(new Request("https://example.com/v1/gateway/run", {
+      method: "POST",
+      body: JSON.stringify({
+        auth: { clientId: "fortune_teller_a", permissions: ["report.generate"] },
+        activity: {
+          client: "fortune_teller_a",
+          workspaceId: "workspace-numeria-a",
+          userId: "user-fortune-teller-a",
+          capability: "report.generate",
+          workflow: "numerology",
+          goal: "Create a report.",
+          context: { consultation: "private context" },
+          input: { privateValue: "do not expose" }
+        },
+        messages: [{ role: "user", content: "Draft a report." }]
+      })
+    }));
+    const runBody = await runResponse.json() as Readonly<{
+      result: Readonly<{ activityId: string }>;
+    }>;
+
+    const hidden = await createPlatformHttpHandler(runtime)(
+      new Request(`https://example.com/v1/activities/${runBody.result.activityId}?client=fortune_teller_a`)
+    );
+    const forbidden = await handler(
+      new Request(`https://example.com/v1/activities/${runBody.result.activityId}?client=other_client`)
+    );
+    const scopedMiss = await handler(
+      new Request(`https://example.com/v1/activities/${runBody.result.activityId}?client=fortune_teller_a&workspaceId=other_workspace`)
+    );
+    const response = await handler(
+      new Request(`https://example.com/v1/activities/${runBody.result.activityId}?client=fortune_teller_a&workspaceId=workspace-numeria-a&userId=user-fortune-teller-a`)
+    );
+    const method = await handler(
+      new Request(`https://example.com/v1/activities/${runBody.result.activityId}?client=fortune_teller_a`, { method: "POST" })
+    );
+    const body = await response.json() as Readonly<{
+      ok: boolean;
+      activity: Readonly<Record<string, unknown>>;
+    }>;
+
+    expect(hidden.status).toBe(404);
+    expect(forbidden.status).toBe(403);
+    expect(scopedMiss.status).toBe(404);
+    expect(response.status).toBe(200);
+    expect(method.status).toBe(405);
+    expect(body.ok).toBe(true);
+    expect(body.activity).toMatchObject({
+      id: runBody.result.activityId,
+      client: "fortune_teller_a",
+      workspaceId: "workspace-numeria-a",
+      userId: "user-fortune-teller-a",
+      capability: "report.generate",
+      workflow: "numerology",
+      status: "completed",
+      provider: "echo",
+      model: "echo-report-v1"
+    });
+    expect(body.activity.input).toBeUndefined();
+    expect(body.activity.context).toBeUndefined();
+  });
 });

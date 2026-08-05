@@ -52,10 +52,8 @@ Applications should call AI Platform Core by capability name. They should not de
 
 Examples:
 
-- `Reading.Interpret`
-- `Reading.GenerateDraft`
 - `Report.Generate`
-- `Report.GenerateSection`
+- `PostDraft.Generate`
 - `Marketing.AnalyzeConsultationTrends`
 - `Marketing.AnalyzeFunnel`
 - `Marketing.DetectBottleneck`
@@ -117,6 +115,27 @@ Approved AI events:
 - `ai.activity.failed.v1`
 - `ai.usage.recorded.v1`
 
+Approved external events AI Platform Core may consume:
+
+- `growth.customer.created.v1`
+- `growth.customer.updated.v1`
+- `growth.lead.converted.v1`
+- `growth.reservation.created.v1`
+- `growth.reservation.cancelled.v1`
+- `studio.session.started.v1`
+- `studio.session.completed.v1`
+- `studio.report.generated.v1`
+- `sns.post_draft.created.v1`
+- `sns.post_draft.updated.v1`
+
+Do not consume or publish these legacy names in cross-system integrations:
+
+- `Session.Started`
+- `Session.Completed`
+- `Document.Generated`
+
+Do not treat `studio.recommendation.created.v1` as stable. It is pending in the contracts repository.
+
 ## SNS Planner Integration
 
 AI Platform Core does not call SNS Planner directly for business execution.
@@ -136,7 +155,16 @@ Growth Engine
   -> owns campaign and business follow-up state
 ```
 
-This keeps SNS strategy and campaign decisions in Growth Engine.
+This keeps SNS strategy, target selection, CTA decisions, and campaign decisions in Growth Engine.
+
+SNS Planner expects Growth Engine to provide:
+
+- `purpose`
+- `targetAudience`
+- `cta`
+- `channel`
+- `tone`
+- `constraints`
 
 ## Privacy And Retention
 

@@ -63,6 +63,61 @@ describe("gateway http handler", () => {
     expect(method.status).toBe(405);
   });
 
+  it("returns a Platform Admin compatible health view", async () => {
+    const runtime = createPlatformRuntime({ clock: { now: () => new Date("2026-08-05T12:00:00.000Z") } });
+    runtime.clients.register({
+      id: "fortune_teller_a",
+      name: "Fortune Teller A",
+      type: "web",
+      version: "0.1.0",
+      provider: "echo",
+      defaultModel: "echo-report-v1",
+      capabilities: ["report.generate"],
+      knowledge: [],
+      analytics: true
+    });
+    runtime.registry.register({
+      id: "Report.Generate",
+      name: "Generate Report",
+      description: "Generate a report.",
+      permission: "report.generate",
+      input: "json",
+      output: "json",
+      execute: async () => ({ ok: true, value: {} })
+    });
+    const handler = createPlatformHttpHandler(runtime);
+
+    const response = await handler(new Request("https://example.com/v1/health"));
+    const method = await handler(new Request("https://example.com/v1/health", { method: "POST" }));
+    const body = await response.json() as Readonly<{
+      ok: boolean;
+      health: Readonly<{
+        app: string;
+        status: string;
+        checkedAt: string;
+        contract: Readonly<{ responsibilitySource: string; requiredReferences: readonly string[] }>;
+        components: Readonly<{ clients: number; capabilities: number; providers: number }>;
+      }>;
+    }>;
+
+    expect(response.status).toBe(200);
+    expect(method.status).toBe(405);
+    expect(body.ok).toBe(true);
+    expect(body.health).toMatchObject({
+      app: "ai-platform-core",
+      status: "ok",
+      checkedAt: "2026-08-05T12:00:00.000Z",
+      components: {
+        clients: 1,
+        capabilities: 1,
+        providers: 1
+      }
+    });
+    expect(body.health.contract.responsibilitySource).toBe("docs/contracts/app-responsibilities.md");
+    expect(body.health.contract.requiredReferences).toContain("docs/contracts/identity-contract.md");
+    expect(body.health.contract.requiredReferences).toContain("docs/repositories/platform-admin.md");
+  });
+
   it("returns scoped usage totals", async () => {
     const runtime = createPlatformRuntime();
     runtime.clients.register({

@@ -235,3 +235,8 @@
 - Added Usage summary grouping by workspace and user.
 - Added HTTP usage filtering by `workspaceId` and `userId`.
 - Documented that `professionalId` is a future extension concept, not a required MVP field.
+
+## 0.1.36
+
+- Added Dashboard grouping by `workspaceId` and `userId`.
+- Added Dashboard filtering by `workspaceId` and `userId`.

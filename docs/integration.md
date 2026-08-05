@@ -86,6 +86,8 @@ AI Platform Core may receive reference IDs for traceability:
 - `activityId`
 - `capabilityId`
 
+These IDs are references, not ownership transfers.
+
 Customer source of truth remains in Growth Engine. Session and Report source of
 truth remain in Professional Studio. AI Platform Core stores only the minimum
 context required for AI execution, usage attribution, and audit.

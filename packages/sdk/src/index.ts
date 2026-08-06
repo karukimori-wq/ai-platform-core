@@ -107,6 +107,7 @@ export {
   type PlatformContractStatusView,
   type PlatformHttpHandlerOptions,
   type PlatformHealthView,
+  type PlatformVersionView,
   type PromptTemplateRenderHttpBody,
   type PromptTemplateRenderHttpView,
   type UsageHttpPeriod,

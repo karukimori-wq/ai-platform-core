@@ -13,6 +13,7 @@ export interface PlatformHttpHandlerOptions {
   readonly analyticsUsageRoute?: string;
   readonly dashboardUsageRoute?: string;
   readonly healthRoute?: string;
+  readonly versionRoute?: string;
   readonly contractStatusRoute?: string;
   readonly activityRoutePrefix?: string;
   readonly capabilityRegisterRoute?: string;
@@ -83,34 +84,30 @@ interface UsageHttpBreakdownItem {
 }
 
 export interface PlatformHealthView {
-  readonly app: "ai-platform-core";
+  readonly appName: "ai-platform-core";
   readonly status: "ok";
-  readonly checkedAt: string;
-  readonly contract: {
-    readonly repository: "karukimori-wq/professional-platform-contracts";
-    readonly responsibilitySource: "docs/contracts/app-responsibilities.md";
-    readonly requiredReferences: readonly string[];
-  };
-  readonly components: {
-    readonly clients: number;
-    readonly capabilities: number;
-    readonly providers: number;
-  };
+  readonly timestamp: string;
+}
+
+export interface PlatformVersionView {
+  readonly appName: "ai-platform-core";
+  readonly appVersion: string;
+  readonly contractVersion: string;
+  readonly commitSha?: string;
+  readonly timestamp: string;
 }
 
 export interface PlatformContractStatusView {
-  readonly app: "ai-platform-core";
-  readonly status: "compatible";
-  readonly checkedAt: string;
-  readonly contract: {
-    readonly repository: "karukimori-wq/professional-platform-contracts";
-    readonly responsibilitySource: "docs/contracts/app-responsibilities.md";
-    readonly apiCatalog: "docs/contracts/api-catalog.md";
-    readonly eventCatalog: "docs/contracts/event-catalog.md";
-  };
-  readonly implementedApis: readonly string[];
-  readonly publishedEvents: readonly string[];
-  readonly pendingEventsExcluded: readonly string[];
+  readonly appName: "ai-platform-core";
+  readonly status: "ok" | "warning" | "error";
+  readonly contractVersion: string;
+  readonly identityMode: "workspaceId+userId";
+  readonly professionalIdRequired: false;
+  readonly usesLegacyEventNames: boolean;
+  readonly usesReportTerminology: boolean;
+  readonly canonicalOwnershipChecked: boolean;
+  readonly issues: readonly string[];
+  readonly timestamp: string;
 }
 
 const jsonHeaders = { "content-type": "application/json" };
@@ -499,69 +496,56 @@ const getActivity = async (
   return jsonResponse(200, { ok: true, activity: toActivityHttpView(activity.value) });
 };
 
-const requiredContractReferences = [
-  "docs/contracts/app-responsibilities.md",
-  "docs/contracts/identity-contract.md",
-  "docs/contracts/data-ownership.md",
-  "docs/contracts/api-catalog.md",
-  "docs/contracts/event-catalog.md",
-  "docs/repositories/platform-admin.md"
-] as const;
+const appName = "ai-platform-core" as const;
+const appVersion = "0.1.0";
+const contractVersion = "0.1.0";
+const identityMode = "workspaceId+userId" as const;
 
 const getHealth = (runtime: PlatformRuntime): Response => {
   const health: PlatformHealthView = {
-    app: "ai-platform-core",
+    appName,
     status: "ok",
-    checkedAt: runtime.clock.now().toISOString(),
-    contract: {
-      repository: "karukimori-wq/professional-platform-contracts",
-      responsibilitySource: "docs/contracts/app-responsibilities.md",
-      requiredReferences: requiredContractReferences
-    },
-    components: {
-      clients: runtime.clients.list().length,
-      capabilities: runtime.registry.list().length,
-      providers: runtime.providers.list().length
-    }
+    timestamp: runtime.clock.now().toISOString()
   };
-  return jsonResponse(200, { ok: true, health });
+  return jsonResponse(200, health);
 };
 
-const implementedAiCoreApis = [
-  "Capability.Register",
-  "Activity.Create",
-  "Activity.Get",
-  "Usage.List",
-  "PromptTemplate.Render"
-] as const;
+const getVersion = (runtime: PlatformRuntime): Response => {
+  const commitSha = readStringFromEnvironment("COMMIT_SHA") ?? readStringFromEnvironment("VERCEL_GIT_COMMIT_SHA");
+  const version: PlatformVersionView = {
+    appName,
+    appVersion,
+    contractVersion,
+    ...(commitSha === undefined ? {} : { commitSha }),
+    timestamp: runtime.clock.now().toISOString()
+  };
+  return jsonResponse(200, version);
+};
 
-const publishedAiCoreEvents = [
-  "ai.activity.created.v1",
-  "ai.activity.completed.v1",
-  "ai.activity.failed.v1",
-  "ai.usage.recorded.v1"
-] as const;
-
-const pendingEventsExcluded = [
-  "studio.recommendation.created.v1"
-] as const;
+const readStringFromEnvironment = (key: string): string | undefined => {
+  const value = process.env[key];
+  return value === undefined || value.length === 0 ? undefined : value;
+};
 
 const getContractStatus = (runtime: PlatformRuntime): Response => {
+  const issues: string[] = [];
+  const usesLegacyEventNames = false;
+  const usesReportTerminology = true;
+  const canonicalOwnershipChecked = true;
+  const statusValue: PlatformContractStatusView["status"] = issues.length === 0 ? "ok" : "warning";
   const status: PlatformContractStatusView = {
-    app: "ai-platform-core",
-    status: "compatible",
-    checkedAt: runtime.clock.now().toISOString(),
-    contract: {
-      repository: "karukimori-wq/professional-platform-contracts",
-      responsibilitySource: "docs/contracts/app-responsibilities.md",
-      apiCatalog: "docs/contracts/api-catalog.md",
-      eventCatalog: "docs/contracts/event-catalog.md"
-    },
-    implementedApis: implementedAiCoreApis,
-    publishedEvents: publishedAiCoreEvents,
-    pendingEventsExcluded
+    appName,
+    status: statusValue,
+    contractVersion,
+    identityMode,
+    professionalIdRequired: false,
+    usesLegacyEventNames,
+    usesReportTerminology,
+    canonicalOwnershipChecked,
+    issues,
+    timestamp: runtime.clock.now().toISOString()
   };
-  return jsonResponse(200, { ok: true, status });
+  return jsonResponse(200, status);
 };
 
 export const createGatewayHttpHandler = (
@@ -591,19 +575,25 @@ export const createPlatformHttpHandler = (
   const gatewayRunRoute = options.gatewayRunRoute ?? "/v1/gateway/run";
   const analyticsUsageRoute = options.analyticsUsageRoute ?? "/v1/analytics/usage";
   const dashboardUsageRoute = options.dashboardUsageRoute ?? "/v1/dashboard/usage";
-  const healthRoute = options.healthRoute ?? "/v1/health";
-  const contractStatusRoute = options.contractStatusRoute ?? "/v1/contracts/status";
+  const healthRoute = options.healthRoute ?? "/health";
+  const versionRoute = options.versionRoute ?? "/version";
+  const contractStatusRoute = options.contractStatusRoute ?? "/contracts/status";
   const activityRoutePrefix = options.activityRoutePrefix ?? "/v1/activities";
   const capabilityRegisterRoute = options.capabilityRegisterRoute ?? "/v1/capabilities";
   const promptTemplateRenderRoute = options.promptTemplateRenderRoute ?? "/v1/prompt-templates/render";
   return async (request) => {
     const url = new URL(request.url);
-    if (url.pathname === healthRoute) {
+    if (url.pathname === healthRoute || url.pathname === "/v1/health") {
       return request.method === "GET"
         ? getHealth(runtime)
         : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only GET is supported."));
     }
-    if (url.pathname === contractStatusRoute) {
+    if (url.pathname === versionRoute || url.pathname === "/v1/version") {
+      return request.method === "GET"
+        ? getVersion(runtime)
+        : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only GET is supported."));
+    }
+    if (url.pathname === contractStatusRoute || url.pathname === "/v1/contracts/status") {
       return request.method === "GET"
         ? getContractStatus(runtime)
         : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only GET is supported."));

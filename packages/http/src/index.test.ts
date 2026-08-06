@@ -63,91 +63,78 @@ describe("gateway http handler", () => {
     expect(method.status).toBe(405);
   });
 
-  it("returns a Platform Admin compatible health view", async () => {
+  it("returns connection-test health and version views", async () => {
     const runtime = createPlatformRuntime({ clock: { now: () => new Date("2026-08-05T12:00:00.000Z") } });
-    runtime.clients.register({
-      id: "fortune_teller_a",
-      name: "Fortune Teller A",
-      type: "web",
-      version: "0.1.0",
-      provider: "echo",
-      defaultModel: "echo-report-v1",
-      capabilities: ["report.generate"],
-      knowledge: [],
-      analytics: true
-    });
-    runtime.registry.register({
-      id: "Report.Generate",
-      name: "Generate Report",
-      description: "Generate a report.",
-      permission: "report.generate",
-      input: "json",
-      output: "json",
-      execute: async () => ({ ok: true, value: {} })
-    });
     const handler = createPlatformHttpHandler(runtime);
 
-    const response = await handler(new Request("https://example.com/v1/health"));
-    const method = await handler(new Request("https://example.com/v1/health", { method: "POST" }));
+    const response = await handler(new Request("https://example.com/health"));
+    const legacyResponse = await handler(new Request("https://example.com/v1/health"));
+    const version = await handler(new Request("https://example.com/version"));
+    const method = await handler(new Request("https://example.com/health", { method: "POST" }));
     const body = await response.json() as Readonly<{
-      ok: boolean;
-      health: Readonly<{
-        app: string;
-        status: string;
-        checkedAt: string;
-        contract: Readonly<{ responsibilitySource: string; requiredReferences: readonly string[] }>;
-        components: Readonly<{ clients: number; capabilities: number; providers: number }>;
-      }>;
+      appName: string;
+      status: string;
+      timestamp: string;
+    }>;
+    const versionBody = await version.json() as Readonly<{
+      appName: string;
+      appVersion: string;
+      contractVersion: string;
+      timestamp: string;
     }>;
 
     expect(response.status).toBe(200);
+    expect(legacyResponse.status).toBe(200);
+    expect(version.status).toBe(200);
     expect(method.status).toBe(405);
-    expect(body.ok).toBe(true);
-    expect(body.health).toMatchObject({
-      app: "ai-platform-core",
+    expect(body).toEqual({
+      appName: "ai-platform-core",
       status: "ok",
-      checkedAt: "2026-08-05T12:00:00.000Z",
-      components: {
-        clients: 1,
-        capabilities: 1,
-        providers: 1
-      }
+      timestamp: "2026-08-05T12:00:00.000Z"
     });
-    expect(body.health.contract.responsibilitySource).toBe("docs/contracts/app-responsibilities.md");
-    expect(body.health.contract.requiredReferences).toContain("docs/contracts/identity-contract.md");
-    expect(body.health.contract.requiredReferences).toContain("docs/repositories/platform-admin.md");
+    expect(versionBody).toMatchObject({
+      appName: "ai-platform-core",
+      appVersion: "0.1.0",
+      contractVersion: "0.1.0",
+      timestamp: "2026-08-05T12:00:00.000Z"
+    });
   });
 
-  it("returns a Platform Admin compatible contract status view", async () => {
+  it("returns a connection-test contract status view", async () => {
     const runtime = createPlatformRuntime({ clock: { now: () => new Date("2026-08-05T12:30:00.000Z") } });
     const handler = createPlatformHttpHandler(runtime);
 
-    const response = await handler(new Request("https://example.com/v1/contracts/status"));
-    const method = await handler(new Request("https://example.com/v1/contracts/status", { method: "POST" }));
+    const response = await handler(new Request("https://example.com/contracts/status"));
+    const legacyResponse = await handler(new Request("https://example.com/v1/contracts/status"));
+    const method = await handler(new Request("https://example.com/contracts/status", { method: "POST" }));
     const body = await response.json() as Readonly<{
-      ok: boolean;
-      status: Readonly<{
-        app: string;
-        status: string;
-        checkedAt: string;
-        implementedApis: readonly string[];
-        publishedEvents: readonly string[];
-        pendingEventsExcluded: readonly string[];
-      }>;
+      appName: string;
+      status: string;
+      contractVersion: string;
+      identityMode: string;
+      professionalIdRequired: boolean;
+      usesLegacyEventNames: boolean;
+      usesReportTerminology: boolean;
+      canonicalOwnershipChecked: boolean;
+      issues: readonly string[];
+      timestamp: string;
     }>;
 
     expect(response.status).toBe(200);
+    expect(legacyResponse.status).toBe(200);
     expect(method.status).toBe(405);
-    expect(body.ok).toBe(true);
-    expect(body.status).toMatchObject({
-      app: "ai-platform-core",
-      status: "compatible",
-      checkedAt: "2026-08-05T12:30:00.000Z"
+    expect(body).toEqual({
+      appName: "ai-platform-core",
+      status: "ok",
+      contractVersion: "0.1.0",
+      identityMode: "workspaceId+userId",
+      professionalIdRequired: false,
+      usesLegacyEventNames: false,
+      usesReportTerminology: true,
+      canonicalOwnershipChecked: true,
+      issues: [],
+      timestamp: "2026-08-05T12:30:00.000Z"
     });
-    expect(body.status.implementedApis).toContain("Activity.Create");
-    expect(body.status.implementedApis).toContain("Usage.List");
-    expect(body.status.publishedEvents).toContain("ai.activity.completed.v1");
-    expect(body.status.pendingEventsExcluded).toContain("studio.recommendation.created.v1");
   });
 
   it("returns scoped usage totals", async () => {

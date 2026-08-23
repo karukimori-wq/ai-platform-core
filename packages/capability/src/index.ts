@@ -16,6 +16,96 @@ export interface Capability<I, O> {
   readonly execute: (input: I, context: CapabilityContext) => Promise<Result<O>>;
 }
 
+export interface CapabilityCatalogItem {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  readonly permission: string;
+  readonly input: string;
+  readonly output: string;
+  readonly requiredMetadata?: readonly string[];
+  readonly sourceOfTruthOwner?: string;
+}
+
+export const communicationPlannerCapabilities = [
+  {
+    id: "Communication.ContextSummarize",
+    name: "Communication Context Summarize",
+    description:
+      "Summarize Communication Planner person-scoped conversation context without owning the context record.",
+    permission: "communication.context.summarize",
+    input: "workspaceId + personId + Communication Planner context references",
+    output: "person-scoped context summary candidate",
+    requiredMetadata: ["workspaceId", "personId"],
+    sourceOfTruthOwner: "Communication Planner"
+  },
+  {
+    id: "Communication.TopicExtract",
+    name: "Communication Topic Extract",
+    description: "Extract topic candidates from a Communication Planner conversation scope.",
+    permission: "communication.topic.extract",
+    input: "workspaceId + personId + conversationId + message references",
+    output: "topic candidates for Communication Planner",
+    requiredMetadata: ["workspaceId", "personId", "conversationId"],
+    sourceOfTruthOwner: "Communication Planner"
+  },
+  {
+    id: "Communication.PromiseExtract",
+    name: "Communication Promise Extract",
+    description: "Extract promise candidates from a Communication Planner conversation scope.",
+    permission: "communication.promise.extract",
+    input: "workspaceId + personId + conversationId + message references",
+    output: "promise candidates for Communication Planner",
+    requiredMetadata: ["workspaceId", "personId", "conversationId"],
+    sourceOfTruthOwner: "Communication Planner"
+  },
+  {
+    id: "Communication.NextActionSuggest",
+    name: "Communication Next Action Suggest",
+    description: "Suggest next action candidates for a Communication Planner person and conversation scope.",
+    permission: "communication.next_action.suggest",
+    input: "workspaceId + personId + conversationId + context references",
+    output: "next action candidates for Communication Planner",
+    requiredMetadata: ["workspaceId", "personId", "conversationId"],
+    sourceOfTruthOwner: "Communication Planner"
+  },
+  {
+    id: "Communication.ReplyGenerate",
+    name: "Communication Reply Generate",
+    description: "Generate a reply draft candidate using only same-person context supplied by Communication Planner.",
+    permission: "communication.reply.generate",
+    input: "workspaceId + personId + conversationId + same-person context",
+    output: "reply draft candidate for Communication Planner SafetyCheck",
+    requiredMetadata: ["workspaceId", "personId", "conversationId"],
+    sourceOfTruthOwner: "Communication Planner"
+  },
+  {
+    id: "Communication.ReplySafetyCheck",
+    name: "Communication Reply Safety Check",
+    description:
+      "Evaluate a reply draft candidate for Communication Planner while leaving send authority with Communication Planner.",
+    permission: "communication.reply.safety_check",
+    input: "workspaceId + personId + conversationId + replyDraftId + draft content hash",
+    output: "safety check recommendation for Communication Planner",
+    requiredMetadata: ["workspaceId", "personId", "conversationId", "replyDraftId"],
+    sourceOfTruthOwner: "Communication Planner"
+  },
+  {
+    id: "Communication.IntentClassify",
+    name: "Communication Intent Classify",
+    description: "Classify communication intent within a Communication Planner person and conversation scope.",
+    permission: "communication.intent.classify",
+    input: "workspaceId + personId + conversationId + message references",
+    output: "intent classification candidate for Communication Planner",
+    requiredMetadata: ["workspaceId", "personId", "conversationId"],
+    sourceOfTruthOwner: "Communication Planner"
+  }
+] as const satisfies readonly CapabilityCatalogItem[];
+
+export const platformCapabilityCatalog = [
+  ...communicationPlannerCapabilities
+] as const satisfies readonly CapabilityCatalogItem[];
+
 export interface CapabilityRegistry {
   readonly register: <I, O>(capability: Capability<I, O>) => Result<void>;
   readonly get: <I, O>(id: string) => Result<Capability<I, O>>;
@@ -37,6 +127,26 @@ export const createCapabilityRegistry = (): CapabilityRegistry => {
     },
     list: () => [...capabilities.values()]
   };
+};
+
+export const registerCapabilityCatalog = (
+  registry: CapabilityRegistry,
+  catalog: readonly CapabilityCatalogItem[],
+  createExecutor: (item: CapabilityCatalogItem) => Capability<unknown, unknown>["execute"]
+): Result<void> => {
+  for (const item of catalog) {
+    const registered = registry.register({
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      permission: item.permission,
+      input: item.input,
+      output: item.output,
+      execute: createExecutor(item)
+    });
+    if (!registered.ok) return registered;
+  }
+  return ok(undefined);
 };
 
 export interface PermissionChecker {

@@ -1,13 +1,12 @@
+import type { Activity, ActivityRepository } from "@ai-platform-core/activity";
 import { createStoredAnalyticsRepository } from "@ai-platform-core/analytics";
+import { err, ok, platformError, UUID } from "@ai-platform-core/kernel";
 import { createD1KeyValueStore, type D1DatabaseLike } from "@ai-platform-core/storage";
 import { createPlatformRuntime, createPromptTemplateRuntime, createStoredPromptTemplateRepository, type PlatformRuntime } from "./index.js";
 
+type StoredActivity=Readonly<Record<string,unknown>>&{id:string;request:Activity["request"];status:Activity["status"];result?:Activity["result"];outcome?:Activity["outcome"];feedback?:Activity["feedback"];createdAt:string;updatedAt:string};
+const toStored=(a:Activity):StoredActivity=>({id:a.id.value,request:a.request,status:a.status,...(a.result===undefined?{}:{result:a.result}),...(a.outcome===undefined?{}:{outcome:a.outcome}),...(a.feedback===undefined?{}:{feedback:a.feedback}),createdAt:a.createdAt.toISOString(),updatedAt:a.updatedAt.toISOString()});
+const fromStored=(a:StoredActivity):Activity=>({id:new UUID(a.id),request:a.request,status:a.status,...(a.result===undefined?{}:{result:a.result}),...(a.outcome===undefined?{}:{outcome:a.outcome}),...(a.feedback===undefined?{}:{feedback:a.feedback}),createdAt:new Date(a.createdAt),updatedAt:new Date(a.updatedAt)});
+const createStoredActivityRepository=(db:D1DatabaseLike):ActivityRepository=>{const store=createD1KeyValueStore<StoredActivity>(db,"activities");return{save:async activity=>{const saved=await store.put(activity.id.value,toStored(activity));return saved.ok?ok(activity):err(saved.error)},get:async id=>{const record=await store.get(id);return record.ok?ok(fromStored(record.value.value)):err(platformError("ACTIVITY_NOT_FOUND",`Activity '${id}' was not found.`))},list:async()=>{const records=await store.list();return records.ok?ok(records.value.map(r=>fromStored(r.value))):err(records.error)}}};
 export interface CloudflareRuntimeOptions { readonly db:D1DatabaseLike; }
-export const createCloudflarePlatformRuntime=(options:CloudflareRuntimeOptions):PlatformRuntime=>{
- const usage=createD1KeyValueStore(options.db,"analytics.usage");
- const outcomes=createD1KeyValueStore(options.db,"analytics.outcomes");
- const feedback=createD1KeyValueStore(options.db,"analytics.feedback");
- const promptStore=createD1KeyValueStore(options.db,"prompt.templates");
- const storage=createD1KeyValueStore<Readonly<Record<string,unknown>>>(options.db,"runtime.storage");
- return createPlatformRuntime({analytics:createStoredAnalyticsRepository({usage,outcomes,feedback}),prompt:createPromptTemplateRuntime(createStoredPromptTemplateRepository(promptStore)),storage});
-};
+export const createCloudflarePlatformRuntime=(options:CloudflareRuntimeOptions):PlatformRuntime=>{const usage=createD1KeyValueStore(options.db,"analytics.usage"),outcomes=createD1KeyValueStore(options.db,"analytics.outcomes"),feedback=createD1KeyValueStore(options.db,"analytics.feedback"),promptStore=createD1KeyValueStore(options.db,"prompt.templates"),storage=createD1KeyValueStore<Readonly<Record<string,unknown>>>(options.db,"runtime.storage");return createPlatformRuntime({activityRepository:createStoredActivityRepository(options.db),analytics:createStoredAnalyticsRepository({usage,outcomes,feedback}),prompt:createPromptTemplateRuntime(createStoredPromptTemplateRepository(promptStore)),storage});};

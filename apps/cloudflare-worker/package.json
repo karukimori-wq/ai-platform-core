@@ -3,7 +3,6 @@
   "version":"0.1.0",
   "type":"module",
   "private":true,
-  "scripts":{"build":"tsc -p tsconfig.json","lint":"eslint src","test":"vitest run --passWithNoTests","test:coverage":"vitest run --coverage --passWithNoTests","deploy":"wrangler deploy","dev":"wrangler dev"},
-  "dependencies":{"@ai-platform-core/http":"workspace:*","@ai-platform-core/runtime":"workspace:*","@ai-platform-core/storage":"workspace:*"},
-  "devDependencies":{"wrangler":"^4.0.0"}
+  "scripts":{"build":"tsc -p tsconfig.json","lint":"eslint src","test":"vitest run --passWithNoTests","test:coverage":"vitest run --coverage --passWithNoTests"},
+  "dependencies":{"@ai-platform-core/http":"workspace:*","@ai-platform-core/runtime":"workspace:*","@ai-platform-core/storage":"workspace:*"}
 }

@@ -56,8 +56,10 @@ describe("capability", () => {
 
   it("registers catalog capabilities and still enforces capability permission", async () => {
     const registry = createCapabilityRegistry();
-    const registered = registerCapabilityCatalog(registry, communicationPlannerCapabilities, async (item) =>
-      ok({ capabilityId: item.id })
+    const registered = registerCapabilityCatalog(
+      registry,
+      communicationPlannerCapabilities,
+      (item) => async () => ok({ capabilityId: item.id })
     );
     expect(registered).toEqual({ ok: true, value: undefined });
 

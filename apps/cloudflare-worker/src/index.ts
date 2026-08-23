@@ -1,9 +1,11 @@
 import { createPlatformHttpHandler } from "@ai-platform-core/http";
 import { createCloudflarePlatformRuntime } from "@ai-platform-core/runtime/cloudflare";
+import type { PlatformRuntime } from "@ai-platform-core/runtime";
 import type { D1DatabaseLike } from "@ai-platform-core/storage";
-
-type Env={DB:D1DatabaseLike;COMMIT_SHA?:string};
-const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{"content-type":"application/json"}});
+type Env={DB:D1DatabaseLike;COMMIT_SHA?:string};let runtime:PlatformRuntime|undefined;
+const cors={"access-control-allow-origin":"*","access-control-allow-methods":"GET,POST,OPTIONS","access-control-allow-headers":"content-type,authorization,x-client-id,x-workspace-id,x-user-id"};
+const withCors=(response:Response)=>{const headers=new Headers(response.headers);for(const[k,v]of Object.entries(cors))headers.set(k,v);return new Response(response.body,{status:response.status,statusText:response.statusText,headers})};
+const json=(body:unknown,status=200)=>withCors(new Response(JSON.stringify(body),{status,headers:{"content-type":"application/json"}}));
 async function persistenceStatus(env:Env){try{const row=await env.DB.prepare("SELECT 1 AS ok").first<{ok:number}>();return json({status:"success",data:{driver:"d1",d1Configured:true,d1Reachable:row?.ok===1,databaseBackedPersistenceReady:row?.ok===1}})}catch{return json({status:"warning",data:{driver:"d1",d1Configured:true,d1Reachable:false,databaseBackedPersistenceReady:false}},503)}}
 async function roundtrip(env:Env){const id=crypto.randomUUID(),now=new Date().toISOString();try{await env.DB.prepare("INSERT INTO platform_kv(namespace,id,value_json,version,updated_at) VALUES(?,?,?,?,?)").bind("system.roundtrip",id,JSON.stringify({id}),1,now).run();const row=await env.DB.prepare("SELECT id FROM platform_kv WHERE namespace=? AND id=? LIMIT 1").bind("system.roundtrip",id).first<{id:string}>();await env.DB.prepare("DELETE FROM platform_kv WHERE namespace=? AND id=?").bind("system.roundtrip",id).run();return json({status:"success",data:{persistenceDriver:"d1",roundtripReady:row?.id===id,createdAt:now}})}catch{return json({status:"error",data:{persistenceDriver:"d1",roundtripReady:false}},503)}}
-export default{async fetch(request:Request,env:Env):Promise<Response>{const url=new URL(request.url);if(url.pathname==="/api/persistence/status"&&request.method==="GET")return persistenceStatus(env);if(url.pathname==="/api/persistence/roundtrip"&&request.method==="POST")return roundtrip(env);const runtime=createCloudflarePlatformRuntime({db:env.DB});return createPlatformHttpHandler(runtime)(request)}};
+export default{async fetch(request:Request,env:Env):Promise<Response>{if(request.method==="OPTIONS")return new Response(null,{status:204,headers:cors});const url=new URL(request.url);if(url.pathname==="/api/persistence/status"&&request.method==="GET")return persistenceStatus(env);if(url.pathname==="/api/persistence/roundtrip"&&request.method==="POST")return roundtrip(env);runtime??=createCloudflarePlatformRuntime({db:env.DB});return withCors(await createPlatformHttpHandler(runtime)(request))}};

@@ -253,6 +253,15 @@
 - Dashboard grouping by signed-in user
 - Dashboard filtering by `workspaceId + userId`
 
+## v0.1.37 Communication Planner Capability Boundary
+
+- Shared `Communication.*` capability catalog entries
+- Communication capability permission convention
+- Required `workspaceId + personId + conversationId` metadata for reply generation
+- Communication Planner kept as source of truth for inbox, person context, conversations, messages, drafts, SafetyChecks, and send decisions
+- AI Platform Core returns analysis, extraction, classification, and reply candidates only
+- Generated replies must pass Communication Planner SafetyCheck and send gate before provider send
+
 ## v0.1.28 Professional Studio Event Boundary
 
 - Shared integration event type names for Growth Engine and Professional Studio

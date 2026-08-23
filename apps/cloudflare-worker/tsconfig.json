@@ -1,0 +1,5 @@
+{
+  "extends":"../../tsconfig.base.json",
+  "compilerOptions":{"tsBuildInfoFile":"dist/.tsbuildinfo","rootDir":"src","outDir":"dist","lib":["ES2023","WebWorker"]},
+  "include":["src/**/*.ts"]
+}

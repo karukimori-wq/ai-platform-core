@@ -81,6 +81,22 @@ jobs:
           if (persistence.status !== 'success' || persistence.data?.driver !== 'd1' || persistence.data?.d1Reachable !== true || persistence.data?.databaseBackedPersistenceReady !== true) throw new Error('Production D1 readiness check failed');
           if (roundtrip.status !== 'success' || roundtrip.data?.persistenceDriver !== 'd1' || roundtrip.data?.roundtripReady !== true) throw new Error('Production D1 roundtrip check failed');
           NODE
+      - name: Verify production Event persistence
+        run: |
+          RUN_ID="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          CLIENT="production-e2e"
+          WORKSPACE="ws-event-${RUN_ID}"
+          USER="user-event-${RUN_ID}"
+          curl --fail --silent --show-error "$PRODUCTION_URL/v1/events/status" | tee /tmp/event-status.json
+          curl --fail --silent --show-error -X POST "$PRODUCTION_URL/v1/events/roundtrip?client=$CLIENT&workspaceId=$WORKSPACE&userId=$USER" -H "x-client-id: $CLIENT" -H "x-workspace-id: $WORKSPACE" -H "x-user-id: $USER" -H "x-trace-id: trace-event-${RUN_ID}" -H "x-correlation-id: corr-event-${RUN_ID}" | tee /tmp/event-roundtrip.json
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const status = JSON.parse(fs.readFileSync('/tmp/event-status.json', 'utf8'));
+          const roundtrip = JSON.parse(fs.readFileSync('/tmp/event-roundtrip.json', 'utf8'));
+          if (status.appName !== 'ai-platform-core' || status.domain !== 'event' || status.status !== 'success' || status.sourceOfTruth !== true || status.eventStoreReachable !== true) throw new Error('Production Event status check failed');
+          if (roundtrip.ok !== true || roundtrip.status !== 'success' || roundtrip.eventName !== 'ai.activity.created.v1' || roundtrip.persisted !== true) throw new Error('Production Event roundtrip check failed');
+          if (!String(roundtrip.traceId).startsWith('trace-event-') || !String(roundtrip.correlationId).startsWith('corr-event-')) throw new Error('Production Event trace/correlation check failed');
+          NODE
       - name: Verify production Activity and Usage persistence
         run: |
           RUN_ID="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"

@@ -382,6 +382,70 @@ describe("gateway http handler", () => {
     expect(body.activity.context).toBeUndefined();
   });
 
+  it("records scoped activity outcome and feedback through HTTP", async () => {
+    const runtime = createPlatformRuntime();
+    runtime.clients.register({
+      id: "fortune_teller_a",
+      name: "Fortune Teller A",
+      type: "web",
+      version: "0.1.0",
+      provider: "echo",
+      defaultModel: "echo-report-v1",
+      capabilities: ["report.generate"],
+      knowledge: [],
+      analytics: true
+    });
+    const handler = createPlatformHttpHandler(runtime, {
+      authorizeScopedRequest: (_request, scope) =>
+        scope.clientId === "fortune_teller_a" &&
+        scope.workspaceId === "workspace-numeria-a" &&
+        scope.userId === "user-fortune-teller-a"
+    });
+
+    const runResponse = await handler(new Request("https://example.com/v1/gateway/run", {
+      method: "POST",
+      body: JSON.stringify({
+        auth: { clientId: "fortune_teller_a", permissions: ["report.generate"] },
+        activity: {
+          client: "fortune_teller_a",
+          workspaceId: "workspace-numeria-a",
+          userId: "user-fortune-teller-a",
+          capability: "report.generate",
+          workflow: "numerology",
+          goal: "Create a report.",
+          context: { app: "Numeria Studio" },
+          input: { reportId: "report_test_001" }
+        },
+        messages: [{ role: "user", content: "Draft a report." }]
+      })
+    }));
+    const runBody = await runResponse.json() as Readonly<{ result: Readonly<{ activityId: string }> }>;
+    const activityId = runBody.result.activityId;
+    const scopedQuery = "client=fortune_teller_a&workspaceId=workspace-numeria-a&userId=user-fortune-teller-a";
+
+    const outcome = await handler(new Request(`https://example.com/v1/activities/${activityId}/outcome?${scopedQuery}`, {
+      method: "POST",
+      body: JSON.stringify({ result: "report_created", score: 0.9 })
+    }));
+    const feedback = await handler(new Request(`https://example.com/v1/activities/${activityId}/feedback?${scopedQuery}`, {
+      method: "POST",
+      body: JSON.stringify({ rating: 5, edited: false, accepted: true })
+    }));
+    const dashboard = await handler(new Request(`https://example.com/v1/dashboard/usage?${scopedQuery}&period=all`));
+    const dashboardBody = await dashboard.json() as Readonly<{
+      ok: boolean;
+      view: Readonly<{ metric: Readonly<{ outcomeCount: number; feedbackCount: number; acceptedCount: number }> }>;
+    }>;
+
+    expect(outcome.status).toBe(201);
+    expect(feedback.status).toBe(201);
+    expect(dashboard.status).toBe(200);
+    expect(dashboardBody.ok).toBe(true);
+    expect(dashboardBody.view.metric.outcomeCount).toBe(1);
+    expect(dashboardBody.view.metric.feedbackCount).toBe(1);
+    expect(dashboardBody.view.metric.acceptedCount).toBe(1);
+  });
+
   it("registers capability manifests through a scoped HTTP endpoint", async () => {
     const runtime = createPlatformRuntime();
     const closedHandler = createPlatformHttpHandler(runtime);
@@ -492,6 +556,43 @@ describe("gateway http handler", () => {
       templateId: "Report.Generate",
       version: 1,
       rendered: "Report for A with number 7."
+    });
+  });
+
+  it("saves and renders prompt templates through scoped HTTP endpoints", async () => {
+    const runtime = createPlatformRuntime();
+    const handler = createPlatformHttpHandler(runtime, {
+      authorizeUsageRequest: (_request, clientId) => clientId === "platform_admin"
+    });
+
+    const saved = await handler(new Request("https://example.com/v1/prompt-templates?client=platform_admin", {
+      method: "POST",
+      body: JSON.stringify({
+        id: "Report.Generate",
+        version: 2,
+        body: "Saved report {{name}} {{number}}.",
+        retention: "metadata"
+      })
+    }));
+    const rendered = await handler(new Request("https://example.com/v1/prompt-templates/render?client=platform_admin", {
+      method: "POST",
+      body: JSON.stringify({
+        templateId: "Report.Generate",
+        variables: { name: "A", number: 7 }
+      })
+    }));
+    const body = await rendered.json() as Readonly<{
+      ok: boolean;
+      prompt: Readonly<Record<string, unknown>>;
+    }>;
+
+    expect(saved.status).toBe(201);
+    expect(rendered.status).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(body.prompt).toMatchObject({
+      templateId: "Report.Generate",
+      version: 2,
+      rendered: "Saved report A 7."
     });
   });
 });

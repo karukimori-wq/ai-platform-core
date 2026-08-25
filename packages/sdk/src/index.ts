@@ -23,7 +23,7 @@ export {
   type UsageRecord,
   createMemoryAnalyticsRepository,
   createStoredAnalyticsRepository,
-  createUsageRecord
+  usageFromActivity
 } from "@ai-platform-core/analytics";
 export {
   type Capability,

@@ -182,7 +182,13 @@ export const createMemoryEventStore = (): EventStore => {
   const events: DomainEvent[] = [];
   return {
     append: async (newEvents) => {
-      events.push(...newEvents);
+      const existing = new Set(events.map((event) => event.id.value));
+      for (const event of newEvents) {
+        if (!existing.has(event.id.value)) {
+          events.push(event);
+          existing.add(event.id.value);
+        }
+      }
       return ok(undefined);
     },
     load: async (aggregateId) =>

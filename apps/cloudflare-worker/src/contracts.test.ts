@@ -49,4 +49,14 @@ describe("Cloudflare Worker contracts", () => {
     expect(source).toContain("AI Usage");
     expect(source).toContain("AI Capability");
   });
+
+  it("exposes an aggregate production readiness view", () => {
+    const source = read("./index.ts");
+    expect(source).toContain("/v1/readiness");
+    expect(source).toContain("/api/readiness");
+    expect(source).toContain("productionReady");
+    expect(source).toContain("eventStore");
+    expect(source).toContain("integrationBoundary");
+    expect(source).toContain("commitSha");
+  });
 });

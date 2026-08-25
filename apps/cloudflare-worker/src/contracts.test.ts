@@ -35,4 +35,18 @@ describe("Cloudflare Worker contracts", () => {
     expect(source).toContain("ScopedAuthorizationRequest");
     expect(source).toContain("mvp_scoped_headers");
   });
+
+  it("exposes application integration boundary status", () => {
+    const source = read("./index.ts");
+    expect(source).toContain("/v1/integrations/status");
+    expect(source).toContain("/api/integrations/status");
+    expect(source).toContain("communication.reply.generate");
+    expect(source).toContain("velvet.message_draft.generate");
+    expect(source).toContain("MessageDraft");
+    expect(source).toContain("fullMeetingTranscript");
+    expect(source).toContain("paymentStatus");
+    expect(source).toContain("AI Activity");
+    expect(source).toContain("AI Usage");
+    expect(source).toContain("AI Capability");
+  });
 });

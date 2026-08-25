@@ -107,15 +107,41 @@ jobs:
           curl --fail --silent --show-error "$PRODUCTION_URL/v1/activities/$ACTIVITY_B?client=$CLIENT&workspaceId=$WORKSPACE_B&userId=$USER_B" -H "x-client-id: $CLIENT" -H "x-workspace-id: $WORKSPACE_B" -H "x-user-id: $USER_B" | tee /tmp/activity-b-read.json
           curl --fail --silent --show-error "$PRODUCTION_URL/v1/analytics/usage?client=$CLIENT&workspaceId=$WORKSPACE_A&userId=$USER_A&period=all" -H "x-client-id: $CLIENT" -H "x-workspace-id: $WORKSPACE_A" -H "x-user-id: $USER_A" | tee /tmp/usage-a.json
           curl --fail --silent --show-error "$PRODUCTION_URL/v1/analytics/usage?client=$CLIENT&workspaceId=$WORKSPACE_B&userId=$USER_B&period=all" -H "x-client-id: $CLIENT" -H "x-workspace-id: $WORKSPACE_B" -H "x-user-id: $USER_B" | tee /tmp/usage-b.json
+          cat >/tmp/outcome-a.json <<EOF
+          {"result":"production_e2e_completed","score":0.95}
+          EOF
+          cat >/tmp/feedback-a.json <<EOF
+          {"rating":5,"edited":false,"accepted":true}
+          EOF
+          curl --fail --silent --show-error -X POST "$PRODUCTION_URL/v1/activities/$ACTIVITY_A/outcome?client=$CLIENT&workspaceId=$WORKSPACE_A&userId=$USER_A" -H 'content-type: application/json' -H "x-client-id: $CLIENT" -H "x-workspace-id: $WORKSPACE_A" -H "x-user-id: $USER_A" --data-binary @/tmp/outcome-a.json | tee /tmp/outcome-a-result.json
+          curl --fail --silent --show-error -X POST "$PRODUCTION_URL/v1/activities/$ACTIVITY_A/feedback?client=$CLIENT&workspaceId=$WORKSPACE_A&userId=$USER_A" -H 'content-type: application/json' -H "x-client-id: $CLIENT" -H "x-workspace-id: $WORKSPACE_A" -H "x-user-id: $USER_A" --data-binary @/tmp/feedback-a.json | tee /tmp/feedback-a-result.json
+          curl --fail --silent --show-error "$PRODUCTION_URL/v1/dashboard/usage?client=$CLIENT&workspaceId=$WORKSPACE_A&userId=$USER_A&period=all" -H "x-client-id: $CLIENT" -H "x-workspace-id: $WORKSPACE_A" -H "x-user-id: $USER_A" | tee /tmp/dashboard-a.json
+          PROMPT_ID="production.prompt.${RUN_ID}"
+          cat >/tmp/prompt-template.json <<EOF
+          {"id":"$PROMPT_ID","version":1,"body":"Production prompt {{name}}","retention":"metadata"}
+          EOF
+          cat >/tmp/prompt-render.json <<EOF
+          {"templateId":"$PROMPT_ID","variables":{"name":"A"}}
+          EOF
+          curl --fail --silent --show-error -X POST "$PRODUCTION_URL/v1/prompt-templates?client=$CLIENT" -H 'content-type: application/json' -H "x-client-id: $CLIENT" --data-binary @/tmp/prompt-template.json | tee /tmp/prompt-template-result.json
+          curl --fail --silent --show-error -X POST "$PRODUCTION_URL/v1/prompt-templates/render?client=$CLIENT" -H 'content-type: application/json' -H "x-client-id: $CLIENT" --data-binary @/tmp/prompt-render.json | tee /tmp/prompt-render-result.json
           node - <<'NODE'
           const fs=require('node:fs');
           const a=JSON.parse(fs.readFileSync('/tmp/activity-a-read.json','utf8'));
           const b=JSON.parse(fs.readFileSync('/tmp/activity-b-read.json','utf8'));
           const ua=JSON.parse(fs.readFileSync('/tmp/usage-a.json','utf8'));
           const ub=JSON.parse(fs.readFileSync('/tmp/usage-b.json','utf8'));
+          const outcome=JSON.parse(fs.readFileSync('/tmp/outcome-a-result.json','utf8'));
+          const feedback=JSON.parse(fs.readFileSync('/tmp/feedback-a-result.json','utf8'));
+          const dashboard=JSON.parse(fs.readFileSync('/tmp/dashboard-a.json','utf8'));
+          const promptTemplate=JSON.parse(fs.readFileSync('/tmp/prompt-template-result.json','utf8'));
+          const promptRender=JSON.parse(fs.readFileSync('/tmp/prompt-render-result.json','utf8'));
           if(a.ok!==true||b.ok!==true)throw new Error('Persisted Activity read failed');
           if(a.activity?.workspaceId===b.activity?.workspaceId||a.activity?.userId===b.activity?.userId)throw new Error('Workspace/user E2E scopes were not distinct');
           if(ua.ok!==true||ua.summary?.usageCount<1||ub.ok!==true||ub.summary?.usageCount<1)throw new Error('Persisted Usage read failed');
+          if(outcome.ok!==true||feedback.ok!==true)throw new Error('Persisted Outcome/Feedback write failed');
+          if(dashboard.ok!==true||dashboard.view?.metric?.outcomeCount<1||dashboard.view?.metric?.feedbackCount<1)throw new Error('Persisted Outcome/Feedback dashboard read failed');
+          if(promptTemplate.ok!==true||promptRender.ok!==true||promptRender.prompt?.rendered!=='Production prompt A')throw new Error('Persisted Prompt Template render failed');
           NODE
       - name: Verify production workspace and user isolation
         run: |

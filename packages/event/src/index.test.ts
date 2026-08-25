@@ -26,6 +26,15 @@ describe("event", () => {
     expect((await store.load(id)).value).toHaveLength(1);
   });
 
+  it("deduplicates stored events by event id", async () => {
+    const store = createMemoryEventStore();
+    const event = { id, aggregateId: id, type: "ai.activity.created.v1", version: 1, occurredAt: new Date(), payload: {}, metadata: {} };
+
+    await store.append([event, event]);
+
+    expect((await store.load(id)).value).toHaveLength(1);
+  });
+
   it("publishes platform integration events", async () => {
     const bus = createEventBus();
     const seen: string[] = [];
@@ -105,12 +114,13 @@ describe("event", () => {
   it("queries stored events by aggregate, type, and time", async () => {
     const store = createMemoryEventStore();
     const otherId = UUID.create("22222222-2222-4222-8222-222222222222").value;
+    const completedId = UUID.create("33333333-3333-4333-8333-333333333333").value;
     const first = new Date("2026-01-01T00:00:00.000Z");
     const second = new Date("2026-01-02T00:00:00.000Z");
     await store.append([
       { id, aggregateId: id, type: "growth.customer.created.v1", version: 1, occurredAt: first, payload: {}, metadata: {} },
       { id: otherId, aggregateId: otherId, type: "growth.customer.created.v1", version: 1, occurredAt: first, payload: {}, metadata: {} },
-      { id, aggregateId: id, type: "studio.session.completed.v1", version: 2, occurredAt: second, payload: {}, metadata: {} }
+      { id: completedId, aggregateId: id, type: "studio.session.completed.v1", version: 2, occurredAt: second, payload: {}, metadata: {} }
     ]);
 
     const result = await store.query({

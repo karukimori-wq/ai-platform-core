@@ -59,4 +59,13 @@ describe("Cloudflare Worker contracts", () => {
     expect(source).toContain("integrationBoundary");
     expect(source).toContain("commitSha");
   });
+
+  it("returns actionable readiness diagnostics for operators", () => {
+    const source = read("./index.ts");
+    expect(source).toContain("failedChecks");
+    expect(source).toContain("recommendedActions");
+    expect(source).toContain("Check /api/persistence/status");
+    expect(source).toContain("Check /v1/events/status");
+    expect(source).toContain("Check /v1/integrations/status");
+  });
 });

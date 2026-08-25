@@ -116,6 +116,12 @@ describe("gateway http handler", () => {
       usesLegacyEventNames: boolean;
       usesReportTerminology: boolean;
       canonicalOwnershipChecked: boolean;
+      authenticationContract: Readonly<{
+        status: string;
+        identityMode: string;
+        requiredReadScope: readonly string[];
+        professionalIdRequired: boolean;
+      }>;
       issues: readonly string[];
       timestamp: string;
     }>;
@@ -132,6 +138,12 @@ describe("gateway http handler", () => {
       usesLegacyEventNames: false,
       usesReportTerminology: true,
       canonicalOwnershipChecked: true,
+      authenticationContract: {
+        status: "mvp_scoped_headers",
+        identityMode: "workspaceId+userId",
+        requiredReadScope: ["clientId", "workspaceId", "userId"],
+        professionalIdRequired: false
+      },
       issues: [],
       timestamp: "2026-08-05T12:30:00.000Z"
     });
@@ -152,7 +164,10 @@ describe("gateway http handler", () => {
     });
     const closedHandler = createPlatformHttpHandler(runtime);
     const handler = createPlatformHttpHandler(runtime, {
-      authorizeUsageRequest: (_request, clientId) => clientId === "fortune_teller_a"
+      authorizeScopedRequest: (_request, scope) =>
+        scope.clientId === "fortune_teller_a" &&
+        scope.workspaceId === "workspace-numeria-a" &&
+        scope.userId === "user-fortune-teller-a"
     });
 
     await handler(new Request("https://example.com/v1/gateway/run", {
@@ -174,11 +189,11 @@ describe("gateway http handler", () => {
     }));
 
     const hidden = await closedHandler(new Request("https://example.com/v1/analytics/usage?client=fortune_teller_a"));
-    const forbidden = await handler(new Request("https://example.com/v1/analytics/usage?client=other_client"));
+    const forbidden = await handler(new Request("https://example.com/v1/analytics/usage?client=other_client&workspaceId=workspace-numeria-a&userId=user-fortune-teller-a"));
     const invalid = await handler(new Request("https://example.com/v1/analytics/usage?client=fortune_teller_a&period=week"));
-    const response = await handler(new Request("https://example.com/v1/analytics/usage?client=fortune_teller_a&period=month"));
+    const missingScope = await handler(new Request("https://example.com/v1/analytics/usage?client=fortune_teller_a&period=month"));
     const scoped = await handler(new Request("https://example.com/v1/analytics/usage?client=fortune_teller_a&period=month&workspaceId=workspace-numeria-a&userId=user-fortune-teller-a"));
-    const body = await response.json() as Readonly<{
+    const body = await scoped.json() as Readonly<{
       ok: boolean;
       summary: Readonly<{
         client: string;
@@ -191,7 +206,7 @@ describe("gateway http handler", () => {
         byModel: Readonly<Record<string, Readonly<{ usageCount: number; totalTokens: number }>>>;
       }>;
     }>;
-    const scopedBody = await scoped.json() as Readonly<{
+    const scopedBody = body as Readonly<{
       ok: boolean;
       summary: Readonly<{ workspaceId: string; userId: string; usageCount: number }>;
     }>;
@@ -199,7 +214,7 @@ describe("gateway http handler", () => {
     expect(hidden.status).toBe(404);
     expect(forbidden.status).toBe(403);
     expect(invalid.status).toBe(400);
-    expect(response.status).toBe(200);
+    expect(missingScope.status).toBe(400);
     expect(scoped.status).toBe(200);
     expect(body.ok).toBe(true);
     expect(scopedBody.summary.workspaceId).toBe("workspace-numeria-a");
@@ -229,7 +244,10 @@ describe("gateway http handler", () => {
       analytics: true
     });
     const handler = createPlatformHttpHandler(runtime, {
-      authorizeUsageRequest: (_request, clientId) => clientId === "fortune_teller_a"
+      authorizeScopedRequest: (_request, scope) =>
+        scope.clientId === "fortune_teller_a" &&
+        scope.workspaceId === "workspace-numeria-a" &&
+        scope.userId === "user-fortune-teller-a"
     });
 
     await handler(new Request("https://example.com/v1/gateway/run", {
@@ -252,8 +270,9 @@ describe("gateway http handler", () => {
     const hidden = await createPlatformHttpHandler(runtime)(
       new Request("https://example.com/v1/dashboard/usage?client=fortune_teller_a")
     );
-    const forbidden = await handler(new Request("https://example.com/v1/dashboard/usage?client=other_client"));
+    const forbidden = await handler(new Request("https://example.com/v1/dashboard/usage?client=other_client&workspaceId=workspace-numeria-a&userId=user-fortune-teller-a"));
     const invalid = await handler(new Request("https://example.com/v1/dashboard/usage?client=fortune_teller_a&period=week"));
+    const missingScope = await handler(new Request("https://example.com/v1/dashboard/usage?client=fortune_teller_a&period=month"));
     const response = await handler(new Request("https://example.com/v1/dashboard/usage?client=fortune_teller_a&period=month&workspaceId=workspace-numeria-a&userId=user-fortune-teller-a"));
     const body = await response.json() as Readonly<{
       ok: boolean;
@@ -269,6 +288,7 @@ describe("gateway http handler", () => {
     expect(hidden.status).toBe(404);
     expect(forbidden.status).toBe(403);
     expect(invalid.status).toBe(400);
+    expect(missingScope.status).toBe(400);
     expect(response.status).toBe(200);
     expect(body.ok).toBe(true);
     expect(body.view.period).toBe("month");
@@ -293,7 +313,7 @@ describe("gateway http handler", () => {
       analytics: true
     });
     const handler = createPlatformHttpHandler(runtime, {
-      authorizeUsageRequest: (_request, clientId) => clientId === "fortune_teller_a"
+      authorizeScopedRequest: (_request, scope) => scope.clientId === "fortune_teller_a"
     });
 
     const runResponse = await handler(new Request("https://example.com/v1/gateway/run", {
@@ -321,10 +341,13 @@ describe("gateway http handler", () => {
       new Request(`https://example.com/v1/activities/${runBody.result.activityId}?client=fortune_teller_a`)
     );
     const forbidden = await handler(
-      new Request(`https://example.com/v1/activities/${runBody.result.activityId}?client=other_client`)
+      new Request(`https://example.com/v1/activities/${runBody.result.activityId}?client=other_client&workspaceId=workspace-numeria-a&userId=user-fortune-teller-a`)
+    );
+    const missingScope = await handler(
+      new Request(`https://example.com/v1/activities/${runBody.result.activityId}?client=fortune_teller_a`)
     );
     const scopedMiss = await handler(
-      new Request(`https://example.com/v1/activities/${runBody.result.activityId}?client=fortune_teller_a&workspaceId=other_workspace`)
+      new Request(`https://example.com/v1/activities/${runBody.result.activityId}?client=fortune_teller_a&workspaceId=other_workspace&userId=user-fortune-teller-a`)
     );
     const response = await handler(
       new Request(`https://example.com/v1/activities/${runBody.result.activityId}?client=fortune_teller_a&workspaceId=workspace-numeria-a&userId=user-fortune-teller-a`)
@@ -339,6 +362,7 @@ describe("gateway http handler", () => {
 
     expect(hidden.status).toBe(404);
     expect(forbidden.status).toBe(403);
+    expect(missingScope.status).toBe(400);
     expect(scopedMiss.status).toBe(404);
     expect(response.status).toBe(200);
     expect(method.status).toBe(405);

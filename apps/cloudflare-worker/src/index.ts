@@ -4,7 +4,7 @@ import type { PlatformRuntime } from "@ai-platform-core/runtime";
 import type { D1DatabaseLike } from "@ai-platform-core/storage";
 interface Env { DB:D1DatabaseLike;COMMIT_SHA?:string; }
 let runtime:PlatformRuntime|undefined;
-const cors={"access-control-allow-origin":"*","access-control-allow-methods":"GET,POST,OPTIONS","access-control-allow-headers":"content-type,authorization,x-client-id,x-workspace-id,x-user-id"};
+const cors={"access-control-allow-origin":"*","access-control-allow-methods":"GET,POST,OPTIONS","access-control-allow-headers":"content-type,authorization,x-client-id,x-workspace-id,x-user-id,x-trace-id,x-correlation-id,x-source-app"};
 const withCors=(response:Response)=>{const headers=new Headers(response.headers);for(const[k,v]of Object.entries(cors))headers.set(k,v);return new Response(response.body,{status:response.status,statusText:response.statusText,headers})};
 const json=(body:unknown,status=200)=>withCors(new Response(JSON.stringify(body),{status,headers:{"content-type":"application/json"}}));
 async function persistenceStatus(env:Env){try{const row=await env.DB.prepare("SELECT 1 AS ok").first<{ok:number}>();return json({status:"success",data:{driver:"d1",d1Configured:true,d1Reachable:row?.ok===1,databaseBackedPersistenceReady:row?.ok===1}})}catch{return json({status:"warning",data:{driver:"d1",d1Configured:true,d1Reachable:false,databaseBackedPersistenceReady:false}},503)}}

@@ -18,7 +18,18 @@ export interface PlatformHttpHandlerOptions {
   readonly activityRoutePrefix?: string;
   readonly capabilityRegisterRoute?: string;
   readonly promptTemplateRenderRoute?: string;
+  readonly authorizeScopedRequest?: (
+    request: Request,
+    scope: ScopedAuthorizationRequest
+  ) => Promise<boolean> | boolean;
   readonly authorizeUsageRequest?: (request: Request, clientId: string) => Promise<boolean> | boolean;
+}
+
+export interface ScopedAuthorizationRequest {
+  readonly clientId: string;
+  readonly workspaceId?: string;
+  readonly userId?: string;
+  readonly ownerUserId?: string;
 }
 
 export interface GatewayRunHttpBody {
@@ -106,6 +117,12 @@ export interface PlatformContractStatusView {
   readonly usesLegacyEventNames: boolean;
   readonly usesReportTerminology: boolean;
   readonly canonicalOwnershipChecked: boolean;
+  readonly authenticationContract: {
+    readonly status: "mvp_scoped_headers";
+    readonly identityMode: "workspaceId+userId";
+    readonly requiredReadScope: readonly ["clientId", "workspaceId", "userId"];
+    readonly professionalIdRequired: false;
+  };
   readonly issues: readonly string[];
   readonly timestamp: string;
 }
@@ -289,19 +306,43 @@ const readUsagePeriod = (url: URL): UsageHttpPeriod | PlatformError => {
 const authorizeScopedRead = async (
   request: Request,
   url: URL,
-  authorize: PlatformHttpHandlerOptions["authorizeUsageRequest"]
-): Promise<{ readonly client: string } | Response> => {
-  if (authorize === undefined) {
+  options: PlatformHttpHandlerOptions,
+  requiredScope: readonly ("workspaceId" | "userId")[] = []
+): Promise<ScopedAuthorizationRequest | Response> => {
+  if (options.authorizeScopedRequest === undefined && options.authorizeUsageRequest === undefined) {
     return errorResponse(404, platformError("HTTP_NOT_FOUND", `Route '${url.pathname}' was not found.`));
   }
   const client = readSearchString(url, "client");
   if (client === undefined) {
     return errorResponse(400, platformError("HTTP_INVALID_QUERY", "Query parameter 'client' is required."));
   }
-  if (!await authorize(request, client)) {
-    return errorResponse(403, platformError("HTTP_FORBIDDEN", "Client usage queries must be scoped to the caller."));
+  const workspaceId = readSearchString(url, "workspaceId");
+  const userId = readSearchString(url, "userId");
+  const ownerUserId = readSearchString(url, "ownerUserId");
+  const scope: ScopedAuthorizationRequest = {
+    clientId: client,
+    ...(workspaceId === undefined ? {} : { workspaceId }),
+    ...(userId === undefined ? {} : { userId }),
+    ...(ownerUserId === undefined ? {} : { ownerUserId })
+  };
+  for (const key of requiredScope) {
+    if (scope[key] === undefined) {
+      return errorResponse(400, platformError(
+        "HTTP_INVALID_QUERY",
+        `Query parameter '${key}' is required for scoped reads.`
+      ));
+    }
   }
-  return { client };
+  const authorized = options.authorizeScopedRequest === undefined
+    ? await options.authorizeUsageRequest?.(request, client)
+    : await options.authorizeScopedRequest(request, scope);
+  if (authorized !== true) {
+    return errorResponse(403, platformError(
+      "AUTHORIZATION_SCOPE_VIOLATION",
+      "Request scope must match the authenticated client, workspace, and user."
+    ));
+  }
+  return scope;
 };
 
 const startOfDay = (date: Date): Date => new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -338,25 +379,28 @@ const listUsage = async (
   runtime: PlatformRuntime,
   request: Request,
   url: URL,
-  authorize: PlatformHttpHandlerOptions["authorizeUsageRequest"]
+  options: PlatformHttpHandlerOptions
 ): Promise<Response> => {
-  const scopedRead = await authorizeScopedRead(request, url, authorize);
+  const scopedRead = await authorizeScopedRead(request, url, options, ["workspaceId", "userId"]);
   if (scopedRead instanceof Response) return scopedRead;
-  const { client } = scopedRead;
+  const { clientId: client } = scopedRead;
+  const workspaceId = scopedRead.workspaceId;
+  const userId = scopedRead.userId;
+  if (workspaceId === undefined || userId === undefined) {
+    return errorResponse(400, platformError("HTTP_INVALID_QUERY", "Query parameters 'workspaceId' and 'userId' are required."));
+  }
   const period = readUsagePeriod(url);
   if (isPlatformError(period)) return errorResponse(400, period);
   const usage = await runtime.analytics.listUsage();
   if (!usage.ok) return errorResponse(400, usage.error);
   const capability = readSearchString(url, "capability");
-  const workspaceId = readSearchString(url, "workspaceId");
-  const userId = readSearchString(url, "userId");
   const provider = readSearchString(url, "provider");
   const model = readSearchString(url, "model");
   const now = new Date();
   const records = filterByPeriod(usage.value, period, now).filter((record) =>
     record.client === client &&
-    (workspaceId === undefined || record.workspaceId === workspaceId) &&
-    (userId === undefined || record.userId === userId) &&
+    record.workspaceId === workspaceId &&
+    record.userId === userId &&
     (capability === undefined || record.capability === capability) &&
     (provider === undefined || record.provider === provider) &&
     (model === undefined || record.model === model)
@@ -365,8 +409,8 @@ const listUsage = async (
     ok: true,
     summary: {
       client,
-      ...(workspaceId === undefined ? {} : { workspaceId }),
-      ...(userId === undefined ? {} : { userId }),
+      workspaceId,
+      userId,
       period,
       usageCount: records.length,
       totalTokens: records.reduce((sum, record) => sum + record.totalTokens, 0),
@@ -385,19 +429,22 @@ const getDashboardUsage = async (
   runtime: PlatformRuntime,
   request: Request,
   url: URL,
-  authorize: PlatformHttpHandlerOptions["authorizeUsageRequest"]
+  options: PlatformHttpHandlerOptions
 ): Promise<Response> => {
-  const scopedRead = await authorizeScopedRead(request, url, authorize);
+  const scopedRead = await authorizeScopedRead(request, url, options, ["workspaceId", "userId"]);
   if (scopedRead instanceof Response) return scopedRead;
+  const workspaceId = scopedRead.workspaceId;
+  const userId = scopedRead.userId;
+  if (workspaceId === undefined || userId === undefined) {
+    return errorResponse(400, platformError("HTTP_INVALID_QUERY", "Query parameters 'workspaceId' and 'userId' are required."));
+  }
   const period = readUsagePeriod(url);
   if (isPlatformError(period)) return errorResponse(400, period);
-  const workspaceId = readSearchString(url, "workspaceId");
-  const userId = readSearchString(url, "userId");
   const view = await runtime.dashboard.getView({
-    client: scopedRead.client,
+    client: scopedRead.clientId,
     period,
-    ...(workspaceId === undefined ? {} : { workspaceId }),
-    ...(userId === undefined ? {} : { userId })
+    workspaceId,
+    userId
   });
   return view.ok ? jsonResponse(200, { ok: true, view: view.value }) : errorResponse(400, view.error);
 };
@@ -415,9 +462,9 @@ const registerCapability = async (
   runtime: PlatformRuntime,
   request: Request,
   url: URL,
-  authorize: PlatformHttpHandlerOptions["authorizeUsageRequest"]
+  options: PlatformHttpHandlerOptions
 ): Promise<Response> => {
-  const scopedRead = await authorizeScopedRead(request, url, authorize);
+  const scopedRead = await authorizeScopedRead(request, url, options);
   if (scopedRead instanceof Response) return scopedRead;
   const parsed = parseCapabilityRegisterBody(await request.json().catch(() => undefined));
   if (isPlatformError(parsed)) return errorResponse(400, parsed);
@@ -436,9 +483,9 @@ const renderPromptTemplate = async (
   runtime: PlatformRuntime,
   request: Request,
   url: URL,
-  authorize: PlatformHttpHandlerOptions["authorizeUsageRequest"]
+  options: PlatformHttpHandlerOptions
 ): Promise<Response> => {
-  const scopedRead = await authorizeScopedRead(request, url, authorize);
+  const scopedRead = await authorizeScopedRead(request, url, options);
   if (scopedRead instanceof Response) return scopedRead;
   const parsed = parsePromptTemplateRenderBody(await request.json().catch(() => undefined));
   if (isPlatformError(parsed)) return errorResponse(400, parsed);
@@ -471,25 +518,28 @@ const getActivity = async (
   runtime: PlatformRuntime,
   request: Request,
   url: URL,
-  authorize: PlatformHttpHandlerOptions["authorizeUsageRequest"],
+  options: PlatformHttpHandlerOptions,
   activityRoutePrefix: string
 ): Promise<Response> => {
-  const scopedRead = await authorizeScopedRead(request, url, authorize);
+  const scopedRead = await authorizeScopedRead(request, url, options, ["workspaceId", "userId"]);
   if (scopedRead instanceof Response) return scopedRead;
+  const workspaceId = scopedRead.workspaceId;
+  const userId = scopedRead.userId;
+  if (workspaceId === undefined || userId === undefined) {
+    return errorResponse(400, platformError("HTTP_INVALID_QUERY", "Query parameters 'workspaceId' and 'userId' are required."));
+  }
   const activityId = url.pathname.slice(activityRoutePrefix.length + 1);
   if (activityId.length === 0 || activityId.includes("/")) {
     return errorResponse(404, platformError("HTTP_NOT_FOUND", `Route '${url.pathname}' was not found.`));
   }
   const activity = await runtime.activity.get(activityId);
   if (!activity.ok) return errorResponse(404, activity.error);
-  if (activity.value.request.client !== scopedRead.client) {
-    return errorResponse(403, platformError("HTTP_FORBIDDEN", "Activity reads must be scoped to the caller."));
+  if (activity.value.request.client !== scopedRead.clientId) {
+    return errorResponse(403, platformError("AUTHORIZATION_SCOPE_VIOLATION", "Activity reads must be scoped to the caller."));
   }
-  const workspaceId = readSearchString(url, "workspaceId");
-  const userId = readSearchString(url, "userId");
   if (
-    (workspaceId !== undefined && activity.value.request.workspaceId !== workspaceId) ||
-    (userId !== undefined && activity.value.request.userId !== userId)
+    activity.value.request.workspaceId !== workspaceId ||
+    activity.value.request.userId !== userId
   ) {
     return errorResponse(404, platformError("ACTIVITY_NOT_FOUND", `Activity '${activityId}' was not found.`));
   }
@@ -542,6 +592,12 @@ const getContractStatus = (runtime: PlatformRuntime): Response => {
     usesLegacyEventNames,
     usesReportTerminology,
     canonicalOwnershipChecked,
+    authenticationContract: {
+      status: "mvp_scoped_headers",
+      identityMode,
+      requiredReadScope: ["clientId", "workspaceId", "userId"],
+      professionalIdRequired: false
+    },
     issues,
     timestamp: runtime.clock.now().toISOString()
   };
@@ -603,27 +659,27 @@ export const createPlatformHttpHandler = (
     }
     if (url.pathname === analyticsUsageRoute) {
       return request.method === "GET"
-        ? listUsage(runtime, request, url, options.authorizeUsageRequest)
+        ? listUsage(runtime, request, url, options)
         : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only GET is supported."));
     }
     if (url.pathname === dashboardUsageRoute) {
       return request.method === "GET"
-        ? getDashboardUsage(runtime, request, url, options.authorizeUsageRequest)
+        ? getDashboardUsage(runtime, request, url, options)
         : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only GET is supported."));
     }
     if (url.pathname === capabilityRegisterRoute) {
       return request.method === "POST"
-        ? registerCapability(runtime, request, url, options.authorizeUsageRequest)
+        ? registerCapability(runtime, request, url, options)
         : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only POST is supported."));
     }
     if (url.pathname === promptTemplateRenderRoute) {
       return request.method === "POST"
-        ? renderPromptTemplate(runtime, request, url, options.authorizeUsageRequest)
+        ? renderPromptTemplate(runtime, request, url, options)
         : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only POST is supported."));
     }
     if (url.pathname.startsWith(`${activityRoutePrefix}/`)) {
       return request.method === "GET"
-        ? getActivity(runtime, request, url, options.authorizeUsageRequest, activityRoutePrefix)
+        ? getActivity(runtime, request, url, options, activityRoutePrefix)
         : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only GET is supported."));
     }
     return errorResponse(404, platformError("HTTP_NOT_FOUND", `Route '${url.pathname}' was not found.`));

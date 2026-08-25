@@ -1,8 +1,20 @@
-import type { Activity, ActivityBudget, ActivityRequest, ActivityStatus } from "@ai-platform-core/activity";
+import type {
+  Activity,
+  ActivityBudget,
+  ActivityFeedback,
+  ActivityOutcome,
+  ActivityRequest,
+  ActivityStatus
+} from "@ai-platform-core/activity";
 import type { GatewayAuthContext, GatewayRequest } from "@ai-platform-core/gateway";
 import { type PlatformError, err, platformError } from "@ai-platform-core/kernel";
 import type { AIMessage } from "@ai-platform-core/provider";
-import type { PlatformRuntime, PromptTemplateRenderRequest, PromptTemplateRenderResult } from "@ai-platform-core/runtime";
+import type {
+  PlatformRuntime,
+  PromptTemplate,
+  PromptTemplateRenderRequest,
+  PromptTemplateRenderResult
+} from "@ai-platform-core/runtime";
 
 export interface GatewayHttpHandlerOptions {
   readonly route?: string;
@@ -59,6 +71,8 @@ export interface CapabilityHttpView {
 export type PromptTemplateRenderHttpBody = PromptTemplateRenderRequest;
 
 export type PromptTemplateRenderHttpView = PromptTemplateRenderResult;
+
+export type PromptTemplateCreateHttpBody = PromptTemplate;
 
 export type UsageHttpPeriod = "today" | "month" | "year" | "all";
 
@@ -289,6 +303,61 @@ const parsePromptTemplateRenderBody = (value: unknown): PromptTemplateRenderHttp
   return { templateId, ...(version === undefined ? {} : { version }), variables: renderVariables };
 };
 
+const parsePromptTemplateCreateBody = (value: unknown): PromptTemplateCreateHttpBody | PlatformError => {
+  if (!isRecord(value)) {
+    return platformError("HTTP_INVALID_BODY", "Request body must be a JSON object.");
+  }
+  const id = readString(value, "id");
+  const body = readString(value, "body");
+  const version = typeof value.version === "number" ? value.version : undefined;
+  const retention = readString(value, "retention");
+  if (id === undefined || version === undefined || body === undefined) {
+    return platformError("HTTP_INVALID_BODY", "Request body must include id, version, and body.");
+  }
+  if (retention !== "none" && retention !== "metadata" && retention !== "rendered") {
+    return platformError("HTTP_INVALID_BODY", "Prompt template retention must be none, metadata, or rendered.");
+  }
+  return { id, version, body, retention };
+};
+
+const parseActivityOutcomeBody = (activityId: string, value: unknown): ActivityOutcome | PlatformError => {
+  if (!isRecord(value)) {
+    return platformError("HTTP_INVALID_BODY", "Request body must be a JSON object.");
+  }
+  const result = readString(value, "result");
+  const score = typeof value.score === "number" ? value.score : undefined;
+  const roi = typeof value.roi === "number" ? value.roi : undefined;
+  if (result === undefined) {
+    return platformError("HTTP_INVALID_BODY", "Request body must include result.");
+  }
+  return {
+    activityId,
+    result,
+    ...(score === undefined ? {} : { score }),
+    ...(roi === undefined ? {} : { roi })
+  };
+};
+
+const parseActivityFeedbackBody = (activityId: string, value: unknown): ActivityFeedback | PlatformError => {
+  if (!isRecord(value)) {
+    return platformError("HTTP_INVALID_BODY", "Request body must be a JSON object.");
+  }
+  const edited = typeof value.edited === "boolean" ? value.edited : undefined;
+  const accepted = typeof value.accepted === "boolean" ? value.accepted : undefined;
+  const rating = typeof value.rating === "number" ? value.rating : undefined;
+  const memo = readString(value, "memo");
+  if (edited === undefined || accepted === undefined) {
+    return platformError("HTTP_INVALID_BODY", "Request body must include edited and accepted.");
+  }
+  return {
+    activityId,
+    ...(rating === undefined ? {} : { rating }),
+    edited,
+    accepted,
+    ...(memo === undefined ? {} : { memo })
+  };
+};
+
 const runGateway = async (runtime: PlatformRuntime, request: GatewayRequest): Promise<Response> => {
   const result = await runtime.gateway.run(request);
   return result.ok ? jsonResponse(200, { ok: true, result: result.value }) : errorResponse(400, result.error);
@@ -495,6 +564,22 @@ const renderPromptTemplate = async (
     : errorResponse(400, rendered.error);
 };
 
+const createPromptTemplate = async (
+  runtime: PlatformRuntime,
+  request: Request,
+  url: URL,
+  options: PlatformHttpHandlerOptions
+): Promise<Response> => {
+  const scopedRead = await authorizeScopedRead(request, url, options);
+  if (scopedRead instanceof Response) return scopedRead;
+  const parsed = parsePromptTemplateCreateBody(await request.json().catch(() => undefined));
+  if (isPlatformError(parsed)) return errorResponse(400, parsed);
+  const saved = await runtime.prompt.register(parsed);
+  return saved.ok
+    ? jsonResponse(201, { ok: true, promptTemplate: saved.value })
+    : errorResponse(400, saved.error);
+};
+
 const toActivityHttpView = (activity: Activity): ActivityHttpView => ({
   id: activity.id.value,
   client: activity.request.client,
@@ -544,6 +629,74 @@ const getActivity = async (
     return errorResponse(404, platformError("ACTIVITY_NOT_FOUND", `Activity '${activityId}' was not found.`));
   }
   return jsonResponse(200, { ok: true, activity: toActivityHttpView(activity.value) });
+};
+
+const readScopedActivity = async (
+  runtime: PlatformRuntime,
+  request: Request,
+  url: URL,
+  options: PlatformHttpHandlerOptions,
+  activityId: string
+): Promise<Activity | Response> => {
+  const scopedRead = await authorizeScopedRead(request, url, options, ["workspaceId", "userId"]);
+  if (scopedRead instanceof Response) return scopedRead;
+  const workspaceId = scopedRead.workspaceId;
+  const userId = scopedRead.userId;
+  if (workspaceId === undefined || userId === undefined) {
+    return errorResponse(400, platformError("HTTP_INVALID_QUERY", "Query parameters 'workspaceId' and 'userId' are required."));
+  }
+  const activity = await runtime.activity.get(activityId);
+  if (!activity.ok) return errorResponse(404, activity.error);
+  if (activity.value.request.client !== scopedRead.clientId) {
+    return errorResponse(403, platformError("AUTHORIZATION_SCOPE_VIOLATION", "Activity writes must be scoped to the caller."));
+  }
+  if (
+    activity.value.request.workspaceId !== workspaceId ||
+    activity.value.request.userId !== userId
+  ) {
+    return errorResponse(404, platformError("ACTIVITY_NOT_FOUND", `Activity '${activityId}' was not found.`));
+  }
+  return activity.value;
+};
+
+const recordActivityOutcome = async (
+  runtime: PlatformRuntime,
+  request: Request,
+  url: URL,
+  options: PlatformHttpHandlerOptions,
+  activityId: string
+): Promise<Response> => {
+  const activity = await readScopedActivity(runtime, request, url, options, activityId);
+  if (activity instanceof Response) return activity;
+  const parsed = parseActivityOutcomeBody(activityId, await request.json().catch(() => undefined));
+  if (isPlatformError(parsed)) return errorResponse(400, parsed);
+  const recorded = await runtime.gateway.recordOutcome({
+    auth: { clientId: activity.request.client, permissions: [] },
+    outcome: parsed
+  });
+  return recorded.ok
+    ? jsonResponse(201, { ok: true, activityId, outcome: parsed })
+    : errorResponse(400, recorded.error);
+};
+
+const recordActivityFeedback = async (
+  runtime: PlatformRuntime,
+  request: Request,
+  url: URL,
+  options: PlatformHttpHandlerOptions,
+  activityId: string
+): Promise<Response> => {
+  const activity = await readScopedActivity(runtime, request, url, options, activityId);
+  if (activity instanceof Response) return activity;
+  const parsed = parseActivityFeedbackBody(activityId, await request.json().catch(() => undefined));
+  if (isPlatformError(parsed)) return errorResponse(400, parsed);
+  const recorded = await runtime.gateway.recordFeedback({
+    auth: { clientId: activity.request.client, permissions: [] },
+    feedback: parsed
+  });
+  return recorded.ok
+    ? jsonResponse(201, { ok: true, activityId, feedback: parsed })
+    : errorResponse(400, recorded.error);
 };
 
 const appName = "ai-platform-core" as const;
@@ -672,9 +825,26 @@ export const createPlatformHttpHandler = (
         ? registerCapability(runtime, request, url, options)
         : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only POST is supported."));
     }
+    if (url.pathname === "/v1/prompt-templates") {
+      return request.method === "POST"
+        ? createPromptTemplate(runtime, request, url, options)
+        : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only POST is supported."));
+    }
     if (url.pathname === promptTemplateRenderRoute) {
       return request.method === "POST"
         ? renderPromptTemplate(runtime, request, url, options)
+        : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only POST is supported."));
+    }
+    if (url.pathname.startsWith(`${activityRoutePrefix}/`) && url.pathname.endsWith("/outcome")) {
+      const activityId = url.pathname.slice(activityRoutePrefix.length + 1, -"/outcome".length);
+      return request.method === "POST" && activityId.length > 0 && !activityId.includes("/")
+        ? recordActivityOutcome(runtime, request, url, options, activityId)
+        : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only POST is supported."));
+    }
+    if (url.pathname.startsWith(`${activityRoutePrefix}/`) && url.pathname.endsWith("/feedback")) {
+      const activityId = url.pathname.slice(activityRoutePrefix.length + 1, -"/feedback".length);
+      return request.method === "POST" && activityId.length > 0 && !activityId.includes("/")
+        ? recordActivityFeedback(runtime, request, url, options, activityId)
         : errorResponse(405, platformError("HTTP_METHOD_NOT_ALLOWED", "Only POST is supported."));
     }
     if (url.pathname.startsWith(`${activityRoutePrefix}/`)) {

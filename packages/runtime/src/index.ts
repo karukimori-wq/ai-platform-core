@@ -1,34 +1,10 @@
 import { createActivityRuntime, createMemoryActivityRepository, type ActivityRepository, type ActivityResult, type ActivityRuntime } from "@ai-platform-core/activity";
 import { createMemoryAnalyticsRepository, type AnalyticsRepository } from "@ai-platform-core/analytics";
-import {
-  createCapabilityRegistry,
-  createCapabilityRuntime,
-  createPermissionChecker,
-  type Capability,
-  type CapabilityContext,
-  type CapabilityRuntime
-} from "@ai-platform-core/capability";
+import { createCapabilityRegistry, createCapabilityRuntime, createPermissionChecker, type Capability, type CapabilityContext, type CapabilityRuntime } from "@ai-platform-core/capability";
 import { createClientRegistry, type ClientRegistry } from "@ai-platform-core/client";
 import { createDashboardQueryService, type DashboardQueryService } from "@ai-platform-core/dashboard";
-import {
-  createEventBus,
-  createEventDispatcher,
-  createMemoryEventStore,
-  type EventBus,
-  type EventDispatcher,
-  type EventStore
-} from "@ai-platform-core/event";
-import {
-  createCryptoIdGenerator,
-  createNoopLogger,
-  err,
-  ok,
-  platformError,
-  systemClock,
-  type Clock,
-  type Logger,
-  type Result
-} from "@ai-platform-core/kernel";
+import { createEventBus, createEventDispatcher, createMemoryEventStore, type EventBus, type EventDispatcher, type EventStore } from "@ai-platform-core/event";
+import { createCryptoIdGenerator, createNoopLogger, err, ok, platformError, systemClock, type Clock, type Logger, type Result } from "@ai-platform-core/kernel";
 import { createAIGateway, createAllowAllAuthenticator, type AIGateway } from "@ai-platform-core/gateway";
 import { createMemoryKnowledgeRepository, type KnowledgeRepository } from "@ai-platform-core/knowledge";
 import { createPluginRuntime, type PluginRuntime } from "@ai-platform-core/plugin";
@@ -43,7 +19,7 @@ export interface PromptTemplate { readonly id:string;readonly version:number;rea
 export interface PromptTemplateRenderRequest { readonly templateId:string;readonly version?:number;readonly variables:Readonly<Record<string,string|number|boolean>>; }
 export interface PromptTemplateRenderResult { readonly templateId:string;readonly version:number;readonly rendered:string; }
 export interface PromptTemplateRepository { readonly save:(template:PromptTemplate)=>Promise<Result<PromptTemplate>>;readonly get:(id:string,version?:number)=>Promise<Result<PromptTemplate>>;readonly list:()=>Promise<Result<readonly PromptTemplate[]>>; }
-interface StoredPromptTemplate extends Readonly<Record<string,unknown>> { readonly id:string;readonly version:number;readonly body:string;readonly retention:PromptTemplate["retention"]; }
+export interface StoredPromptTemplate extends Readonly<Record<string,unknown>> { readonly id:string;readonly version:number;readonly body:string;readonly retention:PromptTemplate["retention"]; }
 export interface PromptTemplateRuntime { readonly register:(template:PromptTemplate)=>Promise<Result<PromptTemplate>>;readonly render:(request:PromptTemplateRenderRequest)=>Promise<Result<PromptTemplateRenderResult>>; }
 export type PromptCapabilityInputValue=string|number|boolean;export type PromptCapabilityInput=Readonly<Record<string,PromptCapabilityInputValue>>;
 export interface PromptCapabilityDefinition {readonly id:string;readonly name:string;readonly description:string;readonly permission:string;readonly input:string;readonly output:string;readonly templateId:string;readonly templateVersion?:number;readonly goal:string;readonly workflow?:string;readonly clientId?:string;readonly provider?:string;readonly model?:string;readonly messageRole?:AIMessage["role"];}

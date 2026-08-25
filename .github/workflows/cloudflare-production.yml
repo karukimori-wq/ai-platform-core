@@ -58,17 +58,26 @@ jobs:
           curl --fail --silent --show-error "$PRODUCTION_URL/version" | tee /tmp/version.json
           curl --fail --silent --show-error "$PRODUCTION_URL/contracts/status" | tee /tmp/contracts.json
           curl --fail --silent --show-error "$PRODUCTION_URL/api/auth/status" | tee /tmp/auth-status.json
+          curl --fail --silent --show-error "$PRODUCTION_URL/v1/integrations/status" | tee /tmp/integrations-status.json
           node - <<'NODE'
           const fs = require('node:fs');
           const health = JSON.parse(fs.readFileSync('/tmp/health.json', 'utf8'));
           const version = JSON.parse(fs.readFileSync('/tmp/version.json', 'utf8'));
           const contracts = JSON.parse(fs.readFileSync('/tmp/contracts.json', 'utf8'));
           const auth = JSON.parse(fs.readFileSync('/tmp/auth-status.json', 'utf8'));
+          const integrations = JSON.parse(fs.readFileSync('/tmp/integrations-status.json', 'utf8'));
           if (health.appName !== 'ai-platform-core' || health.status !== 'ok') throw new Error('Production health check failed');
           if (version.appName !== 'ai-platform-core') throw new Error('Production version check failed');
           if (contracts.appName !== 'ai-platform-core' || contracts.status === 'error' || contracts.professionalIdRequired !== false) throw new Error('Production contract check failed');
           if (contracts.authenticationContract?.status !== 'mvp_scoped_headers') throw new Error('Production authentication contract check failed');
           if (auth.status !== 'success' || auth.authorizationMode !== 'mvp_scoped_headers' || auth.professionalIdRequired !== false) throw new Error('Production auth status check failed');
+          if (integrations.appName !== 'ai-platform-core' || integrations.status !== 'success' || integrations.professionalIdRequired !== false) throw new Error('Production integration status check failed');
+          if (!integrations.sourceOfTruth?.includes('AI Activity') || !integrations.sourceOfTruth?.includes('AI Usage') || !integrations.sourceOfTruth?.includes('AI Capability')) throw new Error('Production integration source-of-truth check failed');
+          if (!integrations.notSourceOfTruth?.includes('Customer') || !integrations.notSourceOfTruth?.includes('Payment') || !integrations.notSourceOfTruth?.includes('MessageDraft')) throw new Error('Production integration ownership boundary check failed');
+          const apps = new Map((integrations.apps ?? []).map((app) => [app.appName, app]));
+          if (!apps.get('communication-planner')?.capabilities?.includes('communication.reply.generate')) throw new Error('Production Communication Planner capability check failed');
+          if (!apps.get('velvet')?.sourceOfTruth?.includes('MessageDraft')) throw new Error('Production Velvet MessageDraft boundary check failed');
+          if (!apps.get('growth-engine')?.sourceOfTruth?.includes('Payment')) throw new Error('Production Growth Engine ownership check failed');
           NODE
       - name: Verify production D1 persistence
         run: |

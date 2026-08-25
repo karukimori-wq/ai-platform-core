@@ -7,6 +7,7 @@ env:
   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
   CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
   D1_DATABASE_ID: ${{ secrets.AI_PLATFORM_CORE_D1_DATABASE_ID }}
+  PRODUCTION_URL: https://ai-platform-core.karukimori.workers.dev
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -50,3 +51,29 @@ jobs:
       - name: Deploy Worker
         working-directory: apps/cloudflare-worker
         run: pnpm exec wrangler deploy
+      - name: Verify production health and contracts
+        run: |
+          sleep 5
+          curl --fail --silent --show-error "$PRODUCTION_URL/health" | tee /tmp/health.json
+          curl --fail --silent --show-error "$PRODUCTION_URL/version" | tee /tmp/version.json
+          curl --fail --silent --show-error "$PRODUCTION_URL/contracts/status" | tee /tmp/contracts.json
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const health = JSON.parse(fs.readFileSync('/tmp/health.json', 'utf8'));
+          const version = JSON.parse(fs.readFileSync('/tmp/version.json', 'utf8'));
+          const contracts = JSON.parse(fs.readFileSync('/tmp/contracts.json', 'utf8'));
+          if (health.appName !== 'ai-platform-core' || health.status !== 'ok') throw new Error('Production health check failed');
+          if (version.appName !== 'ai-platform-core') throw new Error('Production version check failed');
+          if (contracts.appName !== 'ai-platform-core' || contracts.status === 'error' || contracts.professionalIdRequired !== false) throw new Error('Production contract check failed');
+          NODE
+      - name: Verify production D1 persistence
+        run: |
+          curl --fail --silent --show-error "$PRODUCTION_URL/api/persistence/status" | tee /tmp/persistence.json
+          curl --fail --silent --show-error -X POST "$PRODUCTION_URL/api/persistence/roundtrip" | tee /tmp/roundtrip.json
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const persistence = JSON.parse(fs.readFileSync('/tmp/persistence.json', 'utf8'));
+          const roundtrip = JSON.parse(fs.readFileSync('/tmp/roundtrip.json', 'utf8'));
+          if (persistence.status !== 'success' || persistence.data?.driver !== 'd1' || persistence.data?.d1Reachable !== true || persistence.data?.databaseBackedPersistenceReady !== true) throw new Error('Production D1 readiness check failed');
+          if (roundtrip.status !== 'success' || roundtrip.data?.persistenceDriver !== 'd1' || roundtrip.data?.roundtripReady !== true) throw new Error('Production D1 roundtrip check failed');
+          NODE

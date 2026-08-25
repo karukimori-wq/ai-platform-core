@@ -77,3 +77,56 @@ jobs:
           if (persistence.status !== 'success' || persistence.data?.driver !== 'd1' || persistence.data?.d1Reachable !== true || persistence.data?.databaseBackedPersistenceReady !== true) throw new Error('Production D1 readiness check failed');
           if (roundtrip.status !== 'success' || roundtrip.data?.persistenceDriver !== 'd1' || roundtrip.data?.roundtripReady !== true) throw new Error('Production D1 roundtrip check failed');
           NODE
+      - name: Verify production Activity and Usage persistence
+        run: |
+          RUN_ID="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          CLIENT="production-e2e"
+          WORKSPACE_A="ws-e2e-a-${RUN_ID}"
+          WORKSPACE_B="ws-e2e-b-${RUN_ID}"
+          USER_A="user-a-${RUN_ID}"
+          USER_B="user-b-${RUN_ID}"
+          cat >/tmp/activity-a.json <<EOF
+          {"auth":{"clientId":"$CLIENT","permissions":[]},"activity":{"client":"$CLIENT","workspaceId":"$WORKSPACE_A","userId":"$USER_A","capability":"production.echo","goal":"Production D1 E2E A","context":{},"input":{"runId":"$RUN_ID"}},"messages":[{"role":"user","content":"Production E2E A"}]}
+          EOF
+          cat >/tmp/activity-b.json <<EOF
+          {"auth":{"clientId":"$CLIENT","permissions":[]},"activity":{"client":"$CLIENT","workspaceId":"$WORKSPACE_B","userId":"$USER_B","capability":"production.echo","goal":"Production D1 E2E B","context":{},"input":{"runId":"$RUN_ID"}},"messages":[{"role":"user","content":"Production E2E B"}]}
+          EOF
+          curl --fail --silent --show-error -X POST "$PRODUCTION_URL/v1/gateway/run" -H 'content-type: application/json' --data-binary @/tmp/activity-a.json | tee /tmp/activity-a-result.json
+          curl --fail --silent --show-error -X POST "$PRODUCTION_URL/v1/gateway/run" -H 'content-type: application/json' --data-binary @/tmp/activity-b.json | tee /tmp/activity-b-result.json
+          node - <<'NODE'
+          const fs=require('node:fs');
+          for(const name of ['a','b']){const value=JSON.parse(fs.readFileSync(`/tmp/activity-${name}-result.json`,'utf8'));if(value.ok!==true||typeof value.result?.activityId!=='string')throw new Error(`Production Activity ${name} failed`);fs.writeFileSync(`/tmp/activity-${name}-id`,value.result.activityId);}
+          NODE
+          ACTIVITY_A="$(cat /tmp/activity-a-id)"
+          ACTIVITY_B="$(cat /tmp/activity-b-id)"
+          curl --fail --silent --show-error "$PRODUCTION_URL/v1/activities/$ACTIVITY_A?client=$CLIENT&workspaceId=$WORKSPACE_A&userId=$USER_A" -H "x-client-id: $CLIENT" | tee /tmp/activity-a-read.json
+          curl --fail --silent --show-error "$PRODUCTION_URL/v1/activities/$ACTIVITY_B?client=$CLIENT&workspaceId=$WORKSPACE_B&userId=$USER_B" -H "x-client-id: $CLIENT" | tee /tmp/activity-b-read.json
+          curl --fail --silent --show-error "$PRODUCTION_URL/v1/analytics/usage?client=$CLIENT&workspaceId=$WORKSPACE_A&userId=$USER_A&period=all" -H "x-client-id: $CLIENT" | tee /tmp/usage-a.json
+          curl --fail --silent --show-error "$PRODUCTION_URL/v1/analytics/usage?client=$CLIENT&workspaceId=$WORKSPACE_B&userId=$USER_B&period=all" -H "x-client-id: $CLIENT" | tee /tmp/usage-b.json
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const a=JSON.parse(fs.readFileSync('/tmp/activity-a-read.json','utf8'));
+          const b=JSON.parse(fs.readFileSync('/tmp/activity-b-read.json','utf8'));
+          const ua=JSON.parse(fs.readFileSync('/tmp/usage-a.json','utf8'));
+          const ub=JSON.parse(fs.readFileSync('/tmp/usage-b.json','utf8'));
+          if(a.ok!==true||b.ok!==true)throw new Error('Persisted Activity read failed');
+          if(a.activity?.workspaceId===b.activity?.workspaceId||a.activity?.userId===b.activity?.userId)throw new Error('Workspace/user E2E scopes were not distinct');
+          if(ua.ok!==true||ua.summary?.usageCount<1||ub.ok!==true||ub.summary?.usageCount<1)throw new Error('Persisted Usage read failed');
+          NODE
+      - name: Verify production workspace and user isolation
+        run: |
+          RUN_ID="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          CLIENT="production-e2e"
+          WORKSPACE_A="ws-e2e-a-${RUN_ID}"
+          WORKSPACE_B="ws-e2e-b-${RUN_ID}"
+          USER_A="user-a-${RUN_ID}"
+          USER_B="user-b-${RUN_ID}"
+          ACTIVITY_A="$(cat /tmp/activity-a-id)"
+          STATUS=$(curl --silent --output /tmp/cross-scope.json --write-out '%{http_code}' "$PRODUCTION_URL/v1/activities/$ACTIVITY_A?client=$CLIENT&workspaceId=$WORKSPACE_B&userId=$USER_B" -H "x-client-id: $CLIENT")
+          test "$STATUS" = "404"
+          curl --fail --silent --show-error "$PRODUCTION_URL/v1/analytics/usage?client=$CLIENT&workspaceId=$WORKSPACE_A&userId=$USER_A&period=all" -H "x-client-id: $CLIENT" | tee /tmp/isolated-usage.json
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const usage=JSON.parse(fs.readFileSync('/tmp/isolated-usage.json','utf8'));
+          if(usage.ok!==true||usage.summary?.usageCount!==1)throw new Error('Workspace/user Usage isolation failed');
+          NODE

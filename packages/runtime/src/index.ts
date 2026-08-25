@@ -1,6 +1,6 @@
 import { createActivityRuntime, createMemoryActivityRepository, type ActivityRepository, type ActivityResult, type ActivityRuntime } from "@ai-platform-core/activity";
 import { createMemoryAnalyticsRepository, type AnalyticsRepository } from "@ai-platform-core/analytics";
-import { createCapabilityRegistry, createCapabilityRuntime, createPermissionChecker, type Capability, type CapabilityContext, type CapabilityRuntime } from "@ai-platform-core/capability";
+import { createCapabilityRegistry, createCapabilityRuntime, createPermissionChecker, type Capability, type CapabilityRuntime } from "@ai-platform-core/capability";
 import { createClientRegistry, type ClientRegistry } from "@ai-platform-core/client";
 import { createDashboardQueryService, type DashboardQueryService } from "@ai-platform-core/dashboard";
 import { createEventBus, createEventDispatcher, createMemoryEventStore, type EventBus, type EventDispatcher, type EventStore } from "@ai-platform-core/event";

@@ -2,7 +2,8 @@ import { createPlatformHttpHandler } from "@ai-platform-core/http";
 import { createCloudflarePlatformRuntime } from "@ai-platform-core/runtime/cloudflare";
 import type { PlatformRuntime } from "@ai-platform-core/runtime";
 import type { D1DatabaseLike } from "@ai-platform-core/storage";
-type Env={DB:D1DatabaseLike;COMMIT_SHA?:string};let runtime:PlatformRuntime|undefined;
+interface Env { DB:D1DatabaseLike;COMMIT_SHA?:string; }
+let runtime:PlatformRuntime|undefined;
 const cors={"access-control-allow-origin":"*","access-control-allow-methods":"GET,POST,OPTIONS","access-control-allow-headers":"content-type,authorization,x-client-id,x-workspace-id,x-user-id"};
 const withCors=(response:Response)=>{const headers=new Headers(response.headers);for(const[k,v]of Object.entries(cors))headers.set(k,v);return new Response(response.body,{status:response.status,statusText:response.statusText,headers})};
 const json=(body:unknown,status=200)=>withCors(new Response(JSON.stringify(body),{status,headers:{"content-type":"application/json"}}));

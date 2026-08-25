@@ -57,14 +57,18 @@ jobs:
           curl --fail --silent --show-error "$PRODUCTION_URL/health" | tee /tmp/health.json
           curl --fail --silent --show-error "$PRODUCTION_URL/version" | tee /tmp/version.json
           curl --fail --silent --show-error "$PRODUCTION_URL/contracts/status" | tee /tmp/contracts.json
+          curl --fail --silent --show-error "$PRODUCTION_URL/api/auth/status" | tee /tmp/auth-status.json
           node - <<'NODE'
           const fs = require('node:fs');
           const health = JSON.parse(fs.readFileSync('/tmp/health.json', 'utf8'));
           const version = JSON.parse(fs.readFileSync('/tmp/version.json', 'utf8'));
           const contracts = JSON.parse(fs.readFileSync('/tmp/contracts.json', 'utf8'));
+          const auth = JSON.parse(fs.readFileSync('/tmp/auth-status.json', 'utf8'));
           if (health.appName !== 'ai-platform-core' || health.status !== 'ok') throw new Error('Production health check failed');
           if (version.appName !== 'ai-platform-core') throw new Error('Production version check failed');
           if (contracts.appName !== 'ai-platform-core' || contracts.status === 'error' || contracts.professionalIdRequired !== false) throw new Error('Production contract check failed');
+          if (contracts.authenticationContract?.status !== 'mvp_scoped_headers') throw new Error('Production authentication contract check failed');
+          if (auth.status !== 'success' || auth.authorizationMode !== 'mvp_scoped_headers' || auth.professionalIdRequired !== false) throw new Error('Production auth status check failed');
           NODE
       - name: Verify production D1 persistence
         run: |
@@ -99,10 +103,10 @@ jobs:
           NODE
           ACTIVITY_A="$(cat /tmp/activity-a-id)"
           ACTIVITY_B="$(cat /tmp/activity-b-id)"
-          curl --fail --silent --show-error "$PRODUCTION_URL/v1/activities/$ACTIVITY_A?client=$CLIENT&workspaceId=$WORKSPACE_A&userId=$USER_A" -H "x-client-id: $CLIENT" | tee /tmp/activity-a-read.json
-          curl --fail --silent --show-error "$PRODUCTION_URL/v1/activities/$ACTIVITY_B?client=$CLIENT&workspaceId=$WORKSPACE_B&userId=$USER_B" -H "x-client-id: $CLIENT" | tee /tmp/activity-b-read.json
-          curl --fail --silent --show-error "$PRODUCTION_URL/v1/analytics/usage?client=$CLIENT&workspaceId=$WORKSPACE_A&userId=$USER_A&period=all" -H "x-client-id: $CLIENT" | tee /tmp/usage-a.json
-          curl --fail --silent --show-error "$PRODUCTION_URL/v1/analytics/usage?client=$CLIENT&workspaceId=$WORKSPACE_B&userId=$USER_B&period=all" -H "x-client-id: $CLIENT" | tee /tmp/usage-b.json
+          curl --fail --silent --show-error "$PRODUCTION_URL/v1/activities/$ACTIVITY_A?client=$CLIENT&workspaceId=$WORKSPACE_A&userId=$USER_A" -H "x-client-id: $CLIENT" -H "x-workspace-id: $WORKSPACE_A" -H "x-user-id: $USER_A" | tee /tmp/activity-a-read.json
+          curl --fail --silent --show-error "$PRODUCTION_URL/v1/activities/$ACTIVITY_B?client=$CLIENT&workspaceId=$WORKSPACE_B&userId=$USER_B" -H "x-client-id: $CLIENT" -H "x-workspace-id: $WORKSPACE_B" -H "x-user-id: $USER_B" | tee /tmp/activity-b-read.json
+          curl --fail --silent --show-error "$PRODUCTION_URL/v1/analytics/usage?client=$CLIENT&workspaceId=$WORKSPACE_A&userId=$USER_A&period=all" -H "x-client-id: $CLIENT" -H "x-workspace-id: $WORKSPACE_A" -H "x-user-id: $USER_A" | tee /tmp/usage-a.json
+          curl --fail --silent --show-error "$PRODUCTION_URL/v1/analytics/usage?client=$CLIENT&workspaceId=$WORKSPACE_B&userId=$USER_B&period=all" -H "x-client-id: $CLIENT" -H "x-workspace-id: $WORKSPACE_B" -H "x-user-id: $USER_B" | tee /tmp/usage-b.json
           node - <<'NODE'
           const fs=require('node:fs');
           const a=JSON.parse(fs.readFileSync('/tmp/activity-a-read.json','utf8'));
@@ -122,9 +126,11 @@ jobs:
           USER_A="user-a-${RUN_ID}"
           USER_B="user-b-${RUN_ID}"
           ACTIVITY_A="$(cat /tmp/activity-a-id)"
-          STATUS=$(curl --silent --output /tmp/cross-scope.json --write-out '%{http_code}' "$PRODUCTION_URL/v1/activities/$ACTIVITY_A?client=$CLIENT&workspaceId=$WORKSPACE_B&userId=$USER_B" -H "x-client-id: $CLIENT")
+          STATUS=$(curl --silent --output /tmp/cross-scope.json --write-out '%{http_code}' "$PRODUCTION_URL/v1/activities/$ACTIVITY_A?client=$CLIENT&workspaceId=$WORKSPACE_B&userId=$USER_B" -H "x-client-id: $CLIENT" -H "x-workspace-id: $WORKSPACE_B" -H "x-user-id: $USER_B")
           test "$STATUS" = "404"
-          curl --fail --silent --show-error "$PRODUCTION_URL/v1/analytics/usage?client=$CLIENT&workspaceId=$WORKSPACE_A&userId=$USER_A&period=all" -H "x-client-id: $CLIENT" | tee /tmp/isolated-usage.json
+          STATUS=$(curl --silent --output /tmp/header-scope.json --write-out '%{http_code}' "$PRODUCTION_URL/v1/analytics/usage?client=$CLIENT&workspaceId=$WORKSPACE_A&userId=$USER_A&period=all" -H "x-client-id: $CLIENT" -H "x-workspace-id: $WORKSPACE_B" -H "x-user-id: $USER_A")
+          test "$STATUS" = "403"
+          curl --fail --silent --show-error "$PRODUCTION_URL/v1/analytics/usage?client=$CLIENT&workspaceId=$WORKSPACE_A&userId=$USER_A&period=all" -H "x-client-id: $CLIENT" -H "x-workspace-id: $WORKSPACE_A" -H "x-user-id: $USER_A" | tee /tmp/isolated-usage.json
           node - <<'NODE'
           const fs=require('node:fs');
           const usage=JSON.parse(fs.readFileSync('/tmp/isolated-usage.json','utf8'));

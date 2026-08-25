@@ -12,6 +12,8 @@ Cloudflare migration is complete only when every required gate below passes.
 - `/health` returns 200 and appName `ai-platform-core`.
 - `/version` returns 200.
 - `/contracts/status` returns 200 with `professionalIdRequired=false`.
+- `/v1/readiness` or `/api/readiness` returns `productionReady=true`.
+- Readiness output includes `failedChecks` and `recommendedActions` so Platform Admin/operators know the next endpoint to inspect when degraded.
 - `/api/persistence/status` reports D1 reachable and database-backed persistence ready.
 - `/api/persistence/roundtrip` returns `roundtripReady=true`.
 
@@ -28,9 +30,9 @@ Cloudflare migration is complete only when every required gate below passes.
 
 ## Integration
 - Echo provider is used for the first production E2E so no real provider secret is needed.
-- Platform Admin health/version/contracts monitoring is updated after the Worker URL is stable.
+- Platform Admin health/version/contracts/readiness monitoring is updated after the Worker URL is stable.
 - professional-platform-contracts is updated only after the production gates are green.
 
 ## Status transitions
 `in_progress` -> `production_verification` after the first successful Worker deploy and D1 roundtrip.
-`production_verification` -> `completed` only after persistence + isolation E2E and Platform Admin integration are green.
+`production_verification` -> `completed` only after readiness + persistence + isolation E2E and Platform Admin integration are green.

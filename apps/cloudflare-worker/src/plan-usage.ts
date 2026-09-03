@@ -42,7 +42,7 @@ const BUSINESS_ONLY_PREFIX = "business.";
 export function resolveMonthlyPeriod(now = new Date()): { period: string; resetAt: string } {
   const year = now.getUTCFullYear();
   const month = now.getUTCMonth();
-  const period = `${year}-${String(month + 1).padStart(2, "0")}`;
+  const period = `${String(year)}-${String(month + 1).padStart(2, "0")}`;
   const resetAt = new Date(Date.UTC(year, month + 1, 1, 0, 0, 0)).toISOString();
   return { period, resetAt };
 }
@@ -72,7 +72,7 @@ export async function getUsageSnapshot(
     .prepare("SELECT value_json FROM platform_kv WHERE namespace=? AND id=? LIMIT 1")
     .bind("plan.usage", id)
     .first<{ value_json: string }>();
-  const used = row ? Number((JSON.parse(row.value_json) as { used?: number }).used ?? 0) : 0;
+  const used = row ? ((JSON.parse(row.value_json) as { used?: number }).used ?? 0) : 0;
   const limit = resolveLimit(query.planId, query.featureKey);
   return {
     ...query,
@@ -116,7 +116,11 @@ export async function consumeUsage(
   }
 
   const nextUsed = usage.used + 1;
-  const nextUsage = { ...usage, used: nextUsed, remaining: usage.limit === null ? null : Math.max(usage.limit - nextUsed, 0) };
+  const nextUsage = {
+    ...usage,
+    used: nextUsed,
+    remaining: usage.limit === null ? null : Math.max(usage.limit - nextUsed, 0),
+  };
   const nowIso = now.toISOString();
   const counterId = usageId(request, usage.period);
 

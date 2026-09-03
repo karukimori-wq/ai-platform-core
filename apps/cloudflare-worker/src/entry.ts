@@ -1,5 +1,6 @@
 import baseWorker from "./index.js";
 import { handleEntitlementRead, handleUsageConsume, handleUsageRead } from "./plan-api.js";
+import { enforceGatewayPlan } from "./gateway-plan-guard.js";
 import type { D1DatabaseLike } from "@ai-platform-core/storage";
 
 interface Env {
@@ -11,7 +12,7 @@ const cors = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET,POST,OPTIONS",
   "access-control-allow-headers":
-    "content-type,authorization,x-client-id,x-workspace-id,x-user-id,x-trace-id,x-correlation-id,x-source-app",
+    "content-type,authorization,x-client-id,x-workspace-id,x-user-id,x-trace-id,x-correlation-id,x-source-app,x-plan-id,x-feature-key,x-activity-id",
 };
 
 function json(body: unknown, status = 200): Response {
@@ -46,6 +47,11 @@ export default {
     ) {
       const result = await handleUsageConsume(request, env.DB);
       return json(result.body, result.status);
+    }
+
+    if (pathname === "/v1/gateway/run" && request.method === "POST") {
+      const gate = await enforceGatewayPlan(request, env.DB);
+      if (!gate.allowed) return json(gate.body, gate.status);
     }
 
     return baseWorker.fetch(request, env);

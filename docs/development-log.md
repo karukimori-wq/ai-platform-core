@@ -2,6 +2,58 @@
 
 This file records development handoffs that should be easy to ingest into External Intelligence or summarize for other app teams.
 
+## 2026-09-11 - Safe managed Gateway usage commit
+
+### Repository
+
+- `karukimori-wq/ai-platform-core`
+
+### Summary
+
+Managed Gateway usage for Numeria Studio and Velvet is now checked before provider execution and committed only after a successful Gateway response. This prevents failed provider executions from consuming Free monthly quota.
+
+### Implemented
+
+- Added `checkUsageAllowance` for non-mutating plan/usage authorization.
+- Updated `consumeUsage` to reuse the non-mutating allowance check.
+- Updated `GatewayPlanGuard` to return validated plan context instead of consuming usage immediately.
+- Added `commitGatewayPlanUsage` as the post-success usage commit step.
+- Updated the Cloudflare plan-aware entrypoint to call the base Gateway first and consume usage only when the response is successful.
+- Added test coverage proving allowance checks do not increment monthly usage.
+
+### Behavior
+
+Managed app Gateway requests still require:
+
+- `x-source-app`
+- `x-plan-id`
+- `x-feature-key`
+- `x-activity-id`
+- `x-client-id`
+- `x-workspace-id`
+- `x-user-id`
+
+Flow:
+
+```text
+request
+  -> validate managed Gateway plan context
+  -> check capability and remaining usage without consuming quota
+  -> run AI Gateway/provider
+  -> commit usage only when Gateway response is successful
+```
+
+### Useful commits
+
+- `ffa9eab8d1b87e7b6fe2089b9b7279ff5ad174cd` - add plan usage allowance check
+- `514363d678e9b55555806d382a9289a7ffa68783` - separate Gateway plan check from consume
+- `7377a5b1c27d946861fd5a64d930781c01590793` - consume Gateway usage only after success
+- `f75c16e265adfc3abe1ffe7371b2789b1dee7a8f` - cover plan usage allowance check
+
+### Verification
+
+- CI run `34500641641`: lint, test, and build completed successfully.
+
 ## 2026-09-11 - Plan-aware OpenAI Gateway production release
 
 ### Repository
@@ -90,7 +142,8 @@ AI Platform Core does not own:
 
 ### Known follow-up
 
-Gateway plan usage is currently consumed before provider execution for managed apps. A safer follow-up is to split this into authorize/check before provider execution and commit usage only after provider success, with idempotent commit handling.
+- Add a dedicated production smoke test for a managed app Gateway call using a non-secret provider path or a mocked provider route.
+- Surface safe managed Gateway usage status in Platform Admin without exposing prompts, customer data, or provider secrets.
 
 ### Useful commits
 

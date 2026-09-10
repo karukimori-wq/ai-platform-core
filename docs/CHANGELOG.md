@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.42
+
+- Split managed Gateway plan checks from usage consumption.
+- Added `checkUsageAllowance` so Numeria Studio and Velvet Gateway calls can be authorized before provider execution without incrementing monthly usage.
+- Updated the Cloudflare plan-aware entrypoint to commit managed Gateway usage only after a successful Gateway response.
+- Preserved idempotent usage consumption through `x-activity-id`.
+- Added coverage proving allowance checks do not consume Free monthly quota.
+
 ## 0.1.41
 
 - Added Plan/Usage APIs for Free, Pro, and future Business-aware AI capability control.

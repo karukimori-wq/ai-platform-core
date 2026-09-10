@@ -8,7 +8,7 @@ describe("Cloudflare Worker contracts", () => {
     const source = read("./index.ts");
     expect(source).toContain("createCloudflarePlatformRuntime");
     expect(source).toContain("createPlatformHttpHandler");
-    expect(source).toContain("db:env.DB");
+    expect(source).toMatch(/db:\s*env\.DB/);
   });
 
   it("exposes D1 readiness and roundtrip probes", () => {
@@ -21,11 +21,14 @@ describe("Cloudflare Worker contracts", () => {
 
   it("keeps browser monitoring compatible through CORS", () => {
     const source = read("./index.ts");
-    expect(source).toContain('request.method==="OPTIONS"');
+    expect(source).toMatch(/request\.method\s*===\s*["']OPTIONS["']/);
     expect(source).toContain("access-control-allow-origin");
     expect(source).toContain("x-client-id");
     expect(source).toContain("x-workspace-id");
     expect(source).toContain("x-user-id");
+    expect(source).toContain("x-plan-id");
+    expect(source).toContain("x-feature-key");
+    expect(source).toContain("x-activity-id");
   });
 
   it("exposes MVP scoped authentication status and checks scope headers", () => {
@@ -41,13 +44,30 @@ describe("Cloudflare Worker contracts", () => {
     expect(source).toContain("/v1/integrations/status");
     expect(source).toContain("/api/integrations/status");
     expect(source).toContain("communication.reply.generate");
-    expect(source).toContain("velvet.message_draft.generate");
+    expect(source).toContain("studio.report.ai_assist");
+    expect(source).toContain("velvet.memory.summary");
+    expect(source).toContain("velvet.memory.search");
+    expect(source).toContain("velvet.memory.recall");
     expect(source).toContain("MessageDraft");
     expect(source).toContain("fullMeetingTranscript");
     expect(source).toContain("paymentStatus");
     expect(source).toContain("AI Activity");
     expect(source).toContain("AI Usage");
     expect(source).toContain("AI Capability");
+  });
+
+  it("exposes plan gateway status for Platform Admin", () => {
+    const source = read("./index.ts");
+    expect(source).toContain("planGateway");
+    expect(source).toContain("managedApps");
+    expect(source).toContain("numeria-studio");
+    expect(source).toContain("velvet");
+    expect(source).toContain("post_success_gateway_response");
+    expect(source).toContain("failedProviderCallsConsumePlanUsage");
+    expect(source).toContain("appId|workspaceId|userId|activityId");
+    expect(source).toContain("/v1/usage");
+    expect(source).toContain("/v1/entitlements");
+    expect(source).toContain("/v1/usage/consume");
   });
 
   it("exposes an aggregate production readiness view", () => {

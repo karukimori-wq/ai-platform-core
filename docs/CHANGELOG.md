@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.41
+
+- Added Plan/Usage APIs for Free, Pro, and future Business-aware AI capability control.
+- Added plan-aware Cloudflare Worker entrypoint at `src/entry.ts` for Production deployment.
+- Added Gateway Plan Guard for managed Numeria Studio and Velvet AI calls.
+- Added OpenAI Responses API provider while keeping the existing OpenAI-compatible Chat Completions provider available.
+- Registered Numeria Studio AI capabilities: `studio.report.generate` and `studio.report.ai_assist`.
+- Registered Velvet AI capabilities: `velvet.memory.summary`, `velvet.memory.search`, and `velvet.memory.recall`.
+- Added Cloudflare Runtime support for `OPENAI_API_KEY` and optional `OPENAI_DEFAULT_MODEL`; secrets are read from runtime environment and never stored in code.
+- Updated the main Cloudflare Production workflow to deploy `src/entry.ts` with `nodejs_compat` and verify Plan API readiness.
+- Verified Production deployment through GitHub Actions run `34456010956` on commit `d7f012cb71e091885376e47336a3d57029344863`.
+
 ## 0.1.40
 
 - Added aggregate production readiness views at `/v1/readiness` and `/api/readiness` for Platform Admin and deployment verification.

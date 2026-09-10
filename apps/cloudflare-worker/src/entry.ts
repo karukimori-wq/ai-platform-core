@@ -6,6 +6,8 @@ import type { D1DatabaseLike } from "@ai-platform-core/storage";
 interface Env {
   DB: D1DatabaseLike;
   COMMIT_SHA?: string;
+  OPENAI_API_KEY?: string;
+  OPENAI_DEFAULT_MODEL?: string;
 }
 
 const cors = {

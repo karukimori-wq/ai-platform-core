@@ -7,7 +7,7 @@ import {
 } from "@ai-platform-core/analytics";
 import { createClientRegistry, type ClientManifest } from "@ai-platform-core/client";
 import type { DomainEvent, EventQuery, EventStore } from "@ai-platform-core/event";
-import { err, ok, platformError, UUID, type Result } from "@ai-platform-core/kernel";
+import { err, ok, platformError, UUID } from "@ai-platform-core/kernel";
 import { createOpenAICompatibleProvider, createProviderRegistry } from "@ai-platform-core/provider";
 import { createEnvironmentSecretReader } from "@ai-platform-core/secrets";
 import { createD1KeyValueStore, type D1DatabaseLike } from "@ai-platform-core/storage";

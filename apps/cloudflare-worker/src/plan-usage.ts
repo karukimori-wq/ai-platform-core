@@ -61,6 +61,9 @@ export function isCapabilityAllowed(planId: PlanId, featureKey: string): boolean
 const usageId = (query: UsageQuery, period: string) =>
   [query.appId, query.workspaceId, query.userId, query.planId, query.featureKey, period].join("|");
 
+const idempotencyId = (request: ConsumeUsageRequest) =>
+  `${request.appId}|${request.workspaceId}|${request.userId}|${request.activityId}`;
+
 export async function getUsageSnapshot(
   db: D1DatabaseLike,
   query: UsageQuery,
@@ -84,7 +87,7 @@ export async function getUsageSnapshot(
   };
 }
 
-export async function consumeUsage(
+export async function checkUsageAllowance(
   db: D1DatabaseLike,
   request: ConsumeUsageRequest,
   now = new Date(),
@@ -102,12 +105,11 @@ export async function consumeUsage(
     };
   }
 
-  const idempotencyId = `${request.appId}|${request.workspaceId}|${request.userId}|${request.activityId}`;
   const existing = await db
     .prepare("SELECT id FROM platform_kv WHERE namespace=? AND id=? LIMIT 1")
-    .bind("plan.usage.activity", idempotencyId)
+    .bind("plan.usage.activity", idempotencyId(request))
     .first<{ id: string }>();
-  if (existing?.id === idempotencyId) {
+  if (existing?.id === idempotencyId(request)) {
     return { allowed: true, idempotentReplay: true, usage };
   }
 
@@ -115,14 +117,25 @@ export async function consumeUsage(
     return { allowed: false, idempotentReplay: false, errorCode: "PLAN_LIMIT_EXCEEDED", usage };
   }
 
-  const nextUsed = usage.used + 1;
+  return { allowed: true, idempotentReplay: false, usage };
+}
+
+export async function consumeUsage(
+  db: D1DatabaseLike,
+  request: ConsumeUsageRequest,
+  now = new Date(),
+): Promise<ConsumeUsageResult> {
+  const allowed = await checkUsageAllowance(db, request, now);
+  if (!allowed.allowed || allowed.idempotentReplay) return allowed;
+
+  const nextUsed = allowed.usage.used + 1;
   const nextUsage = {
-    ...usage,
+    ...allowed.usage,
     used: nextUsed,
-    remaining: usage.limit === null ? null : Math.max(usage.limit - nextUsed, 0),
+    remaining: allowed.usage.limit === null ? null : Math.max(allowed.usage.limit - nextUsed, 0),
   };
   const nowIso = now.toISOString();
-  const counterId = usageId(request, usage.period);
+  const counterId = usageId(request, allowed.usage.period);
 
   await db
     .prepare("INSERT INTO platform_kv(namespace,id,value_json,version,updated_at) VALUES(?,?,?,?,?) ON CONFLICT(namespace,id) DO UPDATE SET value_json=excluded.value_json,version=platform_kv.version+1,updated_at=excluded.updated_at")
@@ -132,7 +145,7 @@ export async function consumeUsage(
     .prepare("INSERT INTO platform_kv(namespace,id,value_json,version,updated_at) VALUES(?,?,?,?,?) ON CONFLICT(namespace,id) DO NOTHING")
     .bind(
       "plan.usage.activity",
-      idempotencyId,
+      idempotencyId(request),
       JSON.stringify({
         activityId: request.activityId,
         appName: request.appId,

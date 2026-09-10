@@ -1,5 +1,5 @@
 import type { D1DatabaseLike } from "@ai-platform-core/storage";
-import { consumeUsage, type PlanId } from "./plan-usage.js";
+import { checkUsageAllowance, consumeUsage, type PlanId } from "./plan-usage.js";
 
 const PLAN_MANAGED_APPS = new Set(["numeria-studio", "velvet"]);
 const PLAN_IDS = new Set<PlanId>(["free", "pro", "business"]);
@@ -28,6 +28,7 @@ export interface GatewayPlanGuardResult {
   managed: boolean;
   allowed: boolean;
   status: number;
+  context?: GatewayPlanContext;
   body?: unknown;
 }
 
@@ -106,7 +107,7 @@ export async function enforceGatewayPlan(
     };
   }
 
-  const result = await consumeUsage(db, context);
+  const result = await checkUsageAllowance(db, context);
   if (!result.allowed) {
     return {
       managed: true,
@@ -126,5 +127,12 @@ export async function enforceGatewayPlan(
     };
   }
 
-  return { managed: true, allowed: true, status: 200 };
+  return { managed: true, allowed: true, status: 200, context };
+}
+
+export async function commitGatewayPlanUsage(
+  db: D1DatabaseLike,
+  context: GatewayPlanContext,
+): Promise<void> {
+  await consumeUsage(db, context);
 }

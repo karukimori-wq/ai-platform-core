@@ -102,6 +102,72 @@ AI Platform Core resolves internal implementation details:
 - evaluation
 - usage recording
 
+## Plan-aware Gateway Contract
+
+Managed application AI calls should use `/v1/gateway/run` with the plan-aware
+Cloudflare entrypoint. The entrypoint enforces plan and usage before delegating
+to the Gateway runtime.
+
+Required scope:
+
+- `appId` / `activity.client`
+- `workspaceId`
+- `userId`
+- `planId`: `free`, `pro`, or `business`
+- `featureKey`
+- optional `activityId` for idempotent usage counting
+- `x-client-id`
+- `x-workspace-id`
+- `x-user-id`
+- optional `x-plan-id`
+- optional `x-feature-key`
+- optional `x-activity-id`
+- optional `x-trace-id`
+- optional `x-correlation-id`
+
+The authenticated header scope must match the body/query scope. AI Platform Core
+must reject mismatched workspace or user scopes before provider execution.
+
+### Numeria Studio capabilities
+
+Numeria Studio may call AI Platform Core for AI assistance around interpretation
+and report generation only. The currently registered Production capabilities are:
+
+- `studio.report.generate`
+- `studio.report.ai_assist`
+
+Free plan usage limits are enforced by APC for the feature keys defined in the
+plan runtime. Pro is treated as normal use without the Free count limit. Business
+capabilities are definable but Business is not sold or exposed by APC in this
+release.
+
+Numeria Studio remains the source of truth for Sessions and Reports. AI Platform
+Core must not own report records, report snapshots, customer master data,
+reservations, payments, sales, or UI state.
+
+### Velvet capabilities
+
+Velvet may call AI Platform Core for AI assistance around memory summarization,
+search, and recall. The currently registered Production capabilities are:
+
+- `velvet.memory.summary`
+- `velvet.memory.search`
+- `velvet.memory.recall`
+
+Velvet remains the source of truth for customer/person memory records and the
+user-facing memory experience. AI Platform Core must not become Velvet's CRM,
+payment system, customer master, or message-draft authority.
+
+### Provider behavior
+
+Cloudflare Production registers the `openai` provider when `OPENAI_API_KEY` is
+available in the runtime environment. OpenAI execution uses the Responses API
+provider. `OPENAI_DEFAULT_MODEL` is optional; the Cloudflare runtime falls back
+to its repository default when omitted.
+
+Provider secrets must never be logged, returned, stored in D1, or committed to
+GitHub.
+
 ## External References
 
 AI Platform Core may receive reference IDs for traceability:
@@ -242,3 +308,5 @@ Before merging integration changes:
 - Require `workspaceId + personId + conversationId` for Communication reply generation.
 - Keep Communication generated replies as candidates until Communication Planner SafetyCheck and send gate approve them.
 - Keep business decisions in Growth Engine or the relevant Professional Studio.
+- For managed app AI calls, verify Plan API and Gateway Guard behavior before Production release.
+- Never store provider secrets, payment data, customer master data, or full app-owned records in AI Platform Core.

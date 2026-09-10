@@ -8,7 +8,7 @@ import {
 import { createClientRegistry, type ClientManifest } from "@ai-platform-core/client";
 import type { DomainEvent, EventQuery, EventStore } from "@ai-platform-core/event";
 import { err, ok, platformError, UUID } from "@ai-platform-core/kernel";
-import { createOpenAICompatibleProvider, createProviderRegistry } from "@ai-platform-core/provider";
+import { createOpenAIResponsesProvider, createProviderRegistry } from "@ai-platform-core/provider";
 import { createEnvironmentSecretReader } from "@ai-platform-core/secrets";
 import { createD1KeyValueStore, type D1DatabaseLike } from "@ai-platform-core/storage";
 import {
@@ -172,7 +172,7 @@ const createCloudflareProviderRegistry = (env?: CloudflareRuntimeEnvironment) =>
   if (env?.OPENAI_API_KEY !== undefined && env.OPENAI_API_KEY.length > 0) {
     const secretReader = createEnvironmentSecretReader({ [OPENAI_API_KEY_SECRET]: env.OPENAI_API_KEY });
     providers.register(
-      createOpenAICompatibleProvider({
+      createOpenAIResponsesProvider({
         id: "openai",
         secretReader,
         apiKeySecretKey: OPENAI_API_KEY_SECRET,

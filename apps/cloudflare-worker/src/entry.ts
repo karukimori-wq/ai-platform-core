@@ -1,6 +1,6 @@
 import baseWorker from "./index.js";
 import { handleEntitlementRead, handleUsageConsume, handleUsageRead } from "./plan-api.js";
-import { enforceGatewayPlan } from "./gateway-plan-guard.js";
+import { commitGatewayPlanUsage, enforceGatewayPlan } from "./gateway-plan-guard.js";
 import type { D1DatabaseLike } from "@ai-platform-core/storage";
 
 interface Env {
@@ -23,6 +23,8 @@ function json(body: unknown, status = 200): Response {
     headers: { "content-type": "application/json", ...cors },
   });
 }
+
+const shouldCommitGatewayUsage = (response: Response): boolean => response.ok;
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -54,6 +56,12 @@ export default {
     if (pathname === "/v1/gateway/run" && request.method === "POST") {
       const gate = await enforceGatewayPlan(request, env.DB);
       if (!gate.allowed) return json(gate.body, gate.status);
+
+      const response = await baseWorker.fetch(request, env);
+      if (gate.context !== undefined && shouldCommitGatewayUsage(response)) {
+        await commitGatewayPlanUsage(env.DB, gate.context);
+      }
+      return response;
     }
 
     return baseWorker.fetch(request, env);

@@ -43,6 +43,8 @@ export interface OpenAICompatibleProviderConfig {
   readonly fetch?: typeof fetch;
 }
 
+export type OpenAIResponsesProviderConfig = OpenAICompatibleProviderConfig;
+
 interface OpenAIChatCompletionChoice {
   readonly message?: {
     readonly content?: unknown;
@@ -58,6 +60,27 @@ interface OpenAIChatCompletionUsage {
 interface OpenAIChatCompletionResponse {
   readonly model?: unknown;
   readonly choices?: unknown;
+  readonly usage?: unknown;
+}
+
+interface OpenAIResponseUsage {
+  readonly input_tokens?: unknown;
+  readonly output_tokens?: unknown;
+  readonly total_tokens?: unknown;
+}
+
+interface OpenAIResponseOutputContent {
+  readonly text?: unknown;
+}
+
+interface OpenAIResponseOutputItem {
+  readonly content?: unknown;
+}
+
+interface OpenAIResponsesResponse {
+  readonly model?: unknown;
+  readonly output_text?: unknown;
+  readonly output?: unknown;
   readonly usage?: unknown;
 }
 
@@ -107,15 +130,55 @@ const parseChoices = (value: unknown): readonly OpenAIChatCompletionChoice[] =>
 const parseUsage = (value: unknown): OpenAIChatCompletionUsage =>
   typeof value === "object" && value !== null ? value : {};
 
+const parseResponsesUsage = (value: unknown): OpenAIResponseUsage =>
+  typeof value === "object" && value !== null ? value : {};
+
 const parseChatCompletion = (value: unknown): Result<OpenAIChatCompletionResponse> =>
   typeof value === "object" && value !== null
     ? ok(value)
     : err(platformError("PROVIDER_INVALID_RESPONSE", "Provider response was not a JSON object."));
 
+const parseResponsesResponse = (value: unknown): Result<OpenAIResponsesResponse> =>
+  typeof value === "object" && value !== null
+    ? ok(value)
+    : err(platformError("PROVIDER_INVALID_RESPONSE", "Provider response was not a JSON object."));
+
+const parseResponseOutputItems = (value: unknown): readonly OpenAIResponseOutputItem[] =>
+  Array.isArray(value) ? value.filter((item): item is OpenAIResponseOutputItem => typeof item === "object" && item !== null) : [];
+
+const parseResponseOutputContent = (value: unknown): readonly OpenAIResponseOutputContent[] =>
+  Array.isArray(value) ? value.filter((item): item is OpenAIResponseOutputContent => typeof item === "object" && item !== null) : [];
+
 const readResponseText = (response: OpenAIChatCompletionResponse): string => {
   const firstChoice = parseChoices(response.choices)[0];
   const content = firstChoice?.message?.content;
   return typeof content === "string" ? content : "";
+};
+
+const readResponsesText = (response: OpenAIResponsesResponse): string => {
+  if (typeof response.output_text === "string") return response.output_text;
+  return parseResponseOutputItems(response.output)
+    .flatMap((item) => parseResponseOutputContent(item.content))
+    .map((content) => content.text)
+    .filter((text): text is string => typeof text === "string")
+    .join("\n");
+};
+
+const toResponsesInput = (messages: readonly AIMessage[]) =>
+  messages.map((message) => ({
+    role: message.role === "tool" ? "user" : message.role,
+    content: message.content
+  }));
+
+const createOpenAIHeaders = async (config: OpenAICompatibleProviderConfig): Promise<Result<HeadersInit>> => {
+  const apiKey = await config.secretReader.get(config.apiKeySecretKey);
+  if (!apiKey.ok) return apiKey;
+  return ok({
+    "content-type": "application/json",
+    authorization: `Bearer ${apiKey.value}`,
+    ...config.defaultHeaders,
+    ...(config.organization === undefined ? {} : { "openai-organization": config.organization })
+  });
 };
 
 export const createOpenAICompatibleProvider = (config: OpenAICompatibleProviderConfig): AIProvider => {
@@ -124,16 +187,11 @@ export const createOpenAICompatibleProvider = (config: OpenAICompatibleProviderC
   return {
     id: config.id ?? "openai",
     chat: async (request) => {
-      const apiKey = await config.secretReader.get(config.apiKeySecretKey);
-      if (!apiKey.ok) return apiKey;
+      const headers = await createOpenAIHeaders(config);
+      if (!headers.ok) return headers;
       const response = await fetchImpl(`${baseUrl}/chat/completions`, {
         method: "POST",
-        headers: {
-          "content-type": "application/json",
-          authorization: `Bearer ${apiKey.value}`,
-          ...config.defaultHeaders,
-          ...(config.organization === undefined ? {} : { "openai-organization": config.organization })
-        },
+        headers: headers.value,
         body: JSON.stringify({
           model: request.model,
           messages: request.messages
@@ -149,6 +207,48 @@ export const createOpenAICompatibleProvider = (config: OpenAICompatibleProviderC
       const tokens: TokenUsage = {
         input: parseNumber(usage.prompt_tokens),
         output: parseNumber(usage.completion_tokens),
+        total: parseNumber(usage.total_tokens)
+      };
+      return ok({
+        output: { text },
+        text,
+        model: typeof parsed.value.model === "string" ? parsed.value.model : request.model,
+        tokens,
+        cost: { amount: 0, currency: "USD" },
+        knowledgeUsed: []
+      });
+    }
+  };
+};
+
+export const createOpenAIResponsesProvider = (config: OpenAIResponsesProviderConfig): AIProvider => {
+  const baseUrl = config.baseUrl ?? "https://api.openai.com/v1";
+  const fetchImpl = config.fetch ?? fetch;
+  return {
+    id: config.id ?? "openai",
+    chat: async (request) => {
+      const headers = await createOpenAIHeaders(config);
+      if (!headers.ok) return headers;
+      const response = await fetchImpl(`${baseUrl}/responses`, {
+        method: "POST",
+        headers: headers.value,
+        body: JSON.stringify({
+          model: request.model,
+          input: toResponsesInput(request.messages),
+          store: false,
+          ...(request.metadata === undefined ? {} : { metadata: request.metadata })
+        })
+      });
+      if (!response.ok) {
+        return err(platformError("PROVIDER_HTTP_ERROR", `Provider returned HTTP ${String(response.status)}.`));
+      }
+      const parsed = parseResponsesResponse(await response.json());
+      if (!parsed.ok) return parsed;
+      const usage = parseResponsesUsage(parsed.value.usage);
+      const text = readResponsesText(parsed.value);
+      const tokens: TokenUsage = {
+        input: parseNumber(usage.input_tokens),
+        output: parseNumber(usage.output_tokens),
         total: parseNumber(usage.total_tokens)
       };
       return ok({

@@ -41,8 +41,8 @@ interface StoredDomainEvent extends Readonly<Record<string, unknown>> {
 }
 
 export interface CloudflareRuntimeEnvironment {
-  readonly OPENAI_API_KEY?: string;
-  readonly OPENAI_DEFAULT_MODEL?: string;
+  readonly OPENAI_API_KEY?: string | undefined;
+  readonly OPENAI_DEFAULT_MODEL?: string | undefined;
 }
 
 export interface CloudflareRuntimeOptions {

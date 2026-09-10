@@ -2,18 +2,435 @@ import { createPlatformHttpHandler, type ScopedAuthorizationRequest } from "@ai-
 import { createCloudflarePlatformRuntime } from "@ai-platform-core/runtime/cloudflare";
 import type { PlatformRuntime } from "@ai-platform-core/runtime";
 import type { D1DatabaseLike } from "@ai-platform-core/storage";
-interface Env { DB:D1DatabaseLike;COMMIT_SHA?:string;OPENAI_API_KEY?:string;OPENAI_DEFAULT_MODEL?:string; }
-let runtime:PlatformRuntime|undefined;
-const cors={"access-control-allow-origin":"*","access-control-allow-methods":"GET,POST,OPTIONS","access-control-allow-headers":"content-type,authorization,x-client-id,x-workspace-id,x-user-id,x-trace-id,x-correlation-id,x-source-app"};
-const withCors=(response:Response)=>{const headers=new Headers(response.headers);for(const[k,v]of Object.entries(cors))headers.set(k,v);return new Response(response.body,{status:response.status,statusText:response.statusText,headers})};
-const json=(body:unknown,status=200)=>withCors(new Response(JSON.stringify(body),{status,headers:{"content-type":"application/json"}}));
-async function persistenceStatus(env:Env){try{const row=await env.DB.prepare("SELECT 1 AS ok").first<{ok:number}>();return json({status:"success",data:{driver:"d1",d1Configured:true,d1Reachable:row?.ok===1,databaseBackedPersistenceReady:row?.ok===1}})}catch{return json({status:"warning",data:{driver:"d1",d1Configured:true,d1Reachable:false,databaseBackedPersistenceReady:false}},503)}}
-async function roundtrip(env:Env){const id=crypto.randomUUID(),now=new Date().toISOString();try{await env.DB.prepare("INSERT INTO platform_kv(namespace,id,value_json,version,updated_at) VALUES(?,?,?,?,?)").bind("system.roundtrip",id,JSON.stringify({id}),1,now).run();const row=await env.DB.prepare("SELECT id FROM platform_kv WHERE namespace=? AND id=? LIMIT 1").bind("system.roundtrip",id).first<{id:string}>();await env.DB.prepare("DELETE FROM platform_kv WHERE namespace=? AND id=?").bind("system.roundtrip",id).run();return json({status:"success",data:{persistenceDriver:"d1",roundtripReady:row?.id===id,createdAt:now}})}catch{return json({status:"error",data:{persistenceDriver:"d1",roundtripReady:false}},503)}}
-function authStatus(){return json({appName:"ai-platform-core",status:"success",identityMode:"workspaceId+userId",professionalIdRequired:false,scopeHeaders:["X-Client-Id","X-Workspace-Id","X-User-Id"],authorizationMode:"mvp_scoped_headers",contractVersion:"0.1.0",timestamp:new Date().toISOString()})}
-async function eventStatus(env:Env){try{const rows=await env.DB.prepare("SELECT COUNT(*) AS count FROM platform_kv WHERE namespace=?").bind("events").first<{count:number}>();return json({appName:"ai-platform-core",domain:"event",sourceOfTruth:true,status:"success",supported:true,mode:"mvp_event_store",contractVersion:"0.1.0",eventStoreReachable:true,eventCount:rows?.count??0,idempotencyByEventId:true,managedDeliverySupported:true,retrySupported:true,deadLetterQueueSupported:true,auditLogSupported:true,replaySupported:true,traceCorrelationSupported:true,timestamp:new Date().toISOString()})}catch{return json({appName:"ai-platform-core",domain:"event",sourceOfTruth:true,status:"error",supported:true,mode:"mvp_event_store",contractVersion:"0.1.0",eventStoreReachable:false,eventCount:0,idempotencyByEventId:true,managedDeliverySupported:true,retrySupported:true,deadLetterQueueSupported:true,auditLogSupported:true,replaySupported:true,traceCorrelationSupported:true,timestamp:new Date().toISOString()},503)}}
-async function eventRoundtrip(request:Request,env:Env){const url=new URL(request.url),client=url.searchParams.get("client"),workspaceId=url.searchParams.get("workspaceId"),userId=url.searchParams.get("userId");if(client===null||workspaceId===null||userId===null)return json({ok:false,error:{code:"HTTP_INVALID_QUERY",message:"Query parameters client, workspaceId, and userId are required."}},400);if(request.headers.get("x-client-id")!==client||request.headers.get("x-workspace-id")!==workspaceId||request.headers.get("x-user-id")!==userId)return json({ok:false,error:{code:"AUTHORIZATION_SCOPE_VIOLATION",message:"Request scope must match the authenticated client, workspace, and user."}},403);const eventId=crypto.randomUUID(),aggregateId=crypto.randomUUID(),now=new Date().toISOString(),traceId=request.headers.get("x-trace-id")??`trace_${eventId}`,correlationId=request.headers.get("x-correlation-id")??`corr_${aggregateId}`,event={id:eventId,type:"ai.activity.created.v1",aggregateId,version:1,occurredAt:now,payload:{workspaceId,userId,sourceApp:"ai-platform-core",eventName:"ai.activity.created.v1"},metadata:{traceId,correlationId,sourceApp:"ai-platform-core",targetApp:"ai-platform-core",status:"success"}};try{await env.DB.prepare("INSERT INTO platform_kv(namespace,id,value_json,version,updated_at) VALUES(?,?,?,?,?) ON CONFLICT(namespace,id) DO UPDATE SET value_json=excluded.value_json,version=platform_kv.version+1,updated_at=excluded.updated_at").bind("events",eventId,JSON.stringify(event),1,now).run();const row=await env.DB.prepare("SELECT id FROM platform_kv WHERE namespace=? AND id=? LIMIT 1").bind("events",eventId).first<{id:string}>();const persisted=row?.id===eventId;return json({ok:persisted,appName:"ai-platform-core",status:persisted?"success":"error",eventName:"ai.activity.created.v1",eventId,aggregateId,workspaceId,userId,traceId,correlationId,persisted,loadedCount:persisted?1:0,timestamp:new Date().toISOString()},persisted?201:500)}catch{return json({ok:false,appName:"ai-platform-core",status:"error",eventName:"ai.activity.created.v1",eventId,aggregateId,workspaceId,userId,traceId,correlationId,persisted:false,loadedCount:0,timestamp:new Date().toISOString()},500)}}
-function integrationStatus(){const forbidden=["customerMaster","customerName","email","birthDate","fullMeetingTranscript","fullConversationHistory","fullReportBody","paymentStatus","salesAmount","stripeCustomerId","stripePaymentIntentId","apiKey","secretPrompt"];return json({appName:"ai-platform-core",status:"success",contractVersion:"0.1.0",identityMode:"workspaceId+userId",professionalIdRequired:false,sourceOfTruth:["AI Activity","AI Usage","AI Capability"],notSourceOfTruth:["Customer","Reservation","Payment","Sales","Report","Conversation","Message","MessageDraft"],apps:[{appName:"growth-engine",sourceOfTruth:["Customer","Reservation","Payment","Sales"],notSourceOfTruth:["AI Activity","AI Usage","AI Capability"],activityTypes:["growth.recommendation.created"],capabilities:["growth.recommendation.generate"],inputRefOnly:true,forbiddenPayloadFields:forbidden},{appName:"numeria-studio",sourceOfTruth:["Session","Report"],notSourceOfTruth:["Customer","Payment","Sales","AI Usage"],activityTypes:["studio.report.generated"],capabilities:["studio.report.generate"],inputRefOnly:true,forbiddenPayloadFields:forbidden},{appName:"sns-planner",sourceOfTruth:["PostDraft","PostTemplate","PostHistory","MediaAsset"],notSourceOfTruth:["Customer","Payment","Sales","AI Usage"],activityTypes:["sns.post_draft.created","sns.post_draft.updated"],capabilities:["sns.post.generate"],inputRefOnly:true,forbiddenPayloadFields:forbidden},{appName:"communication-planner",sourceOfTruth:["Conversation","Message","ConversationContext","ReplyDraft","SafetyCheck"],notSourceOfTruth:["Customer","Payment","Sales","AI Usage"],activityTypes:["communication.reply.generated","communication.reply.safety_checked"],capabilities:["communication.context.summarize","communication.topic.extract","communication.promise.extract","communication.next_action.suggest","communication.reply.generate","communication.reply.safety_check","communication.intent.classify"],inputRefOnly:true,forbiddenPayloadFields:forbidden},{appName:"velvet",sourceOfTruth:["ProfessionalMemory","MessageDraft"],notSourceOfTruth:["Customer","Payment","Sales","AI Usage"],activityTypes:["velvet.message_draft.created","velvet.professional_memory.updated"],capabilities:["velvet.message_draft.generate","velvet.professional_memory.summarize"],inputRefOnly:true,forbiddenPayloadFields:forbidden}],endpoints:{activityCreate:"/api/activities",gatewayRun:"/v1/gateway/run",usageRead:"/v1/analytics/usage",capabilityRegister:"/v1/capabilities"},observability:{traceHeaders:["X-Trace-Id","X-Correlation-Id","X-Request-Id","X-Source-App"],eventName:"ai.activity.created.v1"},timestamp:new Date().toISOString()})}
-async function readinessStatus(env:Env){const checks:{persistence:boolean;eventStore:boolean;identity:boolean;integrationBoundary:boolean}={persistence:false,eventStore:false,identity:true,integrationBoundary:true};try{const db=await env.DB.prepare("SELECT 1 AS ok").first<{ok:number}>();checks.persistence=db?.ok===1}catch{checks.persistence=false}try{const events=await env.DB.prepare("SELECT COUNT(*) AS count FROM platform_kv WHERE namespace=?").bind("events").first<{count:number}>();checks.eventStore=typeof events?.count==="number"}catch{checks.eventStore=false}const failedChecks=Object.entries(checks).filter(([,passed])=>!passed).map(([name])=>name);const ready=failedChecks.length===0;return json({appName:"ai-platform-core",status:ready?"success":"warning",productionReady:ready,checks,failedChecks,recommendedActions:ready?[]:["Check /api/persistence/status for D1 binding and schema readiness.","Check /v1/events/status for Event Store reachability.","Check /v1/integrations/status before cross-app production verification."],identityMode:"workspaceId+userId",professionalIdRequired:false,sourceOfTruth:["AI Activity","AI Usage","AI Capability"],commitSha:env.COMMIT_SHA??null,timestamp:new Date().toISOString()},ready?200:503)}
-const matches=(actual:string|null,expected:string|undefined)=>expected===undefined||actual===expected;
-const authorizeScopedRead=(request:Request,scope:ScopedAuthorizationRequest)=>request.headers.get("x-client-id")===scope.clientId&&matches(request.headers.get("x-workspace-id"),scope.workspaceId)&&matches(request.headers.get("x-user-id"),scope.userId);
-export default{async fetch(request:Request,env:Env):Promise<Response>{if(request.method==="OPTIONS")return new Response(null,{status:204,headers:cors});const url=new URL(request.url);if((url.pathname==="/v1/readiness"||url.pathname==="/api/readiness")&&request.method==="GET")return readinessStatus(env);if(url.pathname==="/api/persistence/status"&&request.method==="GET")return persistenceStatus(env);if(url.pathname==="/api/persistence/roundtrip"&&request.method==="POST")return roundtrip(env);if(url.pathname==="/api/auth/status"&&request.method==="GET")return authStatus();if((url.pathname==="/v1/events/status"||url.pathname==="/api/events/status")&&request.method==="GET")return eventStatus(env);if((url.pathname==="/v1/events/roundtrip"||url.pathname==="/api/events/roundtrip")&&request.method==="POST")return eventRoundtrip(request,env);if((url.pathname==="/v1/integrations/status"||url.pathname==="/api/integrations/status")&&request.method==="GET")return integrationStatus();runtime??=createCloudflarePlatformRuntime({db:env.DB,env:{OPENAI_API_KEY:env.OPENAI_API_KEY,OPENAI_DEFAULT_MODEL:env.OPENAI_DEFAULT_MODEL}});return withCors(await createPlatformHttpHandler(runtime,{authorizeScopedRequest:authorizeScopedRead})(request))}};
+
+interface Env {
+  DB: D1DatabaseLike;
+  COMMIT_SHA?: string;
+  OPENAI_API_KEY?: string;
+  OPENAI_DEFAULT_MODEL?: string;
+}
+
+let runtime: PlatformRuntime | undefined;
+
+const cors = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-methods": "GET,POST,OPTIONS",
+  "access-control-allow-headers":
+    "content-type,authorization,x-client-id,x-workspace-id,x-user-id,x-trace-id,x-correlation-id,x-source-app,x-plan-id,x-feature-key,x-activity-id",
+};
+
+const withCors = (response: Response): Response => {
+  const headers = new Headers(response.headers);
+  for (const [key, value] of Object.entries(cors)) headers.set(key, value);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+};
+
+const json = (body: unknown, status = 200): Response =>
+  withCors(new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } }));
+
+async function persistenceStatus(env: Env): Promise<Response> {
+  try {
+    const row = await env.DB.prepare("SELECT 1 AS ok").first<{ ok: number }>();
+    return json({
+      status: "success",
+      data: {
+        driver: "d1",
+        d1Configured: true,
+        d1Reachable: row?.ok === 1,
+        databaseBackedPersistenceReady: row?.ok === 1,
+      },
+    });
+  } catch {
+    return json(
+      {
+        status: "warning",
+        data: {
+          driver: "d1",
+          d1Configured: true,
+          d1Reachable: false,
+          databaseBackedPersistenceReady: false,
+        },
+      },
+      503,
+    );
+  }
+}
+
+async function roundtrip(env: Env): Promise<Response> {
+  const id = crypto.randomUUID();
+  const now = new Date().toISOString();
+  try {
+    await env.DB.prepare("INSERT INTO platform_kv(namespace,id,value_json,version,updated_at) VALUES(?,?,?,?,?)")
+      .bind("system.roundtrip", id, JSON.stringify({ id }), 1, now)
+      .run();
+    const row = await env.DB.prepare("SELECT id FROM platform_kv WHERE namespace=? AND id=? LIMIT 1")
+      .bind("system.roundtrip", id)
+      .first<{ id: string }>();
+    await env.DB.prepare("DELETE FROM platform_kv WHERE namespace=? AND id=?")
+      .bind("system.roundtrip", id)
+      .run();
+    return json({
+      status: "success",
+      data: { persistenceDriver: "d1", roundtripReady: row?.id === id, createdAt: now },
+    });
+  } catch {
+    return json({ status: "error", data: { persistenceDriver: "d1", roundtripReady: false } }, 503);
+  }
+}
+
+function authStatus(): Response {
+  return json({
+    appName: "ai-platform-core",
+    status: "success",
+    identityMode: "workspaceId+userId",
+    professionalIdRequired: false,
+    scopeHeaders: ["X-Client-Id", "X-Workspace-Id", "X-User-Id"],
+    authorizationMode: "mvp_scoped_headers",
+    contractVersion: "0.1.0",
+    timestamp: new Date().toISOString(),
+  });
+}
+
+async function eventStatus(env: Env): Promise<Response> {
+  try {
+    const rows = await env.DB.prepare("SELECT COUNT(*) AS count FROM platform_kv WHERE namespace=?")
+      .bind("events")
+      .first<{ count: number }>();
+    return json({
+      appName: "ai-platform-core",
+      domain: "event",
+      sourceOfTruth: true,
+      status: "success",
+      supported: true,
+      mode: "mvp_event_store",
+      contractVersion: "0.1.0",
+      eventStoreReachable: true,
+      eventCount: rows?.count ?? 0,
+      idempotencyByEventId: true,
+      managedDeliverySupported: true,
+      retrySupported: true,
+      deadLetterQueueSupported: true,
+      auditLogSupported: true,
+      replaySupported: true,
+      traceCorrelationSupported: true,
+      timestamp: new Date().toISOString(),
+    });
+  } catch {
+    return json(
+      {
+        appName: "ai-platform-core",
+        domain: "event",
+        sourceOfTruth: true,
+        status: "error",
+        supported: true,
+        mode: "mvp_event_store",
+        contractVersion: "0.1.0",
+        eventStoreReachable: false,
+        eventCount: 0,
+        idempotencyByEventId: true,
+        managedDeliverySupported: true,
+        retrySupported: true,
+        deadLetterQueueSupported: true,
+        auditLogSupported: true,
+        replaySupported: true,
+        traceCorrelationSupported: true,
+        timestamp: new Date().toISOString(),
+      },
+      503,
+    );
+  }
+}
+
+async function eventRoundtrip(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url);
+  const client = url.searchParams.get("client");
+  const workspaceId = url.searchParams.get("workspaceId");
+  const userId = url.searchParams.get("userId");
+  if (client === null || workspaceId === null || userId === null) {
+    return json(
+      { ok: false, error: { code: "HTTP_INVALID_QUERY", message: "Query parameters client, workspaceId, and userId are required." } },
+      400,
+    );
+  }
+  if (
+    request.headers.get("x-client-id") !== client ||
+    request.headers.get("x-workspace-id") !== workspaceId ||
+    request.headers.get("x-user-id") !== userId
+  ) {
+    return json(
+      { ok: false, error: { code: "AUTHORIZATION_SCOPE_VIOLATION", message: "Request scope must match the authenticated client, workspace, and user." } },
+      403,
+    );
+  }
+
+  const eventId = crypto.randomUUID();
+  const aggregateId = crypto.randomUUID();
+  const now = new Date().toISOString();
+  const traceId = request.headers.get("x-trace-id") ?? `trace_${eventId}`;
+  const correlationId = request.headers.get("x-correlation-id") ?? `corr_${aggregateId}`;
+  const event = {
+    id: eventId,
+    type: "ai.activity.created.v1",
+    aggregateId,
+    version: 1,
+    occurredAt: now,
+    payload: { workspaceId, userId, sourceApp: "ai-platform-core", eventName: "ai.activity.created.v1" },
+    metadata: { traceId, correlationId, sourceApp: "ai-platform-core", targetApp: "ai-platform-core", status: "success" },
+  };
+
+  try {
+    await env.DB.prepare(
+      "INSERT INTO platform_kv(namespace,id,value_json,version,updated_at) VALUES(?,?,?,?,?) ON CONFLICT(namespace,id) DO UPDATE SET value_json=excluded.value_json,version=platform_kv.version+1,updated_at=excluded.updated_at",
+    )
+      .bind("events", eventId, JSON.stringify(event), 1, now)
+      .run();
+    const row = await env.DB.prepare("SELECT id FROM platform_kv WHERE namespace=? AND id=? LIMIT 1")
+      .bind("events", eventId)
+      .first<{ id: string }>();
+    const persisted = row?.id === eventId;
+    return json(
+      {
+        ok: persisted,
+        appName: "ai-platform-core",
+        status: persisted ? "success" : "error",
+        eventName: "ai.activity.created.v1",
+        eventId,
+        aggregateId,
+        workspaceId,
+        userId,
+        traceId,
+        correlationId,
+        persisted,
+        loadedCount: persisted ? 1 : 0,
+        timestamp: new Date().toISOString(),
+      },
+      persisted ? 201 : 500,
+    );
+  } catch {
+    return json(
+      {
+        ok: false,
+        appName: "ai-platform-core",
+        status: "error",
+        eventName: "ai.activity.created.v1",
+        eventId,
+        aggregateId,
+        workspaceId,
+        userId,
+        traceId,
+        correlationId,
+        persisted: false,
+        loadedCount: 0,
+        timestamp: new Date().toISOString(),
+      },
+      500,
+    );
+  }
+}
+
+function integrationStatus(): Response {
+  const forbidden = [
+    "customerMaster",
+    "customerName",
+    "email",
+    "birthDate",
+    "fullMeetingTranscript",
+    "fullConversationHistory",
+    "fullReportBody",
+    "paymentStatus",
+    "salesAmount",
+    "stripeCustomerId",
+    "stripePaymentIntentId",
+    "apiKey",
+    "secretPrompt",
+  ];
+
+  return json({
+    appName: "ai-platform-core",
+    status: "success",
+    contractVersion: "0.1.0",
+    identityMode: "workspaceId+userId",
+    professionalIdRequired: false,
+    sourceOfTruth: ["AI Activity", "AI Usage", "AI Capability"],
+    notSourceOfTruth: ["Customer", "Reservation", "Payment", "Sales", "Report", "Conversation", "Message", "MessageDraft"],
+    apps: [
+      {
+        appName: "growth-engine",
+        sourceOfTruth: ["Customer", "Reservation", "Payment", "Sales"],
+        notSourceOfTruth: ["AI Activity", "AI Usage", "AI Capability"],
+        activityTypes: ["growth.recommendation.created"],
+        capabilities: ["growth.recommendation.generate"],
+        inputRefOnly: true,
+        forbiddenPayloadFields: forbidden,
+      },
+      {
+        appName: "numeria-studio",
+        sourceOfTruth: ["Session", "Report"],
+        notSourceOfTruth: ["Customer", "Payment", "Sales", "AI Usage"],
+        activityTypes: ["studio.report.generated"],
+        capabilities: ["studio.report.generate", "studio.report.ai_assist"],
+        inputRefOnly: true,
+        forbiddenPayloadFields: forbidden,
+      },
+      {
+        appName: "sns-planner",
+        sourceOfTruth: ["PostDraft", "PostTemplate", "PostHistory", "MediaAsset"],
+        notSourceOfTruth: ["Customer", "Payment", "Sales", "AI Usage"],
+        activityTypes: ["sns.post_draft.created", "sns.post_draft.updated"],
+        capabilities: ["sns.post.generate"],
+        inputRefOnly: true,
+        forbiddenPayloadFields: forbidden,
+      },
+      {
+        appName: "communication-planner",
+        sourceOfTruth: ["Conversation", "Message", "ConversationContext", "ReplyDraft", "SafetyCheck"],
+        notSourceOfTruth: ["Customer", "Payment", "Sales", "AI Usage"],
+        activityTypes: ["communication.reply.generated", "communication.reply.safety_checked"],
+        capabilities: [
+          "communication.context.summarize",
+          "communication.topic.extract",
+          "communication.promise.extract",
+          "communication.next_action.suggest",
+          "communication.reply.generate",
+          "communication.reply.safety_check",
+          "communication.intent.classify",
+        ],
+        inputRefOnly: true,
+        forbiddenPayloadFields: forbidden,
+      },
+      {
+        appName: "velvet",
+        sourceOfTruth: ["ProfessionalMemory", "MessageDraft"],
+        notSourceOfTruth: ["Customer", "Payment", "Sales", "AI Usage"],
+        activityTypes: ["velvet.message_draft.created", "velvet.professional_memory.updated"],
+        capabilities: ["velvet.memory.summary", "velvet.memory.search", "velvet.memory.recall"],
+        inputRefOnly: true,
+        forbiddenPayloadFields: forbidden,
+      },
+    ],
+    endpoints: {
+      activityCreate: "/api/activities",
+      gatewayRun: "/v1/gateway/run",
+      usageRead: "/v1/analytics/usage",
+      planUsageRead: "/v1/usage",
+      entitlementRead: "/v1/entitlements",
+      planUsageConsume: "/v1/usage/consume",
+      capabilityRegister: "/v1/capabilities",
+    },
+    planGateway: {
+      status: "success",
+      managedApps: ["numeria-studio", "velvet"],
+      requiredHeaders: [
+        "x-source-app",
+        "x-plan-id",
+        "x-feature-key",
+        "x-activity-id",
+        "x-client-id",
+        "x-workspace-id",
+        "x-user-id",
+      ],
+      usageCommitPolicy: "post_success_gateway_response",
+      failedProviderCallsConsumePlanUsage: false,
+      idempotencyKey: "appId|workspaceId|userId|activityId",
+    },
+    observability: {
+      traceHeaders: ["X-Trace-Id", "X-Correlation-Id", "X-Request-Id", "X-Source-App", "X-Plan-Id", "X-Feature-Key"],
+      eventName: "ai.activity.created.v1",
+    },
+    timestamp: new Date().toISOString(),
+  });
+}
+
+async function readinessStatus(env: Env): Promise<Response> {
+  const checks: { persistence: boolean; eventStore: boolean; identity: boolean; integrationBoundary: boolean } = {
+    persistence: false,
+    eventStore: false,
+    identity: true,
+    integrationBoundary: true,
+  };
+  try {
+    const db = await env.DB.prepare("SELECT 1 AS ok").first<{ ok: number }>();
+    checks.persistence = db?.ok === 1;
+  } catch {
+    checks.persistence = false;
+  }
+  try {
+    const events = await env.DB.prepare("SELECT COUNT(*) AS count FROM platform_kv WHERE namespace=?")
+      .bind("events")
+      .first<{ count: number }>();
+    checks.eventStore = typeof events?.count === "number";
+  } catch {
+    checks.eventStore = false;
+  }
+
+  const failedChecks = Object.entries(checks)
+    .filter(([, passed]) => !passed)
+    .map(([name]) => name);
+  const ready = failedChecks.length === 0;
+  return json(
+    {
+      appName: "ai-platform-core",
+      status: ready ? "success" : "warning",
+      productionReady: ready,
+      checks,
+      failedChecks,
+      recommendedActions: ready
+        ? []
+        : [
+            "Check /api/persistence/status for D1 binding and schema readiness.",
+            "Check /v1/events/status for Event Store reachability.",
+            "Check /v1/integrations/status before cross-app production verification.",
+          ],
+      identityMode: "workspaceId+userId",
+      professionalIdRequired: false,
+      sourceOfTruth: ["AI Activity", "AI Usage", "AI Capability"],
+      commitSha: env.COMMIT_SHA ?? null,
+      timestamp: new Date().toISOString(),
+    },
+    ready ? 200 : 503,
+  );
+}
+
+const matches = (actual: string | null, expected: string | undefined): boolean =>
+  expected === undefined || actual === expected;
+
+const authorizeScopedRead = (request: Request, scope: ScopedAuthorizationRequest): boolean =>
+  request.headers.get("x-client-id") === scope.clientId &&
+  matches(request.headers.get("x-workspace-id"), scope.workspaceId) &&
+  matches(request.headers.get("x-user-id"), scope.userId);
+
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
+
+    const url = new URL(request.url);
+    if ((url.pathname === "/v1/readiness" || url.pathname === "/api/readiness") && request.method === "GET") {
+      return readinessStatus(env);
+    }
+    if (url.pathname === "/api/persistence/status" && request.method === "GET") return persistenceStatus(env);
+    if (url.pathname === "/api/persistence/roundtrip" && request.method === "POST") return roundtrip(env);
+    if (url.pathname === "/api/auth/status" && request.method === "GET") return authStatus();
+    if ((url.pathname === "/v1/events/status" || url.pathname === "/api/events/status") && request.method === "GET") {
+      return eventStatus(env);
+    }
+    if ((url.pathname === "/v1/events/roundtrip" || url.pathname === "/api/events/roundtrip") && request.method === "POST") {
+      return eventRoundtrip(request, env);
+    }
+    if ((url.pathname === "/v1/integrations/status" || url.pathname === "/api/integrations/status") && request.method === "GET") {
+      return integrationStatus();
+    }
+
+    runtime ??= createCloudflarePlatformRuntime({
+      db: env.DB,
+      env: {
+        OPENAI_API_KEY: env.OPENAI_API_KEY,
+        OPENAI_DEFAULT_MODEL: env.OPENAI_DEFAULT_MODEL,
+      },
+    });
+    return withCors(await createPlatformHttpHandler(runtime, { authorizeScopedRequest: authorizeScopedRead })(request));
+  },
+};

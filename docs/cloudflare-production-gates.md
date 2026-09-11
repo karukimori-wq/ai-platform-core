@@ -4,6 +4,7 @@ Cloudflare migration is complete only when every required gate below passes.
 
 ## Infrastructure
 - Worker `ai-platform-core` deploys from `main`.
+- There is one production deployment entrypoint: the `Cloudflare Production` workflow.
 - Main Production workflow deploys the plan-aware Worker entrypoint: `apps/cloudflare-worker/src/entry.ts`.
 - Wrangler production config uses `compatibility_flags = ["nodejs_compat"]`.
 - D1 binding is named `DB` and targets database `ai-platform-core`.
@@ -32,6 +33,12 @@ Cloudflare migration is complete only when every required gate below passes.
 - `/v1/gateway/run` remains the single AI execution entrypoint.
 - Production E2E uses `production-e2e` + `production.echo` with the echo provider, so base persistence checks do not require a real provider secret.
 - Managed app calls for `numeria-studio` and `velvet` pass through the plan-aware entrypoint and Gateway Plan Guard.
+- `/v1/integrations/status` must report `planGateway.status=success`.
+- `planGateway.managedApps` must include both `numeria-studio` and `velvet`.
+- `planGateway.usageCommitPolicy` must be `post_success_gateway_response`.
+- `planGateway.failedProviderCallsConsumePlanUsage` must be `false`.
+- `planGateway.idempotencyKey` must remain `appId|workspaceId|userId|activityId`.
+- Production workflow asserts these plan gateway conditions so regressions fail the deployment gate.
 - OpenAI execution uses the OpenAI Responses API provider when `OPENAI_API_KEY` is available.
 - Provider secrets are never echoed in responses, logs, D1, or docs.
 
@@ -58,7 +65,13 @@ Cloudflare migration is complete only when every required gate below passes.
 ## Verified production release
 
 - Workflow: `Cloudflare Production`
-- Run ID: `34456010956`
-- Commit: `d7f012cb71e091885376e47336a3d57029344863`
+- Run ID: `34550249935`
+- Commit: `8bd6ee79081d54821c33613962b7b9fb5d2ca488`
 - Result: `success`
 - Production URL: `https://ai-platform-core.karukimori.workers.dev`
+- Verified: Plan APIs, Plan Gateway status, D1 persistence, Event persistence, Activity/Usage persistence, and workspace/user isolation.
+
+## Workflow consolidation
+
+- The former `Cloudflare Production - Plan APIs` workflow was removed after its checks were merged into `Cloudflare Production`.
+- Operators should use only `Cloudflare Production` for production deployment and verification.

@@ -122,6 +122,12 @@ jobs:
           if (!apps.get('communication-planner')?.capabilities?.includes('communication.reply.generate')) throw new Error('Production Communication Planner capability check failed');
           if (!apps.get('velvet')?.sourceOfTruth?.includes('MessageDraft')) throw new Error('Production Velvet MessageDraft boundary check failed');
           if (!apps.get('growth-engine')?.sourceOfTruth?.includes('Payment')) throw new Error('Production Growth Engine ownership check failed');
+          const planGateway = integrations.planGateway;
+          if (planGateway?.status !== 'success') throw new Error('Production Plan Gateway status check failed');
+          if (!planGateway?.managedApps?.includes('numeria-studio') || !planGateway?.managedApps?.includes('velvet')) throw new Error('Production Plan Gateway managed-app check failed');
+          if (planGateway?.usageCommitPolicy !== 'post_success_gateway_response') throw new Error('Production Plan Gateway usage-commit policy check failed');
+          if (planGateway?.failedProviderCallsConsumePlanUsage !== false) throw new Error('Production Plan Gateway failed-call usage policy check failed');
+          if (planGateway?.idempotencyKey !== 'appId|workspaceId|userId|activityId') throw new Error('Production Plan Gateway idempotency contract check failed');
           NODE
       - name: Verify production D1 persistence
         run: |

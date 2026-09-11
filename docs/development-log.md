@@ -2,6 +2,48 @@
 
 This file records development handoffs that should be easy to ingest into External Intelligence or summarize for other app teams.
 
+## 2026-09-11 - Provider readiness monitoring
+
+### Repository
+
+- `karukimori-wq/ai-platform-core`
+
+### Summary
+
+AI Platform Core now exposes a safe provider-readiness surface for Platform Admin and production verification without returning provider secret values.
+
+### Implemented
+
+- Added `GET /v1/providers/status` and `GET /api/providers/status` to the plan-aware Cloudflare entrypoint.
+- Reports whether the OpenAI provider is configured without returning `OPENAI_API_KEY` or any secret value.
+- Reports that managed OpenAI execution uses the Responses API.
+- Reports managed apps as `numeria-studio` and `velvet`.
+- Reports whether the model selection comes from the environment or repository default without exposing the configured model value.
+- Keeps the echo provider visible as the provider-secret-free Production E2E path.
+- Added contract and runtime response tests, including a check that a supplied secret never appears in the response body.
+- Consolidated Cloudflare production deployment to the single `Cloudflare Production` workflow; the duplicate Plan API production workflow was removed.
+
+### Provider status behavior
+
+```text
+OPENAI_API_KEY configured
+  -> status: success
+  -> providers.openai.configured: true
+
+OPENAI_API_KEY missing
+  -> status: warning
+  -> providers.openai.configured: false
+```
+
+The endpoint intentionally remains readable when degraded so Platform Admin can diagnose configuration problems.
+
+### Useful commits
+
+- `07707e27c3a41bef55fe04e737e31bcd4a27deed` - consolidate Cloudflare production workflow
+- `11bd4ece9adb9bb21df44ebcbf0ac544f600f791` - expose provider readiness status
+- `43db3aa7b8db0428ab81531fb13c5e3a2e7bef83` - cover provider readiness contract
+- `d82d31310e002b02186d67836ccacef8f9f6eb35` - verify provider readiness response and secret non-disclosure
+
 ## 2026-09-11 - Safe managed Gateway usage commit
 
 ### Repository
@@ -143,7 +185,7 @@ AI Platform Core does not own:
 ### Known follow-up
 
 - Add a dedicated production smoke test for a managed app Gateway call using a non-secret provider path or a mocked provider route.
-- Surface safe managed Gateway usage status in Platform Admin without exposing prompts, customer data, or provider secrets.
+- Add `/v1/providers/status` to the Production workflow gate so a missing OpenAI runtime configuration is detected during deployment.
 
 ### Useful commits
 

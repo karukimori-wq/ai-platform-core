@@ -64,6 +64,23 @@ export async function readGatewayPlanContext(request: Request): Promise<GatewayP
   };
 }
 
+async function hasManagedScopeMismatch(request: Request, context: GatewayPlanContext): Promise<boolean> {
+  const body = (await request.clone().json()) as GatewayBody;
+  const bodyClientId = body.activity?.client;
+  const bodyCapability = body.activity?.capability;
+  const sourceApp = request.headers.get("x-source-app");
+  const clientId = request.headers.get("x-client-id");
+  const featureKey = request.headers.get("x-feature-key");
+
+  return (
+    request.headers.get("x-workspace-id") !== context.workspaceId ||
+    request.headers.get("x-user-id") !== context.userId ||
+    (clientId !== null && clientId !== context.appId) ||
+    (sourceApp !== null && bodyClientId !== undefined && sourceApp !== bodyClientId) ||
+    (featureKey !== null && bodyCapability !== undefined && featureKey !== bodyCapability)
+  );
+}
+
 export async function enforceGatewayPlan(
   request: Request,
   db: D1DatabaseLike,
@@ -87,10 +104,7 @@ export async function enforceGatewayPlan(
 
   if (context === null) return { managed: false, allowed: true, status: 200 };
 
-  if (
-    request.headers.get("x-workspace-id") !== context.workspaceId ||
-    request.headers.get("x-user-id") !== context.userId
-  ) {
+  if (await hasManagedScopeMismatch(request, context)) {
     return {
       managed: true,
       allowed: false,

@@ -70,6 +70,17 @@ describe("Cloudflare Worker contracts", () => {
     expect(source).toContain("/v1/usage/consume");
   });
 
+  it("exposes provider readiness without exposing provider secrets", () => {
+    const source = read("./entry.ts");
+    expect(source).toContain("/v1/providers/status");
+    expect(source).toContain("/api/providers/status");
+    expect(source).toContain("openAIConfigured");
+    expect(source).toContain('api: "responses"');
+    expect(source).toContain('managedApps: ["numeria-studio", "velvet"]');
+    expect(source).toContain("secretValuesExposed: false");
+    expect(source).toContain("repository_default");
+  });
+
   it("exposes an aggregate production readiness view", () => {
     const source = read("./index.ts");
     expect(source).toContain("/v1/readiness");

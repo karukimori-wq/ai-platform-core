@@ -16,7 +16,7 @@ const cors = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET,POST,OPTIONS",
   "access-control-allow-headers":
-    "content-type,authorization,x-client-id,x-workspace-id,x-user-id,x-trace-id,x-correlation-id,x-source-app,x-plan-id,x-feature-key,x-activity-id",
+    "content-type,authorization,x-client-id,x-workspace-id,x-user-id,x-app-version,x-trace-id,x-correlation-id,x-source-app,x-plan-id,x-feature-key,x-activity-id",
 };
 
 const withCors = (response: Response): Response => {

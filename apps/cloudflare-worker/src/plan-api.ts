@@ -68,10 +68,10 @@ function readScope(request: Request): PlanScope | PlanApiResponse {
   const userId = url.searchParams.get("userId");
   const planId = url.searchParams.get("planId") as PlanId | null;
   const featureKey = url.searchParams.get("featureKey");
-  const appVersion = url.searchParams.get("appVersion") ?? request.headers.get("x-app-version") ?? "unknown";
+  const appVersion = url.searchParams.get("appVersion") ?? request.headers.get("x-app-version");
 
-  if (!appId || !workspaceId || !userId || !planId || !featureKey) {
-    return badRequest("Query parameters appId, workspaceId, userId, planId, and featureKey are required.");
+  if (!appId || !workspaceId || !userId || !planId || !featureKey || !appVersion) {
+    return badRequest("appId, appVersion, workspaceId, userId, planId, and featureKey are required.");
   }
   if (!PLAN_IDS.has(planId)) return badRequest("planId must be free, pro, or business.");
   if (
@@ -194,7 +194,17 @@ export async function handleUsageConsume(request: Request, db: D1DatabaseLike): 
   const appVersion = body.appVersion ?? scope.appVersion;
   const traceId = body.traceId ?? scope.traceId;
   const correlationId = body.correlationId ?? scope.correlationId;
-  const result = await consumeUsage(db, { ...scope, activityId: body.activityId });
+  const eventName = body.eventName ?? "plan.usage.recorded.v1";
+  const tokenEstimate = body.tokenEstimate ?? null;
+  const result = await consumeUsage(db, {
+    ...scope,
+    activityId: body.activityId,
+    appVersion,
+    traceId,
+    correlationId,
+    eventName,
+    tokenEstimate,
+  });
   if (!result.allowed) {
     return {
       status: result.errorCode === "PLAN_LIMIT_EXCEEDED" ? 429 : 403,
@@ -234,8 +244,8 @@ export async function handleUsageConsume(request: Request, db: D1DatabaseLike): 
       featureKey: scope.featureKey,
       planId: scope.planId,
       activityId: body.activityId,
-      eventName: body.eventName ?? "plan.usage.recorded.v1",
-      tokenEstimate: body.tokenEstimate ?? null,
+      eventName,
+      tokenEstimate,
       entitlementResult: result.entitlementResult,
       idempotentReplay: result.idempotentReplay,
       usagePeriod: result.usage.usagePeriod,

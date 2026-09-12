@@ -29,6 +29,7 @@ const managedRequest = (headers: Record<string, string> = {}, capability = "stud
     {
       "x-source-app": "numeria-studio",
       "x-client-id": "numeria-studio",
+      "x-app-version": "1.0.0",
       "x-plan-id": "free",
       "x-feature-key": capability,
       "x-activity-id": "activity-1",
@@ -49,6 +50,7 @@ describe("gateway plan guard", () => {
   it("reads plan context for managed requests", async () => {
     const context = await readGatewayPlanContext(
       gatewayRequest("numeria-studio", {
+        "x-app-version": "1.0.0",
         "x-plan-id": "free",
         "x-feature-key": "studio.report.ai_assist",
         "x-activity-id": "activity-1",
@@ -60,6 +62,7 @@ describe("gateway plan guard", () => {
     );
     expect(context).toMatchObject({
       appId: "numeria-studio",
+      appVersion: "1.0.0",
       workspaceId: "ws-1",
       userId: "user-1",
       planId: "free",
@@ -67,6 +70,7 @@ describe("gateway plan guard", () => {
       activityId: "activity-1",
       traceId: "trace-1",
       correlationId: "corr-1",
+      eventName: "plan.usage.recorded.v1",
     });
   });
 

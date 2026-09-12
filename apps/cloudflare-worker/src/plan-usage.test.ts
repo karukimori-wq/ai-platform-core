@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { isCapabilityAllowed, resolveLimit, resolveMonthlyPeriod } from "./plan-usage.js";
+import {
+  BUSINESS_PURCHASABLE,
+  BUSINESS_RELEASE_STATUS,
+  isCapabilityAllowed,
+  resolveLimit,
+  resolveMonthlyPeriod,
+} from "./plan-usage.js";
 
 describe("plan usage policy", () => {
   it("uses calendar-month periods and resets at the next UTC month boundary", () => {
@@ -7,16 +13,19 @@ describe("plan usage policy", () => {
     expect(result).toEqual({ period: "2026-09", resetAt: "2026-10-01T00:00:00.000Z" });
   });
 
-  it("recognizes free, pro, and business behavior", () => {
+  it("recognizes free, pro, and business plan ids", () => {
     expect(resolveLimit("free", "studio.report.generate")).toBe(20);
     expect(resolveLimit("pro", "studio.report.generate")).toBeNull();
     expect(resolveLimit("business", "studio.report.generate")).toBeNull();
   });
 
-  it("keeps business capabilities unavailable to free and pro", () => {
+  it("keeps Business defined but unavailable during the Free Pro release", () => {
+    expect(BUSINESS_RELEASE_STATUS).toBe("unavailable");
+    expect(BUSINESS_PURCHASABLE).toBe(false);
     expect(isCapabilityAllowed("free", "business.analytics")).toBe(false);
     expect(isCapabilityAllowed("pro", "business.analytics")).toBe(false);
-    expect(isCapabilityAllowed("business", "business.analytics")).toBe(true);
+    expect(isCapabilityAllowed("business", "business.analytics")).toBe(false);
+    expect(isCapabilityAllowed("business", "studio.report.ai_assist")).toBe(false);
   });
 
   it("recognizes Numeria Studio and Velvet free AI capabilities", () => {

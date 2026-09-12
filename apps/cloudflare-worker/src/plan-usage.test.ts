@@ -13,10 +13,10 @@ describe("plan usage policy", () => {
     expect(result).toEqual({ period: "2026-09", resetAt: "2026-10-01T00:00:00.000Z" });
   });
 
-  it("recognizes free, pro, and business plan ids", () => {
-    expect(resolveLimit("free", "studio.report.generate")).toBe(20);
-    expect(resolveLimit("pro", "studio.report.generate")).toBeNull();
-    expect(resolveLimit("business", "studio.report.generate")).toBeNull();
+  it("does not invent numeric AI-call limits absent from the shared contract", () => {
+    expect(resolveLimit("free", "studio.report.generate")).toBeNull();
+    expect(resolveLimit("free", "studio.report.ai_assist")).toBeNull();
+    expect(resolveLimit("pro", "velvet.ai.organize_suggest")).toBeNull();
   });
 
   it("keeps Business defined but unavailable during the Free Pro release", () => {
@@ -28,10 +28,22 @@ describe("plan usage policy", () => {
     expect(isCapabilityAllowed("business", "studio.report.ai_assist")).toBe(false);
   });
 
-  it("recognizes Numeria Studio and Velvet free AI capabilities", () => {
+  it("allows Free-tier Numeria AI assistance without reusing the appraisal completion limit", () => {
     expect(isCapabilityAllowed("free", "studio.report.ai_assist")).toBe(true);
-    expect(isCapabilityAllowed("free", "velvet.memory.summary")).toBe(true);
-    expect(isCapabilityAllowed("free", "velvet.memory.search")).toBe(true);
-    expect(isCapabilityAllowed("free", "velvet.memory.recall")).toBe(true);
+    expect(isCapabilityAllowed("pro", "studio.report.ai_assist")).toBe(true);
+  });
+
+  it("keeps canonical Pro AI features Pro-only", () => {
+    expect(isCapabilityAllowed("free", "numeria.report.wording_adjustment")).toBe(false);
+    expect(isCapabilityAllowed("pro", "numeria.report.wording_adjustment")).toBe(true);
+    expect(isCapabilityAllowed("free", "velvet.ai.organize_suggest")).toBe(false);
+    expect(isCapabilityAllowed("pro", "velvet.ai.organize_suggest")).toBe(true);
+  });
+
+  it("keeps legacy Velvet AI keys as Pro-only compatibility aliases", () => {
+    for (const featureKey of ["velvet.memory.summary", "velvet.memory.search", "velvet.memory.recall"]) {
+      expect(isCapabilityAllowed("free", featureKey)).toBe(false);
+      expect(isCapabilityAllowed("pro", featureKey)).toBe(true);
+    }
   });
 });

@@ -60,30 +60,44 @@ class MemoryD1 implements D1DatabaseLike {
 }
 
 describe("plan API contracts", () => {
-  it("exposes Numeria Studio free capabilities with monthly limits", () => {
+  it("exposes Numeria Studio Free AI capabilities with monthly limits", () => {
     const features = getAppEntitlementDefinitions("numeria-studio", "free");
-    expect(features).toEqual([
-      {
-        featureKey: "studio.report.generate",
-        allowed: true,
-        usagePolicy: "monthly",
-        limit: 20,
-      },
-      {
-        featureKey: "studio.report.ai_assist",
-        allowed: true,
-        usagePolicy: "monthly",
-        limit: 20,
-      },
-    ]);
+    expect(features).toHaveLength(2);
+    expect(features[0]).toMatchObject({
+      featureKey: "studio.report.generate",
+      allowed: true,
+      entitlementResult: "allowed",
+      usagePolicy: "monthly",
+      limit: 20,
+      releaseStatus: "ready",
+    });
+    expect(features[1]).toMatchObject({
+      featureKey: "studio.report.ai_assist",
+      allowed: true,
+      entitlementResult: "allowed",
+      usagePolicy: "monthly",
+      limit: 20,
+      releaseStatus: "ready",
+    });
   });
 
   it("treats Pro capabilities as unlimited", () => {
     const features = getAppEntitlementDefinitions("velvet", "pro");
     expect(features).toHaveLength(3);
     expect(features.every((feature) => feature.allowed)).toBe(true);
+    expect(features.every((feature) => feature.entitlementResult === "allowed")).toBe(true);
     expect(features.every((feature) => feature.usagePolicy === "unlimited")).toBe(true);
     expect(features.every((feature) => feature.limit === null)).toBe(true);
+  });
+
+  it("recognizes Business but keeps it unavailable in the Free Pro release", () => {
+    const features = getAppEntitlementDefinitions("numeria-studio", "business");
+    expect(features).toHaveLength(2);
+    expect(features.every((feature) => feature.allowed === false)).toBe(true);
+    expect(features.every((feature) => feature.entitlementResult === "unavailable")).toBe(true);
+    expect(features.every((feature) => feature.usagePolicy === "unavailable")).toBe(true);
+    expect(features.every((feature) => feature.releaseStatus === "unavailable")).toBe(true);
+    expect(features.every((feature) => feature.purchasable === false)).toBe(true);
   });
 
   it("keeps Business capability availability out of Free and Pro app definitions", () => {
@@ -104,13 +118,39 @@ describe("plan API contracts", () => {
 
     const checked = await checkUsageAllowance(db, request, new Date("2026-09-10T00:00:00.000Z"));
     expect(checked.allowed).toBe(true);
+    expect(checked.entitlementResult).toBe("allowed");
     expect(checked.usage.used).toBe(0);
+    expect(checked.usage.usageCount).toBe(0);
+    expect(checked.usage.usagePeriod).toBe("monthly");
+    expect(checked.usage.overLimit).toBe(false);
 
     const afterCheck = await getUsageSnapshot(db, request, new Date("2026-09-10T00:00:00.000Z"));
     expect(afterCheck.used).toBe(0);
+    expect(afterCheck.usageCount).toBe(0);
 
     const consumed = await consumeUsage(db, request, new Date("2026-09-10T00:00:00.000Z"));
     expect(consumed.allowed).toBe(true);
     expect(consumed.usage.used).toBe(1);
+    expect(consumed.usage.usageCount).toBe(1);
+  });
+
+  it("rejects Business usage with a shared unavailable result", async () => {
+    const db = new MemoryD1();
+    const result = await checkUsageAllowance(
+      db,
+      {
+        appId: "numeria-studio",
+        workspaceId: "ws-test",
+        userId: "user-test",
+        planId: "business",
+        featureKey: "studio.report.ai_assist",
+        activityId: "activity-business",
+      },
+      new Date("2026-09-10T00:00:00.000Z"),
+    );
+
+    expect(result.allowed).toBe(false);
+    expect(result.entitlementResult).toBe("unavailable");
+    expect(result.errorCode).toBe("BUSINESS_UNAVAILABLE");
   });
 });

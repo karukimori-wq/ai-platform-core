@@ -182,7 +182,7 @@ export async function handleUsageConsume(request: Request, db: D1DatabaseLike): 
     if (unsupported.length > 0) {
       return badRequest(`Usage payload contains unsupported fields: ${unsupported.join(", ")}.`);
     }
-    body = raw as UsageConsumeBody;
+    body = raw;
   } catch {
     return badRequest("A JSON body is required.");
   }

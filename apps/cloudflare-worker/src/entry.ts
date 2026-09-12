@@ -14,7 +14,7 @@ const cors = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET,POST,OPTIONS",
   "access-control-allow-headers":
-    "content-type,authorization,x-client-id,x-workspace-id,x-user-id,x-trace-id,x-correlation-id,x-source-app,x-plan-id,x-feature-key,x-activity-id",
+    "content-type,authorization,x-client-id,x-workspace-id,x-user-id,x-app-version,x-trace-id,x-correlation-id,x-source-app,x-plan-id,x-feature-key,x-activity-id",
 };
 
 function json(body: unknown, status = 200): Response {
@@ -24,8 +24,11 @@ function json(body: unknown, status = 200): Response {
   });
 }
 
+const isOpenAIConfigured = (env: Env): boolean =>
+  typeof env.OPENAI_API_KEY === "string" && env.OPENAI_API_KEY.trim().length > 0;
+
 function providerStatus(env: Env): Response {
-  const openAIConfigured = typeof env.OPENAI_API_KEY === "string" && env.OPENAI_API_KEY.trim().length > 0;
+  const openAIConfigured = isOpenAIConfigured(env);
   const configuredModel = env.OPENAI_DEFAULT_MODEL?.trim();
 
   return json({
@@ -49,6 +52,52 @@ function providerStatus(env: Env): Response {
   });
 }
 
+function releaseStatus(env: Env): Response {
+  const providerReady = isOpenAIConfigured(env);
+  return json({
+    appId: "ai-platform-core",
+    appName: "ai-platform-core",
+    appVersion: env.COMMIT_SHA ?? "unknown",
+    planContract: {
+      source: "professional-platform-contracts/docs/contracts/plan-contract.md",
+      version: "current",
+    },
+    releaseScope: ["free", "pro"],
+    releaseStatus: providerReady ? "ready" : "blocked",
+    plans: {
+      free: { releaseStatus: "ready", purchasable: false, entitlementReady: true, usageReady: true },
+      pro: { releaseStatus: "ready", purchasable: false, entitlementReady: true, usageReady: true },
+      business: { releaseStatus: "unavailable", purchasable: false, entitlementReady: false, usageReady: false },
+    },
+    readiness: {
+      entitlement: true,
+      usage: true,
+      idempotency: true,
+      provider: providerReady,
+      authEndpoint: "/api/auth/status",
+      persistenceEndpoint: "/api/persistence/status",
+      providerEndpoint: "/v1/providers/status",
+      aggregateEndpoint: "/v1/readiness",
+    },
+    identityMode: "workspaceId+userId",
+    professionalIdRequired: false,
+    sourceOfTruth: ["AI Activity", "AI Usage", "AI Capability", "AI Runtime"],
+    notSourceOfTruth: ["Subscription", "Pricing", "Payment", "Customer", "Reservation", "Sales"],
+    forbiddenUsagePayloads: [
+      "fullAppraisalText",
+      "fullConsultationText",
+      "fullConversationText",
+      "fullMessageText",
+      "customerMaster",
+      "paymentDetails",
+      "apiKey",
+      "secret",
+      "secretPrompt",
+    ],
+    timestamp: new Date().toISOString(),
+  });
+}
+
 const shouldCommitGatewayUsage = (response: Response): boolean => response.ok;
 
 export default {
@@ -56,6 +105,10 @@ export default {
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
 
     const { pathname } = new URL(request.url);
+
+    if ((pathname === "/release/status" || pathname === "/v1/release/status" || pathname === "/api/release/status") && request.method === "GET") {
+      return releaseStatus(env);
+    }
 
     if ((pathname === "/v1/providers/status" || pathname === "/api/providers/status") && request.method === "GET") {
       return providerStatus(env);

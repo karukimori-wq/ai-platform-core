@@ -13,8 +13,17 @@ import {
 const PLAN_IDS = new Set<PlanId>(["free", "pro", "business"]);
 
 const FEATURE_KEYS: Record<string, string[]> = {
-  "numeria-studio": ["studio.report.generate", "studio.report.ai_assist"],
-  velvet: ["velvet.memory.summary", "velvet.memory.search", "velvet.memory.recall"],
+  "numeria-studio": [
+    "studio.report.generate",
+    "studio.report.ai_assist",
+    "numeria.report.wording_adjustment",
+  ],
+  velvet: [
+    "velvet.ai.organize_suggest",
+    "velvet.memory.summary",
+    "velvet.memory.search",
+    "velvet.memory.recall",
+  ],
 };
 
 interface PlanScope extends UsageQuery {

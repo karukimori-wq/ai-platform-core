@@ -74,26 +74,34 @@ jobs:
 
           RUN_ID="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           APP="numeria-studio"
+          APP_VERSION="$GITHUB_SHA"
           WORKSPACE="ws-plan-${RUN_ID}"
           USER="user-plan-${RUN_ID}"
-          PLAN="free"
           FEATURE="studio.report.ai_assist"
-          QUERY="appId=$APP&workspaceId=$WORKSPACE&userId=$USER&planId=$PLAN&featureKey=$FEATURE"
-          HEADERS=(-H "x-client-id: $APP" -H "x-workspace-id: $WORKSPACE" -H "x-user-id: $USER")
+          FREE_QUERY="appId=$APP&appVersion=$APP_VERSION&workspaceId=$WORKSPACE&userId=$USER&planId=free&featureKey=$FEATURE"
+          PRO_QUERY="appId=$APP&appVersion=$APP_VERSION&workspaceId=$WORKSPACE&userId=$USER&planId=pro&featureKey=numeria.report.wording_adjustment"
+          BUSINESS_QUERY="appId=$APP&appVersion=$APP_VERSION&workspaceId=$WORKSPACE&userId=$USER&planId=business&featureKey=$FEATURE"
+          HEADERS=(-H "x-client-id: $APP" -H "x-app-version: $APP_VERSION" -H "x-workspace-id: $WORKSPACE" -H "x-user-id: $USER")
 
           fetch_json "$PRODUCTION_URL/health" /tmp/health.json
-          fetch_json "$PRODUCTION_URL/v1/usage?$QUERY" /tmp/plan-usage.json "${HEADERS[@]}"
-          fetch_json "$PRODUCTION_URL/v1/entitlements?$QUERY" /tmp/entitlement.json "${HEADERS[@]}"
+          fetch_json "$PRODUCTION_URL/v1/usage?$FREE_QUERY" /tmp/plan-usage.json "${HEADERS[@]}"
+          fetch_json "$PRODUCTION_URL/v1/entitlements?$FREE_QUERY" /tmp/entitlement-free.json "${HEADERS[@]}"
+          fetch_json "$PRODUCTION_URL/v1/entitlements?$PRO_QUERY" /tmp/entitlement-pro.json "${HEADERS[@]}"
+          fetch_json "$PRODUCTION_URL/v1/entitlements?$BUSINESS_QUERY" /tmp/entitlement-business.json "${HEADERS[@]}"
 
           node - <<'NODE'
           const fs = require('node:fs');
           const read = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
           const health = read('/tmp/health.json');
           const usage = read('/tmp/plan-usage.json');
-          const entitlement = read('/tmp/entitlement.json');
+          const free = read('/tmp/entitlement-free.json');
+          const pro = read('/tmp/entitlement-pro.json');
+          const business = read('/tmp/entitlement-business.json');
           if (health.appName !== 'ai-platform-core' || health.status !== 'ok') throw new Error('Production health failed');
-          if (usage.status !== 'success' || usage.currentPlan !== 'free' || usage.featureKey !== 'studio.report.ai_assist' || usage.limit !== 20) throw new Error('Production plan usage check failed');
-          if (entitlement.status !== 'success' || entitlement.planId !== 'free' || entitlement.featureKey !== 'studio.report.ai_assist' || entitlement.allowed !== true || entitlement.limit !== 20) throw new Error('Production entitlement check failed');
+          if (usage.status !== 'success' || usage.currentPlan !== 'free' || usage.featureKey !== 'studio.report.ai_assist' || usage.limit !== null || usage.usagePeriod !== 'unlimited' || usage.overLimit !== false || usage.entitlementResult !== 'allowed') throw new Error('Production plan usage check failed');
+          if (free.status !== 'success' || free.planId !== 'free' || free.allowed !== true || free.entitlementResult !== 'allowed' || free.limit !== null || free.overLimit !== false) throw new Error('Production Free entitlement check failed');
+          if (pro.status !== 'success' || pro.planId !== 'pro' || pro.featureKey !== 'numeria.report.wording_adjustment' || pro.allowed !== true || pro.entitlementResult !== 'allowed') throw new Error('Production Pro entitlement check failed');
+          if (business.status !== 'success' || business.planId !== 'business' || business.allowed !== false || business.entitlementResult !== 'unavailable' || business.releaseStatus !== 'unavailable' || business.purchasable !== false) throw new Error('Production Business unavailable check failed');
           NODE
       - name: Verify production health and contracts
         run: |
@@ -103,6 +111,8 @@ jobs:
           curl --fail --silent --show-error "$PRODUCTION_URL/contracts/status" | tee /tmp/contracts.json
           curl --fail --silent --show-error "$PRODUCTION_URL/api/auth/status" | tee /tmp/auth-status.json
           curl --fail --silent --show-error "$PRODUCTION_URL/v1/integrations/status" | tee /tmp/integrations-status.json
+          curl --fail --silent --show-error "$PRODUCTION_URL/release/status" | tee /tmp/release-status.json
+          curl --fail --silent --show-error "$PRODUCTION_URL/v1/providers/status" | tee /tmp/provider-status.json
           node - <<'NODE'
           const fs = require('node:fs');
           const health = JSON.parse(fs.readFileSync('/tmp/health.json', 'utf8'));
@@ -110,6 +120,8 @@ jobs:
           const contracts = JSON.parse(fs.readFileSync('/tmp/contracts.json', 'utf8'));
           const auth = JSON.parse(fs.readFileSync('/tmp/auth-status.json', 'utf8'));
           const integrations = JSON.parse(fs.readFileSync('/tmp/integrations-status.json', 'utf8'));
+          const release = JSON.parse(fs.readFileSync('/tmp/release-status.json', 'utf8'));
+          const providers = JSON.parse(fs.readFileSync('/tmp/provider-status.json', 'utf8'));
           if (health.appName !== 'ai-platform-core' || health.status !== 'ok') throw new Error('Production health check failed');
           if (version.appName !== 'ai-platform-core') throw new Error('Production version check failed');
           if (contracts.appName !== 'ai-platform-core' || contracts.status === 'error' || contracts.professionalIdRequired !== false) throw new Error('Production contract check failed');
@@ -128,6 +140,9 @@ jobs:
           if (planGateway?.usageCommitPolicy !== 'post_success_gateway_response') throw new Error('Production Plan Gateway usage-commit policy check failed');
           if (planGateway?.failedProviderCallsConsumePlanUsage !== false) throw new Error('Production Plan Gateway failed-call usage policy check failed');
           if (planGateway?.idempotencyKey !== 'appId|workspaceId|userId|activityId') throw new Error('Production Plan Gateway idempotency contract check failed');
+          if (release.appId !== 'ai-platform-core' || release.releaseStatus !== 'ready' || !release.releaseScope?.includes('free') || !release.releaseScope?.includes('pro')) throw new Error('Production release status check failed');
+          if (release.plans?.business?.releaseStatus !== 'unavailable' || release.plans?.business?.purchasable !== false) throw new Error('Production Business release status check failed');
+          if (providers.status !== 'success' || providers.providers?.openai?.configured !== true || providers.secretValuesExposed !== false) throw new Error('Production provider readiness check failed');
           NODE
       - name: Verify production D1 persistence
         run: |

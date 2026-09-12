@@ -84,7 +84,7 @@ export function resolveLimit(planId: PlanId, featureKey: string): number | null 
 export function isCapabilityAllowed(planId: PlanId, featureKey: string): boolean {
   if (planId === "business") return false;
   if (featureKey.startsWith(BUSINESS_ONLY_PREFIX)) return false;
-  if (FREE_AND_PRO_AI_FEATURES.has(featureKey)) return planId === "free" || planId === "pro";
+  if (FREE_AND_PRO_AI_FEATURES.has(featureKey)) return true;
   if (PRO_ONLY_AI_FEATURES.has(featureKey)) return planId === "pro";
   return false;
 }

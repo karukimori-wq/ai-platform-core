@@ -40,13 +40,30 @@ export interface ConsumeUsageResult {
   usage: UsageSnapshot;
 }
 
-const FREE_LIMITS: Record<string, number> = {
-  "studio.report.generate": 20,
-  "studio.report.ai_assist": 20,
-  "velvet.memory.summary": 100,
-  "velvet.memory.search": 100,
-  "velvet.memory.recall": 100,
-};
+/*
+ * The shared plan contract does not define numeric AI-call quotas for the
+ * current Free / Pro release. In particular, Numeria's 20/month limit is an
+ * appraisal-completion limit owned by Numeria Studio, not an APC AI-call
+ * quota. Keep AI usage measurable here, and only enforce a numeric limit when
+ * the shared contract explicitly defines one in this table in the future.
+ */
+const AI_USAGE_LIMITS: Partial<Record<PlanId, Readonly<Record<string, number>>>> = {};
+
+const FREE_AND_PRO_AI_FEATURES = new Set([
+  // Legacy APC keys retained while app integrations migrate.
+  "studio.report.generate",
+  "studio.report.ai_assist",
+]);
+
+const PRO_ONLY_AI_FEATURES = new Set([
+  // Canonical shared-plan keys.
+  "numeria.report.wording_adjustment",
+  "velvet.ai.organize_suggest",
+  // Legacy APC keys retained as Pro-only compatibility aliases.
+  "velvet.memory.summary",
+  "velvet.memory.search",
+  "velvet.memory.recall",
+]);
 
 const BUSINESS_ONLY_PREFIX = "business.";
 export const BUSINESS_RELEASE_STATUS = "unavailable" as const;
@@ -61,15 +78,15 @@ export function resolveMonthlyPeriod(now = new Date()): { period: string; resetA
 }
 
 export function resolveLimit(planId: PlanId, featureKey: string): number | null {
-  if (planId === "pro" || planId === "business") return null;
-  return FREE_LIMITS[featureKey] ?? 0;
+  return AI_USAGE_LIMITS[planId]?.[featureKey] ?? null;
 }
 
 export function isCapabilityAllowed(planId: PlanId, featureKey: string): boolean {
   if (planId === "business") return false;
   if (featureKey.startsWith(BUSINESS_ONLY_PREFIX)) return false;
-  if (planId === "free") return featureKey in FREE_LIMITS;
-  return true;
+  if (FREE_AND_PRO_AI_FEATURES.has(featureKey)) return planId === "free" || planId === "pro";
+  if (PRO_ONLY_AI_FEATURES.has(featureKey)) return planId === "pro";
+  return false;
 }
 
 const usageId = (query: UsageQuery, period: string) =>

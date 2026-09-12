@@ -60,39 +60,48 @@ class MemoryD1 implements D1DatabaseLike {
 }
 
 describe("plan API contracts", () => {
-  it("exposes Numeria Studio Free AI capabilities with monthly limits", () => {
-    const features = getAppEntitlementDefinitions("numeria-studio", "free");
-    expect(features).toHaveLength(2);
-    expect(features[0]).toMatchObject({
-      featureKey: "studio.report.generate",
+  it("exposes Numeria compatibility keys plus canonical Pro wording adjustment", () => {
+    const free = getAppEntitlementDefinitions("numeria-studio", "free");
+    expect(free).toHaveLength(3);
+    expect(free).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ featureKey: "studio.report.generate", allowed: true, usagePolicy: "unlimited", limit: null }),
+        expect.objectContaining({ featureKey: "studio.report.ai_assist", allowed: true, usagePolicy: "unlimited", limit: null }),
+        expect.objectContaining({
+          featureKey: "numeria.report.wording_adjustment",
+          allowed: false,
+          entitlementResult: "denied",
+          limit: null,
+        }),
+      ]),
+    );
+
+    const pro = getAppEntitlementDefinitions("numeria-studio", "pro");
+    expect(pro.find((feature) => feature.featureKey === "numeria.report.wording_adjustment")).toMatchObject({
       allowed: true,
       entitlementResult: "allowed",
-      usagePolicy: "monthly",
-      limit: 20,
-      releaseStatus: "ready",
-    });
-    expect(features[1]).toMatchObject({
-      featureKey: "studio.report.ai_assist",
-      allowed: true,
-      entitlementResult: "allowed",
-      usagePolicy: "monthly",
-      limit: 20,
-      releaseStatus: "ready",
+      usagePolicy: "unlimited",
+      limit: null,
     });
   });
 
-  it("treats Pro capabilities as unlimited", () => {
-    const features = getAppEntitlementDefinitions("velvet", "pro");
-    expect(features).toHaveLength(3);
-    expect(features.every((feature) => feature.allowed)).toBe(true);
-    expect(features.every((feature) => feature.entitlementResult === "allowed")).toBe(true);
-    expect(features.every((feature) => feature.usagePolicy === "unlimited")).toBe(true);
-    expect(features.every((feature) => feature.limit === null)).toBe(true);
+  it("keeps canonical Velvet AI organization Pro-only and legacy keys compatible", () => {
+    const free = getAppEntitlementDefinitions("velvet", "free");
+    expect(free).toHaveLength(4);
+    expect(free.every((feature) => feature.allowed === false)).toBe(true);
+
+    const pro = getAppEntitlementDefinitions("velvet", "pro");
+    expect(pro).toHaveLength(4);
+    expect(pro.every((feature) => feature.allowed)).toBe(true);
+    expect(pro.every((feature) => feature.entitlementResult === "allowed")).toBe(true);
+    expect(pro.every((feature) => feature.usagePolicy === "unlimited")).toBe(true);
+    expect(pro.every((feature) => feature.limit === null)).toBe(true);
+    expect(pro.some((feature) => feature.featureKey === "velvet.ai.organize_suggest")).toBe(true);
   });
 
   it("recognizes Business but keeps it unavailable in the Free Pro release", () => {
     const features = getAppEntitlementDefinitions("numeria-studio", "business");
-    expect(features).toHaveLength(2);
+    expect(features).toHaveLength(3);
     expect(features.every((feature) => feature.allowed === false)).toBe(true);
     expect(features.every((feature) => feature.entitlementResult === "unavailable")).toBe(true);
     expect(features.every((feature) => feature.usagePolicy === "unavailable")).toBe(true);
@@ -105,7 +114,7 @@ describe("plan API contracts", () => {
     expect(getAppEntitlementDefinitions("velvet", "pro").some((feature) => feature.featureKey.startsWith("business."))).toBe(false);
   });
 
-  it("checks usage allowance without consuming the monthly limit", async () => {
+  it("checks usage allowance without consuming usage during entitlement checks", async () => {
     const db = new MemoryD1();
     const request = {
       appId: "numeria-studio",
@@ -121,7 +130,8 @@ describe("plan API contracts", () => {
     expect(checked.entitlementResult).toBe("allowed");
     expect(checked.usage.used).toBe(0);
     expect(checked.usage.usageCount).toBe(0);
-    expect(checked.usage.usagePeriod).toBe("monthly");
+    expect(checked.usage.usagePeriod).toBe("unlimited");
+    expect(checked.usage.limit).toBeNull();
     expect(checked.usage.overLimit).toBe(false);
 
     const afterCheck = await getUsageSnapshot(db, request, new Date("2026-09-10T00:00:00.000Z"));

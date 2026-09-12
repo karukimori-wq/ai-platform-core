@@ -53,13 +53,34 @@ export interface CloudflareRuntimeOptions {
 const OPENAI_API_KEY_SECRET = "OPENAI_API_KEY";
 const DEFAULT_OPENAI_MODEL = "gpt-4.1-mini";
 
-const toStored = (activity: Activity): StoredActivity => ({
+export const sanitizeActivityForStorage = (activity: Activity): StoredActivity => ({
   id: activity.id.value,
-  request: activity.request,
+  request: {
+    ...activity.request,
+    goal: activity.request.capability,
+    context: {},
+    input: {},
+  },
   status: activity.status,
-  ...(activity.result === undefined ? {} : { result: activity.result }),
+  ...(activity.result === undefined
+    ? {}
+    : {
+        result: {
+          ...activity.result,
+          output: {},
+        },
+      }),
   ...(activity.outcome === undefined ? {} : { outcome: activity.outcome }),
-  ...(activity.feedback === undefined ? {} : { feedback: activity.feedback }),
+  ...(activity.feedback === undefined
+    ? {}
+    : {
+        feedback: {
+          activityId: activity.feedback.activityId,
+          ...(activity.feedback.rating === undefined ? {} : { rating: activity.feedback.rating }),
+          edited: activity.feedback.edited,
+          accepted: activity.feedback.accepted,
+        },
+      }),
   createdAt: activity.createdAt.toISOString(),
   updatedAt: activity.updatedAt.toISOString(),
 });
@@ -79,7 +100,7 @@ const createStoredActivityRepository = (db: D1DatabaseLike): ActivityRepository 
   const store = createD1KeyValueStore<StoredActivity>(db, "activities");
   return {
     save: async (activity) => {
-      const saved = await store.put(activity.id.value, toStored(activity));
+      const saved = await store.put(activity.id.value, sanitizeActivityForStorage(activity));
       return saved.ok ? ok(activity) : err(saved.error);
     },
     get: async (id) => {

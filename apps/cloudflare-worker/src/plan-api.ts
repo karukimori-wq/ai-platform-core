@@ -68,10 +68,10 @@ function readScope(request: Request): PlanScope | PlanApiResponse {
   const userId = url.searchParams.get("userId");
   const planId = url.searchParams.get("planId") as PlanId | null;
   const featureKey = url.searchParams.get("featureKey");
-  const appVersion = url.searchParams.get("appVersion") ?? request.headers.get("x-app-version");
+  const appVersion = url.searchParams.get("appVersion") ?? request.headers.get("x-app-version") ?? "unknown";
 
-  if (!appId || !workspaceId || !userId || !planId || !featureKey || !appVersion) {
-    return badRequest("appId, appVersion, workspaceId, userId, planId, and featureKey are required.");
+  if (!appId || !workspaceId || !userId || !planId || !featureKey) {
+    return badRequest("appId, workspaceId, userId, planId, and featureKey are required.");
   }
   if (!PLAN_IDS.has(planId)) return badRequest("planId must be free, pro, or business.");
   if (

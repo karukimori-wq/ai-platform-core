@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createMemoryKeyValueStore } from "@ai-platform-core/storage";
-import { createMemoryAnalyticsRepository, createStoredAnalyticsRepository } from "./index";
+import { createMemoryAnalyticsRepository, createStoredAnalyticsRepository, toStoredFeedback } from "./index";
 
 describe("analytics repository", () => {
   it("summarizes usage", async () => {
@@ -90,5 +90,18 @@ describe("analytics repository", () => {
     expect(summary.ok).toBe(true);
     if (!summary.ok) return;
     expect(summary.value.byClient.fortune_teller_a).toBe(1);
+  });
+
+  it("does not persist free-text feedback memo", () => {
+    const stored = toStoredFeedback({
+      activityId: "activity-1",
+      rating: 5,
+      edited: false,
+      accepted: true,
+      memo: "sensitive consultation details",
+    });
+
+    expect(stored).toEqual({ activityId: "activity-1", rating: 5, edited: false, accepted: true });
+    expect(JSON.stringify(stored)).not.toContain("sensitive consultation details");
   });
 });

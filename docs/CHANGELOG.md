@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.43
+
+- Aligned AI Platform Core with the shared Free / Pro plan contract and release-readiness requirements.
+- Business remains a recognized `planId` but is unavailable and not purchasable in the current release.
+- Added shared Usage response fields including `usagePeriod`, `usageCount`, `limit`, `overLimit`, and `entitlementResult`.
+- Added `appVersion`, trace/correlation metadata, event name, and token-estimate support to safe Usage metadata.
+- Added `/release/status` plus short `/auth/status` and `/persistence/status` monitoring aliases.
+- Added canonical Pro AI capability keys `numeria.report.wording_adjustment` and `velvet.ai.organize_suggest` while preserving legacy APC compatibility aliases.
+- Removed APC-invented numeric AI-call quotas. Numeria Studio's Free monthly 20 limit remains an appraisal-domain limit and is not treated as an APC 20-call AI quota; Velvet likewise has no APC-defined 100-call quota without an explicit shared contract.
+- Usage remains measurable and idempotent for successful managed Gateway calls even when no numeric AI quota is defined.
+- Hardened persisted Cloudflare Activity records so full goal/context/input/provider-output content is not retained in D1 audit storage.
+- Stopped persisted Analytics feedback from retaining free-text memo content.
+- Expanded integration/monitoring status to expose AI Runtime, canonical capabilities, `x-app-version`, Business unavailable state, provider readiness, and release status without exposing secrets.
+- Updated Cloudflare Production gates to verify Free / Pro entitlement behavior, Business unavailable state, release status, provider readiness, D1/Event/Activity persistence, and workspace/user isolation.
+
 ## 0.1.42
 
 - Split managed Gateway plan checks from usage consumption.

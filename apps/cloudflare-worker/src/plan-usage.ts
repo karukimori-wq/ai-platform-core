@@ -1,6 +1,8 @@
 import type { D1DatabaseLike } from "@ai-platform-core/storage";
 
 export type PlanId = "free" | "pro" | "business";
+export type UsagePeriod = "monthly" | "unlimited";
+export type EntitlementResult = "allowed" | "denied" | "over_limit" | "unavailable";
 
 export interface UsageQuery {
   appId: string;
@@ -12,9 +14,12 @@ export interface UsageQuery {
 
 export interface UsageSnapshot extends UsageQuery {
   period: string;
+  usagePeriod: UsagePeriod;
   used: number;
+  usageCount: number;
   limit: number | null;
   remaining: number | null;
+  overLimit: boolean;
   resetAt: string | null;
 }
 
@@ -25,7 +30,8 @@ export interface ConsumeUsageRequest extends UsageQuery {
 export interface ConsumeUsageResult {
   allowed: boolean;
   idempotentReplay: boolean;
-  errorCode?: "PLAN_LIMIT_EXCEEDED" | "PLAN_NOT_ALLOWED" | "CAPABILITY_DISABLED";
+  entitlementResult: EntitlementResult;
+  errorCode?: "PLAN_LIMIT_EXCEEDED" | "PLAN_NOT_ALLOWED" | "CAPABILITY_DISABLED" | "BUSINESS_UNAVAILABLE";
   usage: UsageSnapshot;
 }
 
@@ -38,6 +44,8 @@ const FREE_LIMITS: Record<string, number> = {
 };
 
 const BUSINESS_ONLY_PREFIX = "business.";
+export const BUSINESS_RELEASE_STATUS = "unavailable" as const;
+export const BUSINESS_PURCHASABLE = false as const;
 
 export function resolveMonthlyPeriod(now = new Date()): { period: string; resetAt: string } {
   const year = now.getUTCFullYear();
@@ -53,7 +61,8 @@ export function resolveLimit(planId: PlanId, featureKey: string): number | null 
 }
 
 export function isCapabilityAllowed(planId: PlanId, featureKey: string): boolean {
-  if (featureKey.startsWith(BUSINESS_ONLY_PREFIX)) return planId === "business";
+  if (planId === "business") return false;
+  if (featureKey.startsWith(BUSINESS_ONLY_PREFIX)) return false;
   if (planId === "free") return featureKey in FREE_LIMITS;
   return true;
 }
@@ -77,12 +86,16 @@ export async function getUsageSnapshot(
     .first<{ value_json: string }>();
   const used = row ? ((JSON.parse(row.value_json) as { used?: number }).used ?? 0) : 0;
   const limit = resolveLimit(query.planId, query.featureKey);
+  const overLimit = limit !== null && used >= limit;
   return {
     ...query,
     period,
+    usagePeriod: limit === null ? "unlimited" : "monthly",
     used,
+    usageCount: used,
     limit,
     remaining: limit === null ? null : Math.max(limit - used, 0),
+    overLimit,
     resetAt: limit === null ? null : resetAt,
   };
 }
@@ -94,10 +107,21 @@ export async function checkUsageAllowance(
 ): Promise<ConsumeUsageResult> {
   const usage = await getUsageSnapshot(db, request, now);
 
+  if (request.planId === "business") {
+    return {
+      allowed: false,
+      idempotentReplay: false,
+      entitlementResult: "unavailable",
+      errorCode: "BUSINESS_UNAVAILABLE",
+      usage,
+    };
+  }
+
   if (!isCapabilityAllowed(request.planId, request.featureKey)) {
     return {
       allowed: false,
       idempotentReplay: false,
+      entitlementResult: "denied",
       errorCode: request.featureKey.startsWith(BUSINESS_ONLY_PREFIX)
         ? "PLAN_NOT_ALLOWED"
         : "CAPABILITY_DISABLED",
@@ -110,14 +134,20 @@ export async function checkUsageAllowance(
     .bind("plan.usage.activity", idempotencyId(request))
     .first<{ id: string }>();
   if (existing?.id === idempotencyId(request)) {
-    return { allowed: true, idempotentReplay: true, usage };
+    return { allowed: true, idempotentReplay: true, entitlementResult: "allowed", usage };
   }
 
-  if (usage.limit !== null && usage.used >= usage.limit) {
-    return { allowed: false, idempotentReplay: false, errorCode: "PLAN_LIMIT_EXCEEDED", usage };
+  if (usage.overLimit) {
+    return {
+      allowed: false,
+      idempotentReplay: false,
+      entitlementResult: "over_limit",
+      errorCode: "PLAN_LIMIT_EXCEEDED",
+      usage,
+    };
   }
 
-  return { allowed: true, idempotentReplay: false, usage };
+  return { allowed: true, idempotentReplay: false, entitlementResult: "allowed", usage };
 }
 
 export async function consumeUsage(
@@ -129,10 +159,12 @@ export async function consumeUsage(
   if (!allowed.allowed || allowed.idempotentReplay) return allowed;
 
   const nextUsed = allowed.usage.used + 1;
-  const nextUsage = {
+  const nextUsage: UsageSnapshot = {
     ...allowed.usage,
     used: nextUsed,
+    usageCount: nextUsed,
     remaining: allowed.usage.limit === null ? null : Math.max(allowed.usage.limit - nextUsed, 0),
+    overLimit: allowed.usage.limit !== null && nextUsed >= allowed.usage.limit,
   };
   const nowIso = now.toISOString();
   const counterId = usageId(request, allowed.usage.period);
@@ -157,5 +189,5 @@ export async function consumeUsage(
     )
     .run();
 
-  return { allowed: true, idempotentReplay: false, usage: nextUsage };
+  return { allowed: true, idempotentReplay: false, entitlementResult: "allowed", usage: nextUsage };
 }

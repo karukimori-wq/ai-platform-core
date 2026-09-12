@@ -14,6 +14,7 @@ describe("Cloudflare Worker contracts", () => {
   it("exposes D1 readiness and roundtrip probes", () => {
     const source = read("./index.ts");
     expect(source).toContain("/api/persistence/status");
+    expect(source).toContain("/persistence/status");
     expect(source).toContain("/api/persistence/roundtrip");
     expect(source).toContain("system.roundtrip");
     expect(source).toContain("roundtripReady");
@@ -26,6 +27,7 @@ describe("Cloudflare Worker contracts", () => {
     expect(source).toContain("x-client-id");
     expect(source).toContain("x-workspace-id");
     expect(source).toContain("x-user-id");
+    expect(source).toContain("x-app-version");
     expect(source).toContain("x-plan-id");
     expect(source).toContain("x-feature-key");
     expect(source).toContain("x-activity-id");
@@ -34,6 +36,7 @@ describe("Cloudflare Worker contracts", () => {
   it("exposes MVP scoped authentication status and checks scope headers", () => {
     const source = read("./index.ts");
     expect(source).toContain("/api/auth/status");
+    expect(source).toContain("/auth/status");
     expect(source).toContain("authorizeScopedRequest");
     expect(source).toContain("ScopedAuthorizationRequest");
     expect(source).toContain("mvp_scoped_headers");
@@ -45,15 +48,18 @@ describe("Cloudflare Worker contracts", () => {
     expect(source).toContain("/api/integrations/status");
     expect(source).toContain("communication.reply.generate");
     expect(source).toContain("studio.report.ai_assist");
+    expect(source).toContain("numeria.report.wording_adjustment");
+    expect(source).toContain("velvet.ai.organize_suggest");
     expect(source).toContain("velvet.memory.summary");
-    expect(source).toContain("velvet.memory.search");
-    expect(source).toContain("velvet.memory.recall");
     expect(source).toContain("MessageDraft");
-    expect(source).toContain("fullMeetingTranscript");
-    expect(source).toContain("paymentStatus");
+    expect(source).toContain("fullAppraisalText");
+    expect(source).toContain("fullConsultationText");
+    expect(source).toContain("fullMessageText");
+    expect(source).toContain("paymentDetails");
     expect(source).toContain("AI Activity");
     expect(source).toContain("AI Usage");
     expect(source).toContain("AI Capability");
+    expect(source).toContain("AI Runtime");
   });
 
   it("exposes plan gateway status for Platform Admin", () => {
@@ -62,6 +68,7 @@ describe("Cloudflare Worker contracts", () => {
     expect(source).toContain("managedApps");
     expect(source).toContain("numeria-studio");
     expect(source).toContain("velvet");
+    expect(source).toContain("x-app-version");
     expect(source).toContain("post_success_gateway_response");
     expect(source).toContain("failedProviderCallsConsumePlanUsage");
     expect(source).toContain("appId|workspaceId|userId|activityId");
@@ -70,15 +77,18 @@ describe("Cloudflare Worker contracts", () => {
     expect(source).toContain("/v1/usage/consume");
   });
 
-  it("exposes provider readiness without exposing provider secrets", () => {
+  it("exposes provider and release readiness without exposing provider secrets", () => {
     const source = read("./entry.ts");
     expect(source).toContain("/v1/providers/status");
     expect(source).toContain("/api/providers/status");
+    expect(source).toContain("/release/status");
     expect(source).toContain("openAIConfigured");
     expect(source).toContain('api: "responses"');
     expect(source).toContain('managedApps: ["numeria-studio", "velvet"]');
     expect(source).toContain("secretValuesExposed: false");
     expect(source).toContain("repository_default");
+    expect(source).toContain('releaseScope: ["free", "pro"]');
+    expect(source).toContain('releaseStatus: "unavailable"');
   });
 
   it("exposes an aggregate production readiness view", () => {
@@ -95,7 +105,7 @@ describe("Cloudflare Worker contracts", () => {
     const source = read("./index.ts");
     expect(source).toContain("failedChecks");
     expect(source).toContain("recommendedActions");
-    expect(source).toContain("Check /api/persistence/status");
+    expect(source).toContain("Check /persistence/status");
     expect(source).toContain("Check /v1/events/status");
     expect(source).toContain("Check /v1/integrations/status");
   });

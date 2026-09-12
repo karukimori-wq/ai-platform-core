@@ -25,6 +25,11 @@ export interface UsageSnapshot extends UsageQuery {
 
 export interface ConsumeUsageRequest extends UsageQuery {
   activityId: string;
+  appVersion?: string;
+  traceId?: string | null;
+  correlationId?: string | null;
+  eventName?: string;
+  tokenEstimate?: number | null;
 }
 
 export interface ConsumeUsageResult {
@@ -181,8 +186,14 @@ export async function consumeUsage(
       JSON.stringify({
         activityId: request.activityId,
         appName: request.appId,
+        appVersion: request.appVersion ?? "unknown",
         featureKey: request.featureKey,
         planId: request.planId,
+        traceId: request.traceId ?? null,
+        correlationId: request.correlationId ?? null,
+        eventName: request.eventName ?? "plan.usage.recorded.v1",
+        tokenEstimate: request.tokenEstimate ?? null,
+        status: "success",
       }),
       1,
       nowIso,

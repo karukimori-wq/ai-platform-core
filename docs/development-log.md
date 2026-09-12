@@ -2,6 +2,101 @@
 
 This file records development handoffs that should be easy to ingest into External Intelligence or summarize for other app teams.
 
+## 2026-09-12 - Free / Pro release contract alignment
+
+### Repository
+
+- `karukimori-wq/ai-platform-core`
+
+### Summary
+
+AI Platform Core has been aligned with the shared `professional-platform-contracts` Free / Pro release contract for AI entitlement, Usage, release monitoring, Business-unavailable behavior, metadata handling, and audit-data minimization.
+
+### Implemented
+
+- Plan authorization uses `appId + workspaceId + userId + planId + featureKey`.
+- `free`, `pro`, and `business` are recognized PlanIds.
+- Business remains defined but unavailable and not purchasable in the current release.
+- Plan/Usage responses now expose `usagePeriod`, `usageCount`, `limit`, `overLimit`, and `entitlementResult`.
+- Safe Usage metadata supports `appVersion`, `traceId`, `correlationId`, `eventName`, and token estimates.
+- Managed Gateway execution requires `x-app-version` in addition to the existing app/plan/feature/scope/idempotency headers.
+- Added `/release/status`, plus `/auth/status` and `/persistence/status` aliases for release monitoring.
+- Provider readiness remains available through `/v1/providers/status` and `/api/providers/status` without exposing secret values.
+- Added canonical Pro capability keys `numeria.report.wording_adjustment` and `velvet.ai.organize_suggest`; legacy APC keys remain temporary compatibility aliases.
+- Removed APC-specific AI-call quotas that were not defined in the shared plan contract.
+- Numeria Studio's Free `20/month` is treated as an appraisal-completion domain limit owned by Numeria Studio, not as a 20-call APC AI limit.
+- Velvet's former APC `100` AI-call assumptions were likewise removed because no shared numeric AI quota defines them.
+- Usage is still measured and recorded idempotently for successful calls even when `limit=null`.
+- Managed Gateway Usage is checked before provider execution and committed only after a successful Gateway response.
+- Failed provider calls do not consume managed plan Usage.
+
+### Data minimization
+
+Persistent APC audit/Usage storage now keeps operational metadata rather than app-owned full text.
+
+Persisted Cloudflare Activity records redact:
+
+- free-text Activity goal
+- context
+- input
+- provider output
+- feedback memo
+
+Analytics persistence also removes free-text feedback memo while retaining rating/edited/accepted operational signals.
+
+APC must not persist appraisal body text, consultation body text, conversation/message body text, full customer-master data, payment data, API keys, Secrets, or secret prompts in Usage/Activity audit storage.
+
+### Release monitoring
+
+Production verification has been aligned to check:
+
+- `/health`
+- `/version`
+- `/contracts/status`
+- `/release/status`
+- `/auth/status`
+- `/persistence/status`
+- Plan Usage/Entitlement behavior
+- Business unavailable / not purchasable
+- provider readiness
+- Plan Gateway post-success Usage commit policy
+- D1 persistence
+- Event persistence
+- Activity/Usage persistence
+- workspace/user isolation
+
+### Ownership boundary
+
+AI Platform Core owns:
+
+- AI Capability
+- AI Activity
+- AI Usage
+- AI Runtime
+- entitlement evaluation for AI features
+- provider routing
+- AI Usage/audit metadata
+
+AI Platform Core does not own:
+
+- pricing
+- subscription billing authority
+- Stripe
+- Customer
+- Reservation
+- Payment
+- Sales
+- Numeria Studio Session/Report records
+- Velvet ProfessionalMemory records
+- app-owned full-text conversations/messages
+
+### Key commits
+
+- `a5455b3926a398ea3d9978b4e4211732fb99a29b` - simplify Free / Pro entitlement condition after lint finding
+- `ad350cbd07aeb01edaea3e3bfe180f7235cb358e` - align production-gate documentation with shared AI quota contract
+- `c67f21e404ef2fb8853323cb2b7b2614d9bf47c4` - align APC integration documentation with Free / Pro plan contract
+- `1766961cdbcbac3a5a72a9df1c4b4aa0343e5763` - record Free / Pro contract alignment in Changelog
+
 ## 2026-09-11 - Provider readiness monitoring
 
 ### Repository

@@ -1,12 +1,15 @@
 # AI Platform Core Integration
 
-AI Platform Core integrates with Growth Engine, Professional Studio, SNS
+AI Platform Core integrates with Growth Engine, Numeria Studio, Velvet, SNS
 Planner, and Communication Planner through the shared contracts repository:
 
 - https://github.com/karukimori-wq/professional-platform-contracts
 
-Before changing cross-app behavior, read the latest main branch contracts:
+Before changing cross-app behavior, read the latest main branch contracts,
+including:
 
+- `docs/contracts/plan-contract.md`
+- `docs/release-readiness/free-pro-release-implementation-requests.md`
 - `docs/contracts/app-responsibilities.md`
 - `docs/contracts/identity-contract.md`
 - `docs/contracts/data-ownership.md`
@@ -14,20 +17,23 @@ Before changing cross-app behavior, read the latest main branch contracts:
 - `docs/contracts/event-catalog.md`
 - `docs/repositories/platform-admin.md`
 
-`app-responsibilities.md` is the controlling responsibility matrix for all
-apps. AI Platform Core changes must preserve those boundaries.
+The shared contracts repository is the source of truth for cross-app plan,
+identity, ownership, release, and integration boundaries.
 
 ## Integration Position
 
-AI Platform Core is the AI execution platform. It is not the business workflow
-orchestrator.
+AI Platform Core is the AI execution platform. It is not the subscription or
+business workflow orchestrator.
 
 ```text
 Growth Engine
-  -> business workflow decisions
+  -> Customer, Reservation, Payment, Sales and business workflow decisions
 
-Professional Studio
-  -> Sessions, Reports, and domain records
+Numeria Studio
+  -> Sessions, Reports and appraisal-domain records
+
+Velvet
+  -> ProfessionalMemory and app-owned user experience records
 
 SNS Planner
   -> SNS post drafts
@@ -36,20 +42,24 @@ Communication Planner
   -> 1-to-1 inbox, person context, reply drafts, SafetyChecks, send decisions
 
 AI Platform Core
-  -> capabilities, activities, prompts, tools, workflows, usage
+  -> AI Capability, AI Activity, AI Usage, AI Runtime, prompts, tools and knowledge
 ```
 
-Platform Admin observes AI Platform Core health, contract compliance, API logs,
-event logs, and AI logs by reference. It must not execute AI Activities or
-become the Usage source of truth.
+AI Platform Core does not own pricing, subscription billing authority, Stripe,
+Customer, Reservation, Payment, or Sales.
+
+Platform Admin observes AI Platform Core health, contract compliance, release
+state, persistence, provider readiness, entitlement state, and Usage. It must not
+execute AI Activities or become the Usage source of truth.
 
 ## API Versus Event
 
 Use APIs when the caller needs an immediate result:
 
-- create an AI Activity
+- execute an AI Activity
 - get Activity status
-- list Usage
+- check entitlement
+- read or record Usage
 - render a Prompt Template
 - register a Capability
 
@@ -59,8 +69,8 @@ Use events when a state change has already happened:
 - AI Activity completed
 - AI Activity failed
 - AI Usage recorded
-- Professional Studio Session completed
-- Professional Studio Report generated
+- Numeria Studio Session completed
+- Numeria Studio Report generated
 - Growth Engine Customer created
 - SNS Planner post draft created
 - Communication Planner message received
@@ -69,108 +79,209 @@ Use events when a state change has already happened:
 
 Events are notifications, not commands.
 
-## Capability Entry Point
-
-Applications call AI Platform Core by capability name.
-
-Use shared external names:
-
-- `Report.Generate`
-- `PostDraft.Generate`
-- `Customer.Find`
-- `Usage.List`
-- `Communication.ContextSummarize`
-- `Communication.TopicExtract`
-- `Communication.PromiseExtract`
-- `Communication.NextActionSuggest`
-- `Communication.ReplyGenerate`
-- `Communication.ReplySafetyCheck`
-- `Communication.IntentClassify`
-
-Do not expose cross-system `Document.*` capability names. If an implementation
-has internal document terminology, map it to `Report.*` at the external contract
-boundary.
-
-AI Platform Core resolves internal implementation details:
-
-- provider
-- model
-- prompt version
-- workflow
-- tool
-- knowledge
-- evaluation
-- usage recording
-
 ## Plan-aware Gateway Contract
 
-Managed application AI calls should use `/v1/gateway/run` with the plan-aware
-Cloudflare entrypoint. The entrypoint enforces plan and usage before delegating
-to the Gateway runtime.
+Managed application AI calls use `/v1/gateway/run` through the plan-aware
+Cloudflare entrypoint.
 
-Required scope:
+The authorization key is:
 
-- `appId` / `activity.client`
-- `workspaceId`
-- `userId`
-- `planId`: `free`, `pro`, or `business`
-- `featureKey`
-- optional `activityId` for idempotent usage counting
+```text
+appId + workspaceId + userId + planId + featureKey
+```
+
+Plan IDs are:
+
+- `free`
+- `pro`
+- `business`
+
+Business is recognized by contract but is unavailable in the current Free / Pro
+release. APC must return Business as unavailable and must not make Business AI
+capabilities usable or purchasable in this release.
+
+Managed Gateway requests require:
+
+- `activity.client` / `appId`
+- `activity.workspaceId`
+- `activity.userId`
+- `x-source-app`
+- `x-app-version`
+- `x-plan-id`
+- `x-feature-key`
+- `x-activity-id`
 - `x-client-id`
 - `x-workspace-id`
 - `x-user-id`
-- optional `x-plan-id`
-- optional `x-feature-key`
-- optional `x-activity-id`
-- optional `x-trace-id`
-- optional `x-correlation-id`
 
-The authenticated header scope must match the body/query scope. AI Platform Core
-must reject mismatched workspace or user scopes before provider execution.
+Trace headers should also be propagated when available:
 
-### Numeria Studio capabilities
+- `x-trace-id`
+- `x-correlation-id`
+
+The authenticated header scope must match the request scope. AI Platform Core
+must reject mismatched application, workspace, or user scope before provider
+execution.
+
+Plan API responses expose the shared release vocabulary, including:
+
+- `planId`
+- `featureKey`
+- `usagePeriod`
+- `usageCount`
+- `limit`
+- `overLimit`
+- `entitlementResult`
+- `appName`
+- `appVersion`
+- `traceId`
+- `correlationId`
+
+Usage is checked before provider execution and committed only after a successful
+managed Gateway response. The idempotency key remains:
+
+```text
+appId|workspaceId|userId|activityId
+```
+
+A failed provider execution must not consume managed plan Usage.
+
+## AI Usage limits
+
+AI Platform Core records AI Usage, but it must not invent numeric AI-call quotas.
+A numeric limit is enforced only when the shared plan contract explicitly defines
+one for that AI feature.
+
+In particular, Numeria Studio Free's monthly `20` limit is the number of
+appraisals completed in Numeria Studio. It is not an APC AI-call limit. APC must
+not reinterpret that domain limit as 20 AI calls.
+
+For current Free / Pro AI features without a shared numeric AI quota:
+
+- Usage is still recorded.
+- `usageCount` increases for successful AI executions.
+- `limit` is `null`.
+- `usagePeriod` is `unlimited` for quota-enforcement purposes.
+- `overLimit` remains `false`.
+
+This does not mean the application itself has no domain limits. App-owned limits
+remain with the application that owns the corresponding domain record.
+
+## Numeria Studio capabilities
 
 Numeria Studio may call AI Platform Core for AI assistance around interpretation
-and report generation only. The currently registered Production capabilities are:
+and report composition only.
+
+Canonical shared-plan capability currently registered for Pro is:
+
+- `numeria.report.wording_adjustment`
+
+Legacy APC compatibility aliases remain temporarily registered while the app
+integration migrates:
 
 - `studio.report.generate`
 - `studio.report.ai_assist`
 
-Free plan usage limits are enforced by APC for the feature keys defined in the
-plan runtime. Pro is treated as normal use without the Free count limit. Business
-capabilities are definable but Business is not sold or exposed by APC in this
-release.
+The compatibility aliases do not create an APC-owned 20-call Free quota.
 
 Numeria Studio remains the source of truth for Sessions and Reports. AI Platform
-Core must not own report records, report snapshots, customer master data,
+Core must not own appraisal records, Report Snapshots, customer master data,
 reservations, payments, sales, or UI state.
 
-### Velvet capabilities
+## Velvet capabilities
 
-Velvet may call AI Platform Core for AI assistance around memory summarization,
-search, and recall. The currently registered Production capabilities are:
+Canonical shared-plan capability currently registered for Pro is:
+
+- `velvet.ai.organize_suggest`
+
+Legacy APC compatibility aliases remain temporarily registered while the app
+integration migrates:
 
 - `velvet.memory.summary`
 - `velvet.memory.search`
 - `velvet.memory.recall`
 
-Velvet remains the source of truth for customer/person memory records and the
-user-facing memory experience. AI Platform Core must not become Velvet's CRM,
-payment system, customer master, or message-draft authority.
+Velvet remains the source of truth for ProfessionalMemory and its user-facing
+experience. AI Platform Core must not become Velvet's CRM, payment system,
+customer master, or message-draft authority.
 
-### Provider behavior
+## Usage and metadata persistence
+
+AI Platform Core may persist operational metadata required for AI execution,
+Usage attribution, audit, and observability. Examples include:
+
+- app metadata
+- `workspaceId`
+- `userId`
+- `planId`
+- `featureKey`
+- `status`
+- token counts or token estimates
+- provider and model metadata
+- event name
+- activity ID
+- trace ID
+- correlation ID
+- timestamps
+
+AI Platform Core must not persist app-owned full-text payloads in Usage or
+Activity audit storage. Persisted Cloudflare Activity records redact free-text
+execution content such as Activity goal text, context, input, provider output,
+and feedback memo.
+
+Do not persist or send into Usage/audit metadata:
+
+- full appraisal text
+- full consultation text
+- full conversation text/history
+- full message text
+- full customer master records
+- payment details
+- API keys
+- Secrets
+- secret prompts
+
+AI execution may transiently receive content necessary to perform the requested
+AI operation, but that does not transfer ownership of the content to APC and does
+not permit storing the full content in Usage or Activity audit records.
+
+## Provider behavior
 
 Cloudflare Production registers the `openai` provider when `OPENAI_API_KEY` is
 available in the runtime environment. OpenAI execution uses the Responses API
 provider. `OPENAI_DEFAULT_MODEL` is optional; the Cloudflare runtime falls back
 to its repository default when omitted.
 
-Provider secrets must never be logged, returned, stored in D1, or committed to
-GitHub.
+Provider configuration readiness is exposed through:
+
+- `/v1/providers/status`
+- `/api/providers/status`
+
+Provider status must never expose secret values.
+
+## Release and readiness monitoring
+
+Platform Admin and deployment verification may use the following surfaces:
+
+- `/health`
+- `/version`
+- `/contracts/status`
+- `/release/status`
+- `/auth/status`
+- `/persistence/status`
+- `/v1/readiness`
+- `/api/readiness`
+- `/v1/providers/status`
+- `/v1/integrations/status`
+
+Legacy `/api/auth/status` and `/api/persistence/status` aliases remain supported.
+
+Release status must show Free / Pro as the current release scope and Business as
+unavailable / not purchasable.
 
 ## External References
 
-AI Platform Core may receive reference IDs for traceability:
+AI Platform Core may receive reference IDs for traceability, such as:
 
 - `workspaceId`
 - `userId`
@@ -188,20 +299,8 @@ AI Platform Core may receive reference IDs for traceability:
 - `activityId`
 - `capabilityId`
 
-These IDs are references, not ownership transfers.
-
-For MVP requests, applications should send `workspaceId + userId` with AI
-Activity execution requests so AI Platform Core can attribute Activity, Usage,
-and Capability execution history to the correct workspace and signed-in
-professional. `ownerUserId` is optional and should be used when ownership differs
-from the acting user. Do not make `professionalId` mandatory for MVP.
-
-Customer source of truth remains in Growth Engine. Session and Report source of
-truth remain in Professional Studio. Communication Person, Conversation,
-Message, ConversationContext, Topic, Promise, Communication NextAction,
-ReplyDraft, SafetyCheck, and ReplySendDecision source of truth remain in
-Communication Planner. AI Platform Core stores only the minimum context required
-for AI execution, usage attribution, and audit.
+These IDs are references, not ownership transfers. `professionalId` is not a
+required MVP identity field.
 
 ## Event Handling
 
@@ -216,14 +315,14 @@ AI Platform Core must support:
 - replay where supported
 - audit logs
 
-Approved AI events:
+Approved AI events include:
 
 - `ai.activity.created.v1`
 - `ai.activity.completed.v1`
 - `ai.activity.failed.v1`
 - `ai.usage.recorded.v1`
 
-Approved consumed event examples:
+Approved consumed event examples include:
 
 - `growth.customer.created.v1`
 - `studio.session.started.v1`
@@ -241,72 +340,40 @@ Approved consumed event examples:
 - `communication.reply_safety.checked.v1`
 - `communication.person_channel.linked.v1`
 
-Forbidden legacy names:
+Forbidden legacy names include:
 
 - `Session.Started`
 - `Session.Completed`
 - `Document.Generated`
 
-Pending event not implemented:
-
-- `studio.recommendation.created.v1`
-
 ## Communication Planner Flow
 
-AI Platform Core may provide `Communication.*` capabilities for analysis,
+AI Platform Core may provide Communication capabilities for analysis,
 classification, extraction, and reply draft generation. Communication Planner
 remains the source of truth for all 1-to-1 communication records and all send
 safety decisions.
 
-Reply generation requests must include:
-
-- `workspaceId`
-- `personId`
-- `conversationId`
-
-Communication Planner must supply only same-person context scoped by
-`workspaceId + personId`. AI Platform Core must not merge context across
-persons, conversations, or workspaces. Generated text is a ReplyDraft candidate
-only; it must return to Communication Planner and pass the existing SafetyCheck
-and send gate before any provider send is attempted.
-
-AI Platform Core must not decide the final provider channel, send directly to
-LINE, Instagram, or X, mutate a checked ReplyDraft after SafetyCheck, or create
-an authoritative SendDecision. Those operations belong to Communication Planner.
+Generated text is a ReplyDraft candidate only. AI Platform Core must not decide
+the final provider channel, send directly to LINE, Instagram, or X, mutate a
+checked ReplyDraft after SafetyCheck, or create an authoritative SendDecision.
 
 ## SNS Planner Flow
 
 AI Platform Core does not call SNS Planner directly for business execution.
-
-Expected flow:
-
-```text
-Growth Engine
-  -> optionally calls AI Platform Core for analysis or content brief
-Growth Engine
-  -> decides purpose, targetAudience, cta, channel, tone, constraints
-Growth Engine
-  -> calls SNS Planner
-SNS Planner
-  -> creates post drafts
-```
-
-This keeps SNS strategy and campaign decisions in Growth Engine.
+Growth Engine or the relevant owning application decides business purpose and
+SNS Planner owns post drafts.
 
 ## Implementation Checklist
 
 Before merging integration changes:
 
-- Read the latest `app-responsibilities.md`.
-- Confirm the shared contract exists in `professional-platform-contracts`.
+- Read the latest shared plan and release-readiness contracts.
 - Confirm the source-of-truth owner is unchanged.
-- Use `Report`, not `Document`, externally.
+- Keep pricing, subscription, Stripe, Customer, Reservation, Payment, and Sales outside AI Platform Core.
 - Use official versioned event names.
-- Keep Pending events out of stable implementation.
-- Use APIs for immediate work and events for state-change notification.
-- Keep Customer, Session, Report, SNS draft, and Communication Planner record ownership outside AI Platform Core.
-- Require `workspaceId + personId + conversationId` for Communication reply generation.
-- Keep Communication generated replies as candidates until Communication Planner SafetyCheck and send gate approve them.
-- Keep business decisions in Growth Engine or the relevant Professional Studio.
-- For managed app AI calls, verify Plan API and Gateway Guard behavior before Production release.
-- Never store provider secrets, payment data, customer master data, or full app-owned records in AI Platform Core.
+- Keep Business unavailable until the shared contract releases it.
+- Do not invent numeric AI quotas from application-domain limits.
+- Require managed Gateway scope including `appId + workspaceId + userId + planId + featureKey` and `appVersion`.
+- Preserve idempotent Usage recording.
+- Do not count failed provider calls as successful plan Usage.
+- Never persist provider secrets, payment data, customer master data, full appraisal text, full consultation text, full conversation/message text, or secret prompts in APC Usage/Activity audit storage.

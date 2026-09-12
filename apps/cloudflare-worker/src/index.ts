@@ -238,14 +238,19 @@ function integrationStatus(): Response {
     "customerName",
     "email",
     "birthDate",
+    "fullAppraisalText",
+    "fullConsultationText",
     "fullMeetingTranscript",
     "fullConversationHistory",
+    "fullMessageText",
     "fullReportBody",
+    "paymentDetails",
     "paymentStatus",
     "salesAmount",
     "stripeCustomerId",
     "stripePaymentIntentId",
     "apiKey",
+    "secret",
     "secretPrompt",
   ];
 
@@ -255,13 +260,24 @@ function integrationStatus(): Response {
     contractVersion: "0.1.0",
     identityMode: "workspaceId+userId",
     professionalIdRequired: false,
-    sourceOfTruth: ["AI Activity", "AI Usage", "AI Capability"],
-    notSourceOfTruth: ["Customer", "Reservation", "Payment", "Sales", "Report", "Conversation", "Message", "MessageDraft"],
+    sourceOfTruth: ["AI Activity", "AI Usage", "AI Capability", "AI Runtime"],
+    notSourceOfTruth: [
+      "Subscription",
+      "Pricing",
+      "Customer",
+      "Reservation",
+      "Payment",
+      "Sales",
+      "Report",
+      "Conversation",
+      "Message",
+      "MessageDraft",
+    ],
     apps: [
       {
         appName: "growth-engine",
         sourceOfTruth: ["Customer", "Reservation", "Payment", "Sales"],
-        notSourceOfTruth: ["AI Activity", "AI Usage", "AI Capability"],
+        notSourceOfTruth: ["AI Activity", "AI Usage", "AI Capability", "AI Runtime"],
         activityTypes: ["growth.recommendation.created"],
         capabilities: ["growth.recommendation.generate"],
         inputRefOnly: true,
@@ -272,7 +288,11 @@ function integrationStatus(): Response {
         sourceOfTruth: ["Session", "Report"],
         notSourceOfTruth: ["Customer", "Payment", "Sales", "AI Usage"],
         activityTypes: ["studio.report.generated"],
-        capabilities: ["studio.report.generate", "studio.report.ai_assist"],
+        capabilities: [
+          "studio.report.generate",
+          "studio.report.ai_assist",
+          "numeria.report.wording_adjustment",
+        ],
         inputRefOnly: true,
         forbiddenPayloadFields: forbidden,
       },
@@ -307,7 +327,12 @@ function integrationStatus(): Response {
         sourceOfTruth: ["ProfessionalMemory", "MessageDraft"],
         notSourceOfTruth: ["Customer", "Payment", "Sales", "AI Usage"],
         activityTypes: ["velvet.message_draft.created", "velvet.professional_memory.updated"],
-        capabilities: ["velvet.memory.summary", "velvet.memory.search", "velvet.memory.recall"],
+        capabilities: [
+          "velvet.ai.organize_suggest",
+          "velvet.memory.summary",
+          "velvet.memory.search",
+          "velvet.memory.recall",
+        ],
         inputRefOnly: true,
         forbiddenPayloadFields: forbidden,
       },
@@ -320,12 +345,18 @@ function integrationStatus(): Response {
       entitlementRead: "/v1/entitlements",
       planUsageConsume: "/v1/usage/consume",
       capabilityRegister: "/v1/capabilities",
+      releaseStatus: "/release/status",
+      providerStatus: "/v1/providers/status",
+      authStatus: "/auth/status",
+      persistenceStatus: "/persistence/status",
+      readiness: "/v1/readiness",
     },
     planGateway: {
       status: "success",
       managedApps: ["numeria-studio", "velvet"],
       requiredHeaders: [
         "x-source-app",
+        "x-app-version",
         "x-plan-id",
         "x-feature-key",
         "x-activity-id",
@@ -338,7 +369,15 @@ function integrationStatus(): Response {
       idempotencyKey: "appId|workspaceId|userId|activityId",
     },
     observability: {
-      traceHeaders: ["X-Trace-Id", "X-Correlation-Id", "X-Request-Id", "X-Source-App", "X-Plan-Id", "X-Feature-Key"],
+      traceHeaders: [
+        "X-Trace-Id",
+        "X-Correlation-Id",
+        "X-Request-Id",
+        "X-Source-App",
+        "X-App-Version",
+        "X-Plan-Id",
+        "X-Feature-Key",
+      ],
       eventName: "ai.activity.created.v1",
     },
     timestamp: new Date().toISOString(),
@@ -381,13 +420,13 @@ async function readinessStatus(env: Env): Promise<Response> {
       recommendedActions: ready
         ? []
         : [
-            "Check /api/persistence/status for D1 binding and schema readiness.",
+            "Check /persistence/status for D1 binding and schema readiness.",
             "Check /v1/events/status for Event Store reachability.",
             "Check /v1/integrations/status before cross-app production verification.",
           ],
       identityMode: "workspaceId+userId",
       professionalIdRequired: false,
-      sourceOfTruth: ["AI Activity", "AI Usage", "AI Capability"],
+      sourceOfTruth: ["AI Activity", "AI Usage", "AI Capability", "AI Runtime"],
       commitSha: env.COMMIT_SHA ?? null,
       timestamp: new Date().toISOString(),
     },
@@ -411,9 +450,13 @@ export default {
     if ((url.pathname === "/v1/readiness" || url.pathname === "/api/readiness") && request.method === "GET") {
       return readinessStatus(env);
     }
-    if (url.pathname === "/api/persistence/status" && request.method === "GET") return persistenceStatus(env);
+    if ((url.pathname === "/api/persistence/status" || url.pathname === "/persistence/status") && request.method === "GET") {
+      return persistenceStatus(env);
+    }
     if (url.pathname === "/api/persistence/roundtrip" && request.method === "POST") return roundtrip(env);
-    if (url.pathname === "/api/auth/status" && request.method === "GET") return authStatus();
+    if ((url.pathname === "/api/auth/status" || url.pathname === "/auth/status") && request.method === "GET") {
+      return authStatus();
+    }
     if ((url.pathname === "/v1/events/status" || url.pathname === "/api/events/status") && request.method === "GET") {
       return eventStatus(env);
     }

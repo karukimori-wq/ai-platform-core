@@ -212,7 +212,11 @@ export const createCloudflarePlatformRuntime = (options: CloudflareRuntimeOption
     version: "1",
     provider: "openai",
     defaultModel: openAIModel,
-    capabilities: ["studio.report.generate", "studio.report.ai_assist"],
+    capabilities: [
+      "studio.report.generate",
+      "studio.report.ai_assist",
+      "numeria.report.wording_adjustment",
+    ],
     knowledge: [],
     analytics: true,
   });
@@ -224,7 +228,12 @@ export const createCloudflarePlatformRuntime = (options: CloudflareRuntimeOption
     version: "1",
     provider: "openai",
     defaultModel: openAIModel,
-    capabilities: ["velvet.memory.summary", "velvet.memory.search", "velvet.memory.recall"],
+    capabilities: [
+      "velvet.ai.organize_suggest",
+      "velvet.memory.summary",
+      "velvet.memory.search",
+      "velvet.memory.recall",
+    ],
     knowledge: [],
     analytics: true,
   });

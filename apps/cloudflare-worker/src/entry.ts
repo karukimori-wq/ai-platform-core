@@ -27,6 +27,14 @@ function json(body: unknown, status = 200): Response {
 const isOpenAIConfigured = (env: Env): boolean =>
   typeof env.OPENAI_API_KEY === "string" && env.OPENAI_API_KEY.trim().length > 0;
 
+const resolveCommitSha = (env: Env): string => {
+  const bindingCommit = env.COMMIT_SHA?.trim();
+  if (bindingCommit !== undefined && bindingCommit.length > 0) return bindingCommit;
+
+  const processCommit = process.env.COMMIT_SHA?.trim() ?? process.env.VERCEL_GIT_COMMIT_SHA?.trim();
+  return processCommit !== undefined && processCommit.length > 0 ? processCommit : "unknown";
+};
+
 function providerStatus(env: Env): Response {
   const openAIConfigured = isOpenAIConfigured(env);
   const configuredModel = env.OPENAI_DEFAULT_MODEL?.trim();
@@ -57,7 +65,7 @@ function releaseStatus(env: Env): Response {
   return json({
     appId: "ai-platform-core",
     appName: "ai-platform-core",
-    appVersion: env.COMMIT_SHA ?? "unknown",
+    appVersion: resolveCommitSha(env),
     planContract: {
       source: "professional-platform-contracts/docs/contracts/plan-contract.md",
       version: "current",

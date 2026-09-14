@@ -56,21 +56,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          fetch_json() {
-            local url="$1"
-            local out="$2"
-            local headers=("${@:3}")
-            for attempt in {1..10}; do
-              code=$(curl --silent --show-error --output "$out" --write-out "%{http_code}" "${headers[@]}" "$url" || true)
-              if [ "$code" = "200" ]; then
-                return 0
-              fi
-              echo "Attempt $attempt: HTTP $code from $url"
-              sleep 3
-            done
-            cat "$out" || true
-            return 1
-          }
 
           RUN_ID="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           APP="numeria-studio"
@@ -83,26 +68,55 @@ jobs:
           BUSINESS_QUERY="appId=$APP&appVersion=$APP_VERSION&workspaceId=$WORKSPACE&userId=$USER&planId=business&featureKey=$FEATURE"
           HEADERS=(-H "x-client-id: $APP" -H "x-app-version: $APP_VERSION" -H "x-workspace-id: $WORKSPACE" -H "x-user-id: $USER")
 
-          fetch_json "$PRODUCTION_URL/health" /tmp/health.json
-          fetch_json "$PRODUCTION_URL/v1/usage?$FREE_QUERY" /tmp/plan-usage.json "${HEADERS[@]}"
-          fetch_json "$PRODUCTION_URL/v1/entitlements?$FREE_QUERY" /tmp/entitlement-free.json "${HEADERS[@]}"
-          fetch_json "$PRODUCTION_URL/v1/entitlements?$PRO_QUERY" /tmp/entitlement-pro.json "${HEADERS[@]}"
-          fetch_json "$PRODUCTION_URL/v1/entitlements?$BUSINESS_QUERY" /tmp/entitlement-business.json "${HEADERS[@]}"
+          contract_ready=false
+          for attempt in {1..10}; do
+            HEALTH_CODE=$(curl --silent --show-error --output /tmp/health.json --write-out "%{http_code}" "$PRODUCTION_URL/health" || true)
+            USAGE_CODE=$(curl --silent --show-error --output /tmp/plan-usage.json --write-out "%{http_code}" "${HEADERS[@]}" "$PRODUCTION_URL/v1/usage?$FREE_QUERY" || true)
+            FREE_CODE=$(curl --silent --show-error --output /tmp/entitlement-free.json --write-out "%{http_code}" "${HEADERS[@]}" "$PRODUCTION_URL/v1/entitlements?$FREE_QUERY" || true)
+            PRO_CODE=$(curl --silent --show-error --output /tmp/entitlement-pro.json --write-out "%{http_code}" "${HEADERS[@]}" "$PRODUCTION_URL/v1/entitlements?$PRO_QUERY" || true)
+            BUSINESS_CODE=$(curl --silent --show-error --output /tmp/entitlement-business.json --write-out "%{http_code}" "${HEADERS[@]}" "$PRODUCTION_URL/v1/entitlements?$BUSINESS_QUERY" || true)
 
-          node - <<'NODE'
+            if [ "$HEALTH_CODE" = "200" ] && [ "$USAGE_CODE" = "200" ] && [ "$FREE_CODE" = "200" ] && [ "$PRO_CODE" = "200" ] && [ "$BUSINESS_CODE" = "200" ]; then
+              if node - <<'NODE'
           const fs = require('node:fs');
           const read = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
-          const health = read('/tmp/health.json');
-          const usage = read('/tmp/plan-usage.json');
-          const free = read('/tmp/entitlement-free.json');
-          const pro = read('/tmp/entitlement-pro.json');
-          const business = read('/tmp/entitlement-business.json');
-          if (health.appName !== 'ai-platform-core' || health.status !== 'ok') throw new Error('Production health failed');
-          if (usage.status !== 'success' || usage.currentPlan !== 'free' || usage.featureKey !== 'studio.report.ai_assist' || usage.limit !== null || usage.usagePeriod !== 'unlimited' || usage.overLimit !== false || usage.entitlementResult !== 'allowed') throw new Error('Production plan usage check failed');
-          if (free.status !== 'success' || free.planId !== 'free' || free.allowed !== true || free.entitlementResult !== 'allowed' || free.limit !== null || free.overLimit !== false) throw new Error('Production Free entitlement check failed');
-          if (pro.status !== 'success' || pro.planId !== 'pro' || pro.featureKey !== 'numeria.report.wording_adjustment' || pro.allowed !== true || pro.entitlementResult !== 'allowed') throw new Error('Production Pro entitlement check failed');
-          if (business.status !== 'success' || business.planId !== 'business' || business.allowed !== false || business.entitlementResult !== 'unavailable' || business.releaseStatus !== 'unavailable' || business.purchasable !== false) throw new Error('Production Business unavailable check failed');
+          try {
+            const health = read('/tmp/health.json');
+            const usage = read('/tmp/plan-usage.json');
+            const free = read('/tmp/entitlement-free.json');
+            const pro = read('/tmp/entitlement-pro.json');
+            const business = read('/tmp/entitlement-business.json');
+            const ready =
+              health.appName === 'ai-platform-core' && health.status === 'ok' &&
+              usage.status === 'success' && usage.currentPlan === 'free' && usage.featureKey === 'studio.report.ai_assist' && usage.limit === null && usage.usagePeriod === 'unlimited' && usage.overLimit === false && usage.entitlementResult === 'allowed' &&
+              free.status === 'success' && free.planId === 'free' && free.allowed === true && free.entitlementResult === 'allowed' && free.limit === null && free.overLimit === false &&
+              pro.status === 'success' && pro.planId === 'pro' && pro.featureKey === 'numeria.report.wording_adjustment' && pro.allowed === true && pro.entitlementResult === 'allowed' &&
+              business.status === 'success' && business.planId === 'business' && business.allowed === false && business.entitlementResult === 'unavailable' && business.releaseStatus === 'unavailable' && business.purchasable === false;
+            process.exit(ready ? 0 : 1);
+          } catch {
+            process.exit(1);
+          }
           NODE
+              then
+                contract_ready=true
+                echo "Production Plan contract is ready on attempt $attempt."
+                break
+              fi
+            fi
+
+            echo "Attempt $attempt: production Plan contract not ready yet (health=$HEALTH_CODE usage=$USAGE_CODE free=$FREE_CODE pro=$PRO_CODE business=$BUSINESS_CODE)."
+            sleep 3
+          done
+
+          if [ "$contract_ready" != "true" ]; then
+            echo "Production Plan contract did not converge to the deployed contract. Last responses:"
+            for file in /tmp/health.json /tmp/plan-usage.json /tmp/entitlement-free.json /tmp/entitlement-pro.json /tmp/entitlement-business.json; do
+              echo "--- $file"
+              cat "$file" || true
+              echo
+            done
+            exit 1
+          fi
       - name: Verify production health and contracts
         run: |
           sleep 5

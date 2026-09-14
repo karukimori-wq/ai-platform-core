@@ -1,11 +1,15 @@
 import type { D1DatabaseLike } from "@ai-platform-core/storage";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import worker from "./entry.js";
 
 const db = {} as D1DatabaseLike;
 
 const providerRequest = (): Request => new Request("https://example.com/v1/providers/status");
 const releaseRequest = (): Request => new Request("https://example.com/release/status");
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
 
 describe("Cloudflare provider readiness", () => {
   it("reports OpenAI configured without exposing the secret", async () => {
@@ -86,6 +90,18 @@ describe("Free Pro release status", () => {
     expect(body.professionalIdRequired).toBe(false);
     expect(body.notSourceOfTruth).toEqual(expect.arrayContaining(["Subscription", "Payment", "Customer", "Reservation", "Sales"]));
     expect(text).not.toContain("provider-secret");
+  });
+
+  it("uses the process COMMIT_SHA when the Worker binding is unavailable", async () => {
+    vi.stubEnv("COMMIT_SHA", "process-release-sha");
+
+    const response = await worker.fetch(releaseRequest(), {
+      DB: db,
+      OPENAI_API_KEY: "provider-secret",
+    });
+    const body = (await response.json()) as { appVersion: string };
+
+    expect(body.appVersion).toBe("process-release-sha");
   });
 
   it("reports release blocked when the managed OpenAI provider is missing", async () => {

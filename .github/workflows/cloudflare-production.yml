@@ -36,6 +36,8 @@ jobs:
           main = "src/entry.ts"
           compatibility_date = "2026-08-24"
           compatibility_flags = ["nodejs_compat"]
+          [vars]
+          COMMIT_SHA = "$GITHUB_SHA"
           [[d1_databases]]
           binding = "DB"
           database_name = "ai-platform-core"
@@ -155,6 +157,7 @@ jobs:
           if (planGateway?.failedProviderCallsConsumePlanUsage !== false) throw new Error('Production Plan Gateway failed-call usage policy check failed');
           if (planGateway?.idempotencyKey !== 'appId|workspaceId|userId|activityId') throw new Error('Production Plan Gateway idempotency contract check failed');
           if (release.appId !== 'ai-platform-core' || release.releaseStatus !== 'ready' || !release.releaseScope?.includes('free') || !release.releaseScope?.includes('pro')) throw new Error('Production release status check failed');
+          if (release.appVersion !== process.env.GITHUB_SHA) throw new Error('Production release appVersion check failed');
           if (release.plans?.business?.releaseStatus !== 'unavailable' || release.plans?.business?.purchasable !== false) throw new Error('Production Business release status check failed');
           if (providers.status !== 'success' || providers.providers?.openai?.configured !== true || providers.secretValuesExposed !== false) throw new Error('Production provider readiness check failed');
           NODE

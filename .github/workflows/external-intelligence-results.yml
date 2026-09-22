@@ -1,0 +1,87 @@
+name: External Intelligence Results
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+      - Cloudflare Production
+    types: [completed]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  record:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record verified development result in EIS
+        env:
+          EIS_BASE_URL: https://external-intelligence-system.vercel.app
+          WORKSPACE_ID: professional-platform-dev
+          SOURCE_WORKFLOW: ${{ github.event.workflow_run.name }}
+          SOURCE_REPOSITORY: ${{ github.event.workflow_run.head_repository.full_name }}
+          SOURCE_COMMIT: ${{ github.event.workflow_run.head_sha }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ "$SOURCE_WORKFLOW" = "Cloudflare Production" ]; then
+            TASK_TYPE="production-deploy"
+            SUMMARY="AI Platform Core Production passed deploy, Plan entitlement/usage checks, auth/contracts, provider readiness, D1 roundtrip, Event persistence, and Activity/Usage persistence checks."
+            KNOWLEDGE_TITLE="AI Platform Core production workflow completed"
+            KNOWLEDGE_STATEMENT="The current AI Platform Core commit passed the configured Production API, Plan, auth/contract and D1 persistence checks. Cross-app/provider readiness is checked, but intended-user UI reachability, human verification, and live end-to-end app integration execution are not established by this workflow."
+            FINGERPRINT='{"runtime":"cloudflare-workers","framework":"typescript-monorepo","database":"cloudflare-d1","auth":"mvp-scoped-headers","environment":"production","planModel":"free-pro-business-contract","appRole":"ai-runtime","nodeVersion":"22"}'
+            VERIFICATION='{"productionDeployed":true,"uiReachable":false,"permissionVerified":true,"requiresPersistence":true,"persistenceVerified":true,"requiresIntegration":true,"integrationVerified":false,"humanVerified":false}'
+          else
+            TASK_TYPE="ci-validation"
+            SUMMARY="AI Platform Core main CI passed lint, tests, and build."
+            KNOWLEDGE_TITLE="AI Platform Core main CI validation completed"
+            KNOWLEDGE_STATEMENT="The current AI Platform Core main commit passed lint, tests, and build. This is implementation evidence only and does not prove Production deployment, Production persistence, integrations, UI reachability, or human verification."
+            FINGERPRINT='{"runtime":"cloudflare-workers","framework":"typescript-monorepo","database":"cloudflare-d1","auth":"mvp-scoped-headers","environment":"ci","planModel":"free-pro-business-contract","appRole":"ai-runtime","nodeVersion":"22"}'
+            VERIFICATION='{"productionDeployed":false,"uiReachable":false,"permissionVerified":false,"requiresPersistence":true,"persistenceVerified":false,"requiresIntegration":true,"integrationVerified":false,"humanVerified":false}'
+          fi
+
+          oidc_response="$(curl --fail --silent --show-error \
+            --header "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=https%3A%2F%2Fexternal-intelligence-system.vercel.app")"
+          EIS_TOKEN="$(printf '%s' "$oidc_response" | jq -r '.value // empty')"
+          if [ -z "$EIS_TOKEN" ]; then
+            echo 'External Intelligence: NOT CONNECTED (GitHub OIDC token missing)'
+            exit 0
+          fi
+
+          EVIDENCE_URI="${{ github.server_url }}/${{ github.repository }}/actions/runs/$SOURCE_RUN_ID"
+          payload="$(jq -n \
+            --arg workspaceId "$WORKSPACE_ID" \
+            --arg projectId "ai-platform-core" \
+            --arg appId "ai-platform-core" \
+            --arg componentId "runtime" \
+            --arg repository "$SOURCE_REPOSITORY" \
+            --arg commitSha "$SOURCE_COMMIT" \
+            --arg taskType "$TASK_TYPE" \
+            --arg summary "$SUMMARY" \
+            --arg knowledgeTitle "$KNOWLEDGE_TITLE" \
+            --arg knowledgeStatement "$KNOWLEDGE_STATEMENT" \
+            --arg evidenceUri "$EVIDENCE_URI" \
+            --argjson fingerprint "$FINGERPRINT" \
+            --argjson verification "$VERIFICATION" \
+            '{workspaceId:$workspaceId,projectId:$projectId,appId:$appId,componentId:$componentId,repository:$repository,commitSha:$commitSha,taskType:$taskType,summary:$summary,outcome:"implementation_result",success:true,source:"github_actions",knowledgeTitle:$knowledgeTitle,knowledgeStatement:$knowledgeStatement,evidenceUri:$evidenceUri,fingerprint:$fingerprint,verification:$verification}')"
+
+          http_code="$(curl --silent --show-error --output /tmp/eis-response.json --write-out '%{http_code}' \
+            --request POST "${EIS_BASE_URL%/}/api/development/results" \
+            --header 'content-type: application/json' \
+            --header "authorization: Bearer $EIS_TOKEN" \
+            --data "$payload" || true)"
+
+          if [[ "$http_code" =~ ^2 ]]; then
+            echo 'External Intelligence: RECORDED (github_oidc)'
+            cat /tmp/eis-response.json
+            exit 0
+          fi
+
+          echo "External Intelligence: NOT CONNECTED (github_oidc, HTTP $http_code)" >&2
+          if [ -f /tmp/eis-response.json ]; then cat /tmp/eis-response.json >&2; fi
+          exit 0

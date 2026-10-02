@@ -1,3 +1,39 @@
+## 2026-10-02 - Numeria Studio structured AI report generation
+
+### Source of truth
+
+- `professional-platform-contracts/docs/contracts/numeria-ai-report-contract.md`
+- `professional-platform-contracts/schemas/studio-ai-report-request.v1.schema.json`
+- `professional-platform-contracts/schemas/studio-ai-report-response.v1.schema.json`
+- Contract version: `studio-ai-report.v1`
+- Feature key: `numeria.report.ai_generate`
+
+### Implemented
+
+- Added `POST /api/v1/generations/report` and `POST /v1/generations/report`.
+- Added strict request validation matching the canonical request schema and additional-properties rules.
+- Added scoped request validation for `numeria-studio + workspaceId + userId`.
+- Added Free / Pro entitlement support without inventing a numeric APC AI-call quota.
+- Business remains unavailable.
+- Added versioned Base Policy, report Task Prompt, Numerology knowledge and Tarot knowledge.
+- Character Snapshot supports `preset` and `custom`; Character remains structured style configuration rather than a raw system prompt.
+- Generation layers remain separate: Base Policy -> Domain Knowledge -> Character -> Tone -> Task Prompt -> Numeria Input Data.
+- Added OpenAI Responses API Structured Outputs support through `text.format` JSON Schema.
+- APC validates the generated draft again after provider execution.
+- Activity, Analytics Usage and plan Usage are recorded only after output validation succeeds.
+- Generation content is transient; persisted Activity storage continues to redact context/input/provider output and Usage stores operational metadata only.
+- Added canonical errors for invalid input, character validation, unsupported divination, insufficient reading data, feature/usage denial, provider failure, output schema failure and service unavailability.
+- Integration/release status now identifies AI Prompt and AI Knowledge as APC responsibilities while excluding appraisal Session, Character master, confirmed divination result, formal Report, Report Snapshot and PDF.
+- Added a real Production smoke generation to `Cloudflare Production`.
+
+### Formal Report boundary
+
+The APC response is an AI Generation / AI Draft. Numeria Studio remains responsible for review/edit, formal Report finalization, Report Snapshot persistence, PDF generation, and `studio.report.generated.v1`.
+
+### Production verification
+
+Pending the next `Cloudflare Production` run after CI is green.
+
 ## 2026-10-02 - Free / Pro production verification completed
 
 ### Repository

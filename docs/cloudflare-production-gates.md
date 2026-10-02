@@ -77,11 +77,15 @@ Cloudflare migration is complete only when every required gate below passes.
 ## Last verified production release
 
 - Workflow: `Cloudflare Production`
-- Run ID: `34550249935`
-- Commit: `8bd6ee79081d54821c33613962b7b9fb5d2ca488`
+- Run ID: `36953840715` (run #25)
+- Commit: `986c51d9a5793506318e63c50fb229f6e64041fd`
 - Result: `success`
 - Production URL: `https://ai-platform-core.karukimori.workers.dev`
-- This verification predates the current Free / Pro shared-plan-contract alignment. A new Production run is required after the latest main CI is green.
+- Verified: 2026-10-02
+- Free / Pro shared-plan-contract gates passed; Business remained `unavailable` / `purchasable=false`.
+- `/version.commitSha` and `/release/status.appVersion` both matched the deployed commit.
+- OpenAI provider readiness, D1 roundtrip, Event persistence, Activity/Usage persistence, and workspace/user isolation all passed.
+- Production Plan API rollout polling completed successfully, preventing the previous false-red caused by reading an older Worker contract immediately after deployment.
 
 ## Workflow consolidation
 

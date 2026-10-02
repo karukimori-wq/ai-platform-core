@@ -23,7 +23,7 @@ const validRequest = () => ({
   characterSnapshot: {
     characterId: "character-1",
     type: "custom",
-    version: "3",
+    characterVersion: "3",
     name: "やさしい占い師",
     personality: "calm",
     speakingStyle: "gentle",

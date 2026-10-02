@@ -16,6 +16,7 @@ const FEATURE_KEYS: Record<string, string[]> = {
   "numeria-studio": [
     "studio.report.generate",
     "studio.report.ai_assist",
+    "numeria.report.ai_generate",
     "numeria.report.wording_adjustment",
   ],
   velvet: [

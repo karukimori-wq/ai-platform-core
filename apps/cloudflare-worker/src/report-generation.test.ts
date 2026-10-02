@@ -108,6 +108,16 @@ describe("Numeria AI report contract", () => {
     ).toBe(true);
     expect(
       containsForbiddenGenerationPayload({
+        consultationRequest: { appraisalClientSnapshot: { StripeCustomerId: "cus_forbidden" } },
+      }),
+    ).toBe(true);
+    expect(
+      containsForbiddenGenerationPayload({
+        consultationRequest: { appraisalClientSnapshot: { snsDraftBody: "not appraisal data" } },
+      }),
+    ).toBe(true);
+    expect(
+      containsForbiddenGenerationPayload({
         consultationRequest: { appraisalClientSnapshot: { nickname: "相談者A" } },
       }),
     ).toBe(false);

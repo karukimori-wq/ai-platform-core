@@ -190,6 +190,7 @@ describe("Numeria report generation orchestration", () => {
     expect(result.body).toMatchObject({
       status: "success",
       generationId: "generation-1",
+      draftType: "ai_draft",
       traceId: "trace-report",
       correlationId: "corr-report",
       promptKey: "numeria.report.generate.structured",

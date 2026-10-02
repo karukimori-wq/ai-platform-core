@@ -166,6 +166,13 @@ const createTestRuntime = (text: string, activities: ActivityRepository) => {
   return runtime;
 };
 
+const throwingProvider = (): AIProvider => ({
+  id: "openai",
+  chat: async () => {
+    throw new Error("network unavailable");
+  },
+});
+
 describe("Numeria report generation orchestration", () => {
   it("records Activity and both Usage layers only after a valid structured draft", async () => {
     const db = new MemoryD1();
@@ -227,6 +234,35 @@ describe("Numeria report generation orchestration", () => {
       new Date("2026-10-02T04:00:00.000Z"),
     );
     expect(planUsage.usageCount).toBe(1);
+  });
+
+  it("normalizes provider transport failures to SERVICE_UNAVAILABLE without recording usage", async () => {
+    const db = new MemoryD1();
+    const activities = createMemoryActivityRepository();
+    const runtime = createTestRuntime(validDraft, activities);
+    runtime.providers.register(throwingProvider());
+
+    const result = await handleStudioAIReportGeneration(makeRequest(), {
+      runtime,
+      db,
+      id: () => "generation-unavailable",
+      now: () => new Date("2026-10-02T04:00:00.000Z"),
+    });
+
+    expect(result.status).toBe(503);
+    expect(result.body).toMatchObject({
+      status: "error",
+      generationId: "generation-unavailable",
+      error: { code: "SERVICE_UNAVAILABLE", retryable: true },
+    });
+
+    const activityList = await activities.list();
+    expect(activityList.ok).toBe(true);
+    if (activityList.ok) expect(activityList.value).toHaveLength(0);
+
+    const analytics = await runtime.analytics.listUsage();
+    expect(analytics.ok).toBe(true);
+    if (analytics.ok) expect(analytics.value).toHaveLength(0);
   });
 
   it("returns OUTPUT_SCHEMA_INVALID and records no Activity or Usage for malformed AI output", async () => {

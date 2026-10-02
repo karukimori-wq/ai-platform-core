@@ -574,51 +574,125 @@ export async function handleStudioAIReportGeneration(
   }
 
   const messages = buildReportMessages(body, knowledge.instructions);
-  const gateway = await dependencies.runtime.gateway.run({
-    auth: { clientId: body.appName, permissions: [] },
-    activity: {
-      client: body.appName,
+  const client = dependencies.runtime.clients.get(body.appName);
+  if (!client.ok) {
+    return errorResult(503, "SERVICE_UNAVAILABLE", client.error.message, body.correlationId, traceId, true, generationId);
+  }
+  const providerId = client.value.provider ?? "openai";
+  const provider = dependencies.runtime.providers.get(providerId);
+  if (!provider.ok) {
+    return errorResult(503, "SERVICE_UNAVAILABLE", provider.error.message, body.correlationId, traceId, true, generationId);
+  }
+  const model = client.value.defaultModel ?? "gpt-4.1-mini";
+  const startedAt = (dependencies.now?.() ?? new Date()).getTime();
+  const providerResult = await provider.value.chat({
+    model,
+    messages,
+    input: {
+      contractVersion: body.contractVersion,
+      sessionId: body.sessionId,
+      locale: body.locale,
+    },
+    metadata: {
+      generationId,
       workspaceId: body.workspaceId,
       userId: body.userId,
-      capability: body.featureKey,
-      workflow: "numeria.ai_report_generation.v1",
-      goal: NUMERIA_REPORT_FEATURE_KEY,
-      context: {
-        contractVersion: body.contractVersion,
-        sessionId: body.sessionId,
-        promptKey: NUMERIA_REPORT_PROMPT_KEY,
-        promptVersion: NUMERIA_REPORT_PROMPT_VERSION,
-        characterId: body.characterSnapshot.characterId,
-        characterVersion: body.characterSnapshot.version,
-        correlationId: body.correlationId,
-        traceId,
-      },
-      input: {
-        contractVersion: body.contractVersion,
-        sessionId: body.sessionId,
-        locale: body.locale,
-        divinationMethods: body.divination.methods.map((method) => method.methodKey),
-      },
+      sessionId: body.sessionId,
+      featureKey: body.featureKey,
+      correlationId: body.correlationId,
+      traceId,
     },
-    messages,
   });
 
-  if (!gateway.ok) {
-    const mapped = mapGatewayError(gateway.error.code);
-    return errorResult(mapped.status, mapped.code, gateway.error.message, body.correlationId, traceId, mapped.retryable, generationId);
+  if (!providerResult.ok) {
+    const mapped = mapGatewayError(providerResult.error.code);
+    return errorResult(
+      mapped.status,
+      mapped.code,
+      providerResult.error.message,
+      body.correlationId,
+      traceId,
+      mapped.retryable,
+      generationId,
+    );
   }
 
-  const text = typeof gateway.value.output.text === "string" ? gateway.value.output.text : "";
-  const draft = parseGeneratedDraft(text, body);
+  const draft = parseGeneratedDraft(providerResult.value.text ?? "", body);
   if (draft === undefined) {
     return errorResult(502, "OUTPUT_SCHEMA_INVALID", "AI output did not conform to studio-ai-report-response.v1 draft fields.", body.correlationId, traceId, true, generationId);
+  }
+
+  const activityCreatedAt = dependencies.now?.() ?? new Date();
+  const activity = await dependencies.runtime.activity.create({
+    client: body.appName,
+    workspaceId: body.workspaceId,
+    userId: body.userId,
+    capability: body.featureKey,
+    workflow: "numeria.ai_report_generation.v1",
+    goal: NUMERIA_REPORT_FEATURE_KEY,
+    context: {
+      contractVersion: body.contractVersion,
+      sessionId: body.sessionId,
+      promptKey: NUMERIA_REPORT_PROMPT_KEY,
+      promptVersion: NUMERIA_REPORT_PROMPT_VERSION,
+      characterId: body.characterSnapshot.characterId,
+      characterVersion: body.characterSnapshot.version,
+      correlationId: body.correlationId,
+      traceId,
+      generationId,
+    },
+    input: {
+      contractVersion: body.contractVersion,
+      sessionId: body.sessionId,
+      locale: body.locale,
+      divinationMethods: body.divination.methods.map((method) => method.methodKey),
+    },
+  });
+  if (!activity.ok) {
+    return errorResult(503, "SERVICE_UNAVAILABLE", activity.error.message, body.correlationId, traceId, true, generationId);
+  }
+
+  const latencyMs = Math.max(0, activityCreatedAt.getTime() - startedAt);
+  const completed = await dependencies.runtime.activity.complete({
+    activityId: activity.value.id.value,
+    output: { schema: "studio-ai-report-response.v1", generationId },
+    provider: providerId,
+    model: providerResult.value.model,
+    tokens: providerResult.value.tokens,
+    cost: providerResult.value.cost,
+    latencyMs,
+    knowledgeUsed: knowledge.versions.map((item) => `${item.knowledgeKey}@${item.version}`),
+  });
+  if (!completed.ok) {
+    return errorResult(503, "SERVICE_UNAVAILABLE", completed.error.message, body.correlationId, traceId, true, generationId);
+  }
+
+  const analyticsRecorded = await dependencies.runtime.analytics.recordUsage({
+    activityId: activity.value.id.value,
+    client: body.appName,
+    workspaceId: body.workspaceId,
+    userId: body.userId,
+    capability: body.featureKey,
+    workflow: "numeria.ai_report_generation.v1",
+    provider: providerId,
+    model: providerResult.value.model,
+    inputTokens: providerResult.value.tokens.input,
+    outputTokens: providerResult.value.tokens.output,
+    totalTokens: providerResult.value.tokens.total,
+    costAmount: providerResult.value.cost.amount,
+    costCurrency: providerResult.value.cost.currency,
+    latencyMs,
+    occurredAt: activityCreatedAt,
+  });
+  if (!analyticsRecorded.ok) {
+    return errorResult(503, "SERVICE_UNAVAILABLE", analyticsRecorded.error.message, body.correlationId, traceId, true, generationId);
   }
 
   const usage = await consumeUsage(
     dependencies.db,
     {
       ...planRequest,
-      tokenEstimate: gateway.value.tokens.total,
+      tokenEstimate: providerResult.value.tokens.total,
     },
     dependencies.now?.() ?? new Date(),
   );
@@ -645,11 +719,11 @@ export async function handleStudioAIReportGeneration(
       promptKey: NUMERIA_REPORT_PROMPT_KEY,
       promptVersion: NUMERIA_REPORT_PROMPT_VERSION,
       knowledgeVersions: knowledge.versions,
-      model: { provider: gateway.value.provider, modelId: gateway.value.model },
+      model: { provider: providerId, modelId: providerResult.value.model },
       generatedAt,
       usage: {
-        inputTokensApprox: gateway.value.tokens.input,
-        outputTokensApprox: gateway.value.tokens.output,
+        inputTokensApprox: providerResult.value.tokens.input,
+        outputTokensApprox: providerResult.value.tokens.output,
         usageRecorded: true,
         usagePeriod: usage.usage.usagePeriod,
         usageCount: usage.usage.usageCount,

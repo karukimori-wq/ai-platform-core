@@ -80,6 +80,16 @@ describe("provider registry", () => {
         { role: "system", content: "be helpful" },
         { role: "user", content: "hello" }
       ],
+      structuredOutput: {
+        name: "report",
+        strict: true,
+        schema: {
+          type: "object",
+          additionalProperties: false,
+          properties: { title: { type: "string" } },
+          required: ["title"]
+        }
+      },
       metadata: { featureKey: "studio.report.generate" }
     });
 
@@ -93,6 +103,19 @@ describe("provider registry", () => {
         { role: "user", content: "hello" }
       ],
       store: false,
+      text: {
+        format: {
+          type: "json_schema",
+          name: "report",
+          strict: true,
+          schema: {
+            type: "object",
+            additionalProperties: false,
+            properties: { title: { type: "string" } },
+            required: ["title"]
+          }
+        }
+      },
       metadata: { featureKey: "studio.report.generate" }
     });
     expect(response.value.text).toBe("hello from responses");

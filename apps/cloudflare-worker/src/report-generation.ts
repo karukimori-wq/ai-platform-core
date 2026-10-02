@@ -164,7 +164,7 @@ const KNOWLEDGE = {
     instruction:
       "Tarot knowledge: interpret only the supplied cards, positions, orientations and spread relationships in confirmedResult. Do not draw cards, change upright/reversed state, change positions, or add cards.",
   },
-};
+} as const satisfies Readonly<Record<string, { knowledgeKey: string; version: string; instruction: string }>>;
 
 const FORBIDDEN_GENERATION_KEYS = new Set([
   "customerMaster",

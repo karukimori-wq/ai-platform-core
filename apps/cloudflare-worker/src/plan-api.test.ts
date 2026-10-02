@@ -62,11 +62,12 @@ class MemoryD1 implements D1DatabaseLike {
 describe("plan API contracts", () => {
   it("exposes Numeria compatibility keys plus canonical Pro wording adjustment", () => {
     const free = getAppEntitlementDefinitions("numeria-studio", "free");
-    expect(free).toHaveLength(3);
+    expect(free).toHaveLength(4);
     expect(free).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ featureKey: "studio.report.generate", allowed: true, usagePolicy: "unlimited", limit: null }),
         expect.objectContaining({ featureKey: "studio.report.ai_assist", allowed: true, usagePolicy: "unlimited", limit: null }),
+        expect.objectContaining({ featureKey: "numeria.report.ai_generate", allowed: true, usagePolicy: "unlimited", limit: null }),
         expect.objectContaining({
           featureKey: "numeria.report.wording_adjustment",
           allowed: false,
@@ -101,7 +102,7 @@ describe("plan API contracts", () => {
 
   it("recognizes Business but keeps it unavailable in the Free Pro release", () => {
     const features = getAppEntitlementDefinitions("numeria-studio", "business");
-    expect(features).toHaveLength(3);
+    expect(features).toHaveLength(4);
     expect(features.every((feature) => feature.allowed === false)).toBe(true);
     expect(features.every((feature) => feature.entitlementResult === "unavailable")).toBe(true);
     expect(features.every((feature) => feature.usagePolicy === "unavailable")).toBe(true);

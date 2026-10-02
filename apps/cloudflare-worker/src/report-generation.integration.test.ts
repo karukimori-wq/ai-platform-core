@@ -1,7 +1,4 @@
 import { describe, expect, it } from "vitest";
-import type { ActivityRepository } from "@ai-platform-core/activity";
-import { createMemoryActivityRepository } from "@ai-platform-core/activity";
-import type { AIProvider } from "@ai-platform-core/provider";
 import { createPlatformRuntime } from "@ai-platform-core/runtime";
 import type { D1DatabaseLike, D1PreparedStatementLike } from "@ai-platform-core/storage";
 import { getUsageSnapshot } from "./plan-usage.js";
@@ -134,7 +131,7 @@ const validDraft = JSON.stringify({
   warnings: [],
 });
 
-const provider = (text: string): AIProvider => ({
+const provider = (text: string) => ({
   id: "openai",
   chat: async (request) => ({
     ok: true,
@@ -149,8 +146,8 @@ const provider = (text: string): AIProvider => ({
   }),
 });
 
-const createTestRuntime = (text: string, activities: ActivityRepository) => {
-  const runtime = createPlatformRuntime({ activityRepository: activities });
+const createTestRuntime = (text: string) => {
+  const runtime = createPlatformRuntime();
   runtime.clients.register({
     id: "numeria-studio",
     name: "Numeria Studio",
@@ -166,7 +163,7 @@ const createTestRuntime = (text: string, activities: ActivityRepository) => {
   return runtime;
 };
 
-const throwingProvider = (): AIProvider => ({
+const throwingProvider = () => ({
   id: "openai",
   chat: async () => {
     throw new Error("network unavailable");
@@ -176,8 +173,7 @@ const throwingProvider = (): AIProvider => ({
 describe("Numeria report generation orchestration", () => {
   it("records Activity and both Usage layers only after a valid structured draft", async () => {
     const db = new MemoryD1();
-    const activities = createMemoryActivityRepository();
-    const runtime = createTestRuntime(validDraft, activities);
+    const runtime = createTestRuntime(validDraft);
 
     const result = await handleStudioAIReportGeneration(makeRequest(), {
       runtime,
@@ -199,16 +195,11 @@ describe("Numeria report generation orchestration", () => {
       usage: { usageRecorded: true, usageCount: 1, limit: null, overLimit: false },
     });
 
-    const activityList = await activities.list();
-    expect(activityList.ok).toBe(true);
-    if (activityList.ok) {
-      expect(activityList.value).toHaveLength(1);
-      expect(activityList.value[0]?.status).toBe("completed");
-      expect(activityList.value[0]?.request.context).toMatchObject({
-        generationId: "generation-1",
-        correlationId: "corr-report",
-        traceId: "trace-report",
-      });
+    const activityEvents = await runtime.events.all();
+    expect(activityEvents.ok).toBe(true);
+    if (activityEvents.ok) {
+      expect(activityEvents.value.filter((event) => event.type === "ActivityCreated")).toHaveLength(1);
+      expect(activityEvents.value.filter((event) => event.type === "ActivityCompleted")).toHaveLength(1);
     }
 
     const analytics = await runtime.analytics.listUsage();
@@ -239,8 +230,7 @@ describe("Numeria report generation orchestration", () => {
 
   it("normalizes provider transport failures to SERVICE_UNAVAILABLE without recording usage", async () => {
     const db = new MemoryD1();
-    const activities = createMemoryActivityRepository();
-    const runtime = createTestRuntime(validDraft, activities);
+    const runtime = createTestRuntime(validDraft);
     runtime.providers.register(throwingProvider());
 
     const result = await handleStudioAIReportGeneration(makeRequest(), {
@@ -257,9 +247,9 @@ describe("Numeria report generation orchestration", () => {
       error: { code: "SERVICE_UNAVAILABLE", retryable: true },
     });
 
-    const activityList = await activities.list();
-    expect(activityList.ok).toBe(true);
-    if (activityList.ok) expect(activityList.value).toHaveLength(0);
+    const activityEvents = await runtime.events.all();
+    expect(activityEvents.ok).toBe(true);
+    if (activityEvents.ok) expect(activityEvents.value).toHaveLength(0);
 
     const analytics = await runtime.analytics.listUsage();
     expect(analytics.ok).toBe(true);
@@ -285,9 +275,9 @@ describe("Numeria report generation orchestration", () => {
       error: { code: "OUTPUT_SCHEMA_INVALID" },
     });
 
-    const activityList = await activities.list();
-    expect(activityList.ok).toBe(true);
-    if (activityList.ok) expect(activityList.value).toHaveLength(0);
+    const activityEvents = await runtime.events.all();
+    expect(activityEvents.ok).toBe(true);
+    if (activityEvents.ok) expect(activityEvents.value).toHaveLength(0);
 
     const analytics = await runtime.analytics.listUsage();
     expect(analytics.ok).toBe(true);

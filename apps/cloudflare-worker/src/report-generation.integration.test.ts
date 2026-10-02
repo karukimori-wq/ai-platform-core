@@ -258,8 +258,7 @@ describe("Numeria report generation orchestration", () => {
 
   it("returns OUTPUT_SCHEMA_INVALID and records no Activity or Usage for malformed AI output", async () => {
     const db = new MemoryD1();
-    const activities = createMemoryActivityRepository();
-    const runtime = createTestRuntime('{"title":"missing required fields"}', activities);
+    const runtime = createTestRuntime('{"title":"missing required fields"}');
 
     const result = await handleStudioAIReportGeneration(makeRequest(), {
       runtime,

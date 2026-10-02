@@ -16,6 +16,7 @@ describe("plan usage policy", () => {
   it("does not invent numeric AI-call limits absent from the shared contract", () => {
     expect(resolveLimit("free", "studio.report.generate")).toBeNull();
     expect(resolveLimit("free", "studio.report.ai_assist")).toBeNull();
+    expect(resolveLimit("free", "numeria.report.ai_generate")).toBeNull();
     expect(resolveLimit("pro", "velvet.ai.organize_suggest")).toBeNull();
   });
 
@@ -31,6 +32,8 @@ describe("plan usage policy", () => {
   it("allows Free-tier Numeria AI assistance without reusing the appraisal completion limit", () => {
     expect(isCapabilityAllowed("free", "studio.report.ai_assist")).toBe(true);
     expect(isCapabilityAllowed("pro", "studio.report.ai_assist")).toBe(true);
+    expect(isCapabilityAllowed("free", "numeria.report.ai_generate")).toBe(true);
+    expect(isCapabilityAllowed("pro", "numeria.report.ai_generate")).toBe(true);
   });
 
   it("keeps canonical Pro AI features Pro-only", () => {

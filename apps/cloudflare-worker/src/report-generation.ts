@@ -151,7 +151,7 @@ const TASK_PROMPT = [
   "Do not include generationId, prompt metadata, model metadata, usage, or timestamps; AI Platform Core adds those after validation.",
 ].join("\n");
 
-const KNOWLEDGE: Readonly<Record<string, { knowledgeKey: string; version: string; instruction: string }>> = {
+const KNOWLEDGE = {
   numerology: {
     knowledgeKey: "numeria.numerology.interpretation",
     version: "1.0.0",

@@ -68,6 +68,34 @@ describe("Numeria AI report contract", () => {
     expect(parseStudioAIReportRequest({ ...validRequest(), reportId: "must-not-be-owned-by-apc" })).toBeUndefined();
   });
 
+  it("requires canonical characterVersion while allowing the deprecated version alias only as optional compatibility data", () => {
+    const canonical = validRequest();
+    expect(parseStudioAIReportRequest(canonical)).toBeDefined();
+
+    const aliasOnly = validRequest();
+    const character = aliasOnly.characterSnapshot as Record<string, unknown>;
+    delete character.characterVersion;
+    character.version = "legacy-only";
+    expect(parseStudioAIReportRequest(aliasOnly)).toBeUndefined();
+
+    expect(
+      parseStudioAIReportRequest({
+        ...validRequest(),
+        characterSnapshot: { ...validRequest().characterSnapshot, version: "legacy-alias" },
+      }),
+    ).toBeDefined();
+  });
+
+  it("allows divination-specific confirmed-result fields permitted by the canonical schema", () => {
+    const request = validRequest();
+    request.confirmedResult.results[0] = {
+      ...request.confirmedResult.results[0],
+      cardOrientation: "upright",
+      spreadPosition: "present",
+    } as typeof request.confirmedResult.results[number];
+    expect(parseStudioAIReportRequest(request)).toBeDefined();
+  });
+
   it("rejects the wrong contract or feature key", () => {
     expect(parseStudioAIReportRequest({ ...validRequest(), contractVersion: "studio-ai-report.v2" })).toBeUndefined();
     expect(parseStudioAIReportRequest({ ...validRequest(), featureKey: "studio.report.generate" })).toBeUndefined();

@@ -260,7 +260,7 @@ function integrationStatus(): Response {
     contractVersion: "0.1.0",
     identityMode: "workspaceId+userId",
     professionalIdRequired: false,
-    sourceOfTruth: ["AI Activity", "AI Usage", "AI Capability", "AI Runtime"],
+    sourceOfTruth: ["AI Activity", "AI Usage", "AI Capability", "AI Runtime", "AI Prompt", "AI Knowledge"],
     notSourceOfTruth: [
       "Subscription",
       "Pricing",
@@ -272,6 +272,12 @@ function integrationStatus(): Response {
       "Conversation",
       "Message",
       "MessageDraft",
+      "Appraisal Session",
+      "Character Master",
+      "Confirmed Divination Result",
+      "Formal Report",
+      "Report Snapshot",
+      "PDF",
     ],
     apps: [
       {

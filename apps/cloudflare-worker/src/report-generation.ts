@@ -504,7 +504,7 @@ export async function handleStudioAIReportGeneration(
     `trace_${crypto.randomUUID()}`;
   const body = parseStudioAIReportRequest(raw);
   if (body === undefined) {
-    if (rawRecord !== undefined && "characterSnapshot" in rawRecord && !validateCharacter(rawRecord.characterSnapshot)) {
+    if (rawRecord !== undefined && !validateCharacter(rawRecord.characterSnapshot)) {
       return errorResult(400, "CHARACTER_INVALID", "Character Snapshot is malformed or does not conform to the contract.", correlationId, traceId, false);
     }
     const confirmed = rawRecord?.confirmedResult;

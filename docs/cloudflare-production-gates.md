@@ -51,6 +51,18 @@ Cloudflare migration is complete only when every required gate below passes.
 - OpenAI execution uses the OpenAI Responses API provider when `OPENAI_API_KEY` is available.
 - `/v1/providers/status` must report OpenAI configured in Production, and no secret value may appear in the response.
 
+## Numeria AI report generation gate
+- `POST /api/v1/generations/report` accepts only `studio-ai-report.v1` requests from `numeria-studio`.
+- Canonical feature key is `numeria.report.ai_generate`.
+- Production smoke generation uses the real managed OpenAI Responses provider.
+- OpenAI Structured Outputs constrains the model draft and APC validates the returned draft again before recording Activity or Usage.
+- Generation applies Base Policy, versioned Domain Knowledge, Character, Tone, Task Prompt, and Numeria Input Data as separate instruction layers.
+- Custom Character is style configuration and cannot override Base Policy, confirmed Numeria results, safety rules, or output schema.
+- Supported V1 knowledge includes versioned Numerology and Tarot interpretation rules; APC never performs Numeria's deterministic calculations or tarot draw.
+- Successful response is an AI Draft only and must not contain formal Report/PDF ownership fields.
+- Activity, Analytics Usage, and plan Usage are recorded internally after output validation; Numeria does not make separate Usage/Activity registration calls.
+- Production smoke verifies `generationId`, trace/correlation propagation, prompt version, knowledge version, model metadata, structured sections, and Usage persistence.
+
 ## Persistence and data minimization
 - Activity created in one request can be read in a later request.
 - Persisted Activity records retain operational metadata but redact free-form `goal`, `context`, `input`, provider `output`, and feedback `memo`.

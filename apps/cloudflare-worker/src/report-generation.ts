@@ -426,7 +426,7 @@ const validateGeneratedDraft = (value: unknown, request: StudioAIReportRequest):
       key: section.key,
       heading: section.heading,
       body: section.body,
-      ...(section.warnings === undefined ? {} : { warnings: section.warnings as string[] }),
+      ...(section.warnings === undefined ? {} : { warnings: section.warnings }),
     });
   }
   const requiredKeys = request.outputFormat.sections.filter((section) => section.required !== false).map((section) => section.key);
@@ -437,7 +437,7 @@ const validateGeneratedDraft = (value: unknown, request: StudioAIReportRequest):
     lead: value.lead,
     sections,
     closing: value.closing,
-    warnings: value.warnings as string[],
+    warnings: value.warnings,
   };
 };
 

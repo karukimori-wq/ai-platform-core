@@ -151,5 +151,5 @@ describe("Numeria AI report contract", () => {
       "```",
     ].join("\n");
     expect(parseGeneratedDraft(fenced, parsed)).toBeDefined();
-  });;
+  });
 });

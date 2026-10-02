@@ -94,8 +94,8 @@ function releaseStatus(env: Env): Response {
     },
     identityMode: "workspaceId+userId",
     professionalIdRequired: false,
-    sourceOfTruth: ["AI Activity", "AI Usage", "AI Capability", "AI Runtime"],
-    notSourceOfTruth: ["Subscription", "Pricing", "Payment", "Customer", "Reservation", "Sales"],
+    sourceOfTruth: ["AI Activity", "AI Usage", "AI Capability", "AI Runtime", "AI Prompt", "AI Knowledge"],
+    notSourceOfTruth: ["Subscription", "Pricing", "Payment", "Customer", "Reservation", "Sales", "Appraisal Session", "Character Master", "Confirmed Divination Result", "Formal Report", "Report Snapshot", "PDF"],
     forbiddenUsagePayloads: [
       "fullAppraisalText",
       "fullConsultationText",

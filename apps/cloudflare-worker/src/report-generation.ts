@@ -195,6 +195,9 @@ const hasOnlyFields = (value: Record<string, unknown>, fields: ReadonlySet<strin
 const optionalString = (value: unknown): value is string | undefined =>
   value === undefined || typeof value === "string";
 
+const optionalNonEmptyString = (value: unknown): value is string | undefined =>
+  value === undefined || isNonEmptyString(value);
+
 const validDateTime = (value: unknown): boolean =>
   value === undefined || (typeof value === "string" && !Number.isNaN(Date.parse(value)));
 
@@ -282,15 +285,15 @@ export function parseStudioAIReportRequest(value: unknown): StudioAIReportReques
   if (
     value.contractVersion !== NUMERIA_REPORT_CONTRACT_VERSION ||
     value.appName !== "numeria-studio" ||
-    !optionalString(value.appVersion) ||
+    !optionalNonEmptyString(value.appVersion) ||
     !isNonEmptyString(value.workspaceId) ||
     !isNonEmptyString(value.userId) ||
     !isNonEmptyString(value.sessionId) ||
     (value.planId !== "free" && value.planId !== "pro" && value.planId !== "business") ||
     value.featureKey !== NUMERIA_REPORT_FEATURE_KEY ||
-    !optionalString(value.traceId) ||
+    !optionalNonEmptyString(value.traceId) ||
     !isNonEmptyString(value.correlationId) ||
-    !isNonEmptyString(value.locale) ||
+    !isNonEmptyString(value.locale) || value.locale.length < 2 ||
     !validateCharacter(value.characterSnapshot) ||
     !validateConsultation(value.consultationRequest) ||
     !validateDivination(value.divination) ||
@@ -366,8 +369,17 @@ const stripCodeFence = (text: string): string => {
   return trimmed.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
 };
 
+const GENERATED_DRAFT_FIELDS = new Set(["title", "lead", "sections", "closing", "warnings"]);
+const GENERATED_SECTION_FIELDS = new Set(["key", "heading", "body", "warnings"]);
+
 const validateGeneratedDraft = (value: unknown, request: StudioAIReportRequest): GeneratedDraft | undefined => {
-  if (!isRecord(value) || !isNonEmptyString(value.title) || !isNonEmptyString(value.lead) || typeof value.closing !== "string") {
+  if (
+    !isRecord(value) ||
+    !hasOnlyFields(value, GENERATED_DRAFT_FIELDS) ||
+    !isNonEmptyString(value.title) ||
+    !isNonEmptyString(value.lead) ||
+    typeof value.closing !== "string"
+  ) {
     return undefined;
   }
   if (!Array.isArray(value.sections) || value.sections.length === 0 || !Array.isArray(value.warnings) || !value.warnings.every((x) => typeof x === "string")) {
@@ -377,6 +389,7 @@ const validateGeneratedDraft = (value: unknown, request: StudioAIReportRequest):
   for (const section of value.sections) {
     if (
       !isRecord(section) ||
+      !hasOnlyFields(section, GENERATED_SECTION_FIELDS) ||
       !isNonEmptyString(section.key) ||
       !isNonEmptyString(section.heading) ||
       !isNonEmptyString(section.body) ||
@@ -449,17 +462,35 @@ export async function handleStudioAIReportGeneration(
   request: Request,
   dependencies: ReportGenerationDependencies,
 ): Promise<ReportGenerationResult> {
-  const traceId = request.headers.get("x-trace-id") ?? `trace_${crypto.randomUUID()}`;
   let raw: unknown;
   try {
     raw = await request.json();
   } catch {
+    const traceId = request.headers.get("x-trace-id") ?? `trace_${crypto.randomUUID()}`;
     return errorResult(400, "INVALID_INPUT", "Request body must be valid JSON.", "", traceId, false);
   }
 
+  const rawRecord = isRecord(raw) ? raw : undefined;
+  const correlationId = typeof rawRecord?.correlationId === "string" ? rawRecord.correlationId : "";
+  const traceId =
+    request.headers.get("x-trace-id") ??
+    (typeof rawRecord?.traceId === "string" && rawRecord.traceId.trim().length > 0 ? rawRecord.traceId : undefined) ??
+    `trace_${crypto.randomUUID()}`;
   const body = parseStudioAIReportRequest(raw);
-  const correlationId = isRecord(raw) && typeof raw.correlationId === "string" ? raw.correlationId : "";
   if (body === undefined) {
+    if (rawRecord !== undefined && "characterSnapshot" in rawRecord && !validateCharacter(rawRecord.characterSnapshot)) {
+      return errorResult(400, "CHARACTER_INVALID", "Character Snapshot is malformed or does not conform to the contract.", correlationId, traceId, false);
+    }
+    const confirmed = rawRecord?.confirmedResult;
+    if (
+      isRecord(confirmed) &&
+      (typeof confirmed.summary !== "string" ||
+        confirmed.summary.trim().length === 0 ||
+        !Array.isArray(confirmed.results) ||
+        confirmed.results.length === 0)
+    ) {
+      return errorResult(422, "INSUFFICIENT_READING_DATA", "Confirmed appraisal result is missing required reading data.", correlationId, traceId, false);
+    }
     return errorResult(
       400,
       "INVALID_INPUT",
@@ -478,7 +509,13 @@ export async function handleStudioAIReportGeneration(
   if (knowledge === undefined) {
     return errorResult(422, "UNSUPPORTED_DIVINATION", "One or more divination methodKey values are not supported.", body.correlationId, traceId, false, generationId);
   }
-  if (body.confirmedResult.results.some((result) => !body.divination.methods.some((method) => method.methodKey === result.methodKey))) {
+  if (
+    body.confirmedResult.results.some(
+      (result) =>
+        Object.keys(result.data).length === 0 ||
+        !body.divination.methods.some((method) => method.methodKey === result.methodKey),
+    )
+  ) {
     return errorResult(422, "INSUFFICIENT_READING_DATA", "confirmedResult contains a method that is not present in divination.methods.", body.correlationId, traceId, false, generationId);
   }
 
@@ -558,7 +595,10 @@ export async function handleStudioAIReportGeneration(
   return {
     status: 200,
     body: {
-      status: draft.warnings.length > 0 ? "warning" : "success",
+      status:
+        draft.warnings.length > 0 || draft.sections.some((section) => (section.warnings?.length ?? 0) > 0)
+          ? "warning"
+          : "success",
       generationId,
       traceId,
       correlationId: body.correlationId,

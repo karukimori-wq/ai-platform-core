@@ -198,7 +198,14 @@ Generation instruction layers are kept separate and applied in this order:
 Numeria sends confirmed appraisal data for generation. APC may use that content
 transiently to generate the draft, but persisted Activity and Usage records do
 not retain the consultation/appraisal body. Character is a structured snapshot,
-not a raw system prompt, and cannot override Base Policy.
+not a raw system prompt, and cannot override Base Policy. The canonical Character
+version field is `characterVersion`; the request schema retains `version` only
+as a deprecated optional compatibility alias. Policy-override attempts in
+Character instructions are rejected as `CHARACTER_INVALID` before model execution.
+
+A successful generation response always includes `draftType: "ai_draft"`.
+That value is a hard ownership boundary: the response is not a formal Numeria
+Report, Report Snapshot, or PDF.
 
 For report generation the processing order is:
 

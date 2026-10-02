@@ -53,6 +53,7 @@ const FREE_AND_PRO_AI_FEATURES = new Set([
   // Legacy APC keys retained while app integrations migrate.
   "studio.report.generate",
   "studio.report.ai_assist",
+  "numeria.report.ai_generate",
 ]);
 
 const PRO_ONLY_AI_FEATURES = new Set([

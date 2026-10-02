@@ -7,11 +7,18 @@ export interface AIMessage {
   readonly content: string;
 }
 
+export interface AIStructuredOutputFormat {
+  readonly name: string;
+  readonly schema: Readonly<Record<string, unknown>>;
+  readonly strict?: boolean;
+}
+
 export interface AIProviderRequest {
   readonly model: string;
   readonly messages: readonly AIMessage[];
   readonly input?: Readonly<Record<string, unknown>>;
   readonly metadata?: Readonly<Record<string, unknown>>;
+  readonly structuredOutput?: AIStructuredOutputFormat;
 }
 
 export interface AIProviderResponse {
@@ -236,6 +243,18 @@ export const createOpenAIResponsesProvider = (config: OpenAIResponsesProviderCon
           model: request.model,
           input: toResponsesInput(request.messages),
           store: false,
+          ...(request.structuredOutput === undefined
+            ? {}
+            : {
+                text: {
+                  format: {
+                    type: "json_schema",
+                    name: request.structuredOutput.name,
+                    strict: request.structuredOutput.strict ?? true,
+                    schema: request.structuredOutput.schema,
+                  },
+                },
+              }),
           ...(request.metadata === undefined ? {} : { metadata: request.metadata })
         })
       });

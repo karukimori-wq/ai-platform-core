@@ -236,6 +236,7 @@ export const createCloudflarePlatformRuntime = (options: CloudflareRuntimeOption
     capabilities: [
       "studio.report.generate",
       "studio.report.ai_assist",
+      "numeria.report.ai_generate",
       "numeria.report.wording_adjustment",
     ],
     knowledge: [],

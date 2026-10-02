@@ -272,6 +272,30 @@ const validateCharacter = (value: unknown): value is CharacterSnapshot => {
   );
 };
 
+const characterViolatesBasePolicy = (character: CharacterSnapshot): boolean => {
+  const text = [
+    character.personality ?? "",
+    character.speakingStyle ?? "",
+    ...(character.writingRules ?? []),
+    character.customInstruction ?? "",
+  ]
+    .join("\n")
+    .toLowerCase();
+
+  const forbiddenPatterns = [
+    /ignore\s+(all\s+)?(previous|system|base|safety)/,
+    /override\s+(the\s+)?(system|base|safety|policy|schema)/,
+    /reveal\s+(the\s+)?(system|base|prompt|instructions?)/,
+    /change\s+(the\s+)?confirmed\s+(result|reading)/,
+    /invent\s+(a\s+)?(result|reading|card|number)/,
+    /base\s*policy.{0,20}(ignore|override|disable)/,
+    /(base\s*policy|system\s*prompt).{0,20}(無視|上書き|変更|解除|表示)/,
+    /(確定済み|確定した).{0,20}(鑑定結果|結果|数値|カード).{0,20}(変更|書き換え|上書き)/,
+    /(存在しない|未提供).{0,20}(鑑定結果|カード|数値).{0,20}(追加|生成|捏造)/,
+  ];
+  return forbiddenPatterns.some((pattern) => pattern.test(text));
+};
+
 const validateConsultation = (value: unknown): value is ConsultationRequest =>
   isRecord(value) &&
   hasOnlyFields(value, CONSULTATION_FIELDS) &&
@@ -554,6 +578,16 @@ export async function handleStudioAIReportGeneration(
       "INVALID_INPUT",
       "Request does not conform to studio-ai-report-request.v1.",
       correlationId,
+      traceId,
+      false,
+    );
+  }
+  if (characterViolatesBasePolicy(body.characterSnapshot)) {
+    return errorResult(
+      400,
+      "CHARACTER_INVALID",
+      "Character Snapshot attempts to override protected AI Platform Core policy or confirmed appraisal facts.",
+      body.correlationId,
       traceId,
       false,
     );

@@ -188,7 +188,7 @@ jobs:
             "characterSnapshot":{
               "characterId":"production-smoke-gentle",
               "type":"preset",
-              "version":"1",
+              "characterVersion":"1",
               "name":"やさしい占い師",
               "personality":"落ち着いて寄り添う",
               "speakingStyle":"やわらかく明確",

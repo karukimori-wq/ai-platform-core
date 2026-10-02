@@ -88,11 +88,10 @@ describe("Numeria AI report contract", () => {
 
   it("allows divination-specific confirmed-result fields permitted by the canonical schema", () => {
     const request = validRequest();
-    request.confirmedResult.results[0] = {
-      ...request.confirmedResult.results[0],
+    Object.assign(request.confirmedResult.results[0] ?? {}, {
       cardOrientation: "upright",
       spreadPosition: "present",
-    } as typeof request.confirmedResult.results[number];
+    });
     expect(parseStudioAIReportRequest(request)).toBeDefined();
   });
 

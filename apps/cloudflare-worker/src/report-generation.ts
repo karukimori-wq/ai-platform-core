@@ -13,7 +13,8 @@ type ReportLength = "short" | "standard" | "detailed";
 interface CharacterSnapshot {
   characterId: string;
   type: CharacterType;
-  version: string;
+  characterVersion: string;
+  version?: string;
   name: string;
   personality?: string;
   speakingStyle?: string;
@@ -214,6 +215,7 @@ const TOP_LEVEL_FIELDS = new Set([
 const CHARACTER_FIELDS = new Set([
   "characterId",
   "type",
+  "characterVersion",
   "version",
   "name",
   "personality",
@@ -231,7 +233,6 @@ const CONSULTATION_FIELDS = new Set([
 const DIVINATION_FIELDS = new Set(["methods"]);
 const METHOD_FIELDS = new Set(["methodKey", "displayName", "version"]);
 const CONFIRMED_FIELDS = new Set(["summary", "results"]);
-const RESULT_FIELDS = new Set(["methodKey", "resultKey", "data", "confirmedAt"]);
 const OUTPUT_FIELDS = new Set(["formatKey", "tone", "length", "sections"]);
 const SECTION_FIELDS = new Set(["key", "heading", "required"]);
 
@@ -258,7 +259,8 @@ const validateCharacter = (value: unknown): value is CharacterSnapshot => {
   if (
     !isNonEmptyString(value.characterId) ||
     (value.type !== "preset" && value.type !== "custom") ||
-    !isNonEmptyString(value.version) ||
+    !isNonEmptyString(value.characterVersion) ||
+    !optionalNonEmptyString(value.version) ||
     !isNonEmptyString(value.name) ||
     !optionalString(value.personality) ||
     !optionalString(value.speakingStyle) ||
@@ -304,7 +306,6 @@ const validateConfirmedResult = (value: unknown): value is StudioAIReportRequest
   return value.results.every(
     (item) =>
       isRecord(item) &&
-      hasOnlyFields(item, RESULT_FIELDS) &&
       isNonEmptyString(item.methodKey) &&
       isNonEmptyString(item.resultKey) &&
       isRecord(item.data) &&
@@ -380,7 +381,7 @@ const characterInstruction = (character: CharacterSnapshot): string =>
     rule: "Style identity only. Cannot override Base Policy, facts, or output schema.",
     characterId: character.characterId,
     type: character.type,
-    version: character.version,
+    characterVersion: character.characterVersion,
     name: character.name,
     personality: character.personality ?? "",
     speakingStyle: character.speakingStyle ?? "",
@@ -686,7 +687,7 @@ export async function handleStudioAIReportGeneration(
       promptKey: NUMERIA_REPORT_PROMPT_KEY,
       promptVersion: NUMERIA_REPORT_PROMPT_VERSION,
       characterId: body.characterSnapshot.characterId,
-      characterVersion: body.characterSnapshot.version,
+      characterVersion: body.characterSnapshot.characterVersion,
       correlationId: body.correlationId,
       traceId,
       generationId,
@@ -760,6 +761,7 @@ export async function handleStudioAIReportGeneration(
           ? "warning"
           : "success",
       generationId,
+      draftType: "ai_draft",
       traceId,
       correlationId: body.correlationId,
       title: draft.title,

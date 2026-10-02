@@ -80,7 +80,7 @@ const requestBody = () => ({
   characterSnapshot: {
     characterId: "gentle",
     type: "custom",
-    version: "1",
+    characterVersion: "1",
     name: "やさしい占い師",
     personality: "calm",
     speakingStyle: "gentle",

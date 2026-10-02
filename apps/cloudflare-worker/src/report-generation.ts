@@ -496,7 +496,12 @@ const errorResult = (
 });
 
 const mapGatewayError = (code: string): { code: string; status: number; retryable: boolean } => {
-  if (code === "PROVIDER_NOT_FOUND" || code === "GATEWAY_PROVIDER_NOT_AVAILABLE") {
+  if (
+    code === "PROVIDER_NOT_FOUND" ||
+    code === "GATEWAY_PROVIDER_NOT_AVAILABLE" ||
+    code === "SECRET_NOT_FOUND" ||
+    code === "SECRET_STORE_UNAVAILABLE"
+  ) {
     return { code: "SERVICE_UNAVAILABLE", status: 503, retryable: true };
   }
   if (code === "PROVIDER_HTTP_ERROR" || code === "PROVIDER_INVALID_RESPONSE" || code === "GATEWAY_PROVIDER_RETRY_FAILED") {
@@ -611,29 +616,43 @@ export async function handleStudioAIReportGeneration(
   }
   const model = client.value.defaultModel ?? "gpt-4.1-mini";
   const startedAt = (dependencies.now?.() ?? new Date()).getTime();
-  const providerResult = await provider.value.chat({
-    model,
-    messages,
-    input: {
-      contractVersion: body.contractVersion,
-      sessionId: body.sessionId,
-      locale: body.locale,
-    },
-    structuredOutput: {
-      name: "numeria_ai_report_draft_v1",
-      schema: REPORT_DRAFT_SCHEMA,
-      strict: true,
-    },
-    metadata: {
-      generationId,
-      workspaceId: body.workspaceId,
-      userId: body.userId,
-      sessionId: body.sessionId,
-      featureKey: body.featureKey,
-      correlationId: body.correlationId,
+  const providerResult = await provider.value
+    .chat({
+      model,
+      messages,
+      input: {
+        contractVersion: body.contractVersion,
+        sessionId: body.sessionId,
+        locale: body.locale,
+      },
+      structuredOutput: {
+        name: "numeria_ai_report_draft_v1",
+        schema: REPORT_DRAFT_SCHEMA,
+        strict: true,
+      },
+      metadata: {
+        generationId,
+        workspaceId: body.workspaceId,
+        userId: body.userId,
+        sessionId: body.sessionId,
+        featureKey: body.featureKey,
+        correlationId: body.correlationId,
+        traceId,
+      },
+    })
+    .catch(() => undefined);
+
+  if (providerResult === undefined) {
+    return errorResult(
+      503,
+      "SERVICE_UNAVAILABLE",
+      "AI provider request could not be completed.",
+      body.correlationId,
       traceId,
-    },
-  });
+      true,
+      generationId,
+    );
+  }
 
   if (!providerResult.ok) {
     const mapped = mapGatewayError(providerResult.error.code);

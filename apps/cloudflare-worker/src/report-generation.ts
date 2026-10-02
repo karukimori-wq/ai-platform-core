@@ -172,6 +172,8 @@ const FORBIDDEN_GENERATION_KEYS = new Set([
   "paymentDetails",
   "paymentStatus",
   "salesAmount",
+  "salesDetails",
+  "stripe",
   "stripeCustomerId",
   "stripePaymentIntentId",
   "apiKey",
@@ -180,6 +182,9 @@ const FORBIDDEN_GENERATION_KEYS = new Set([
   "fullConversationHistory",
   "fullConversationText",
   "fullMessageText",
+  "snsDraftBody",
+  "postDraftBody",
+  "messageDraftBody",
   "fullReportBody",
   "fullAppraisalText",
   "fullConsultationText",
@@ -188,9 +193,17 @@ const FORBIDDEN_GENERATION_KEYS = new Set([
 export const containsForbiddenGenerationPayload = (value: unknown): boolean => {
   if (Array.isArray(value)) return value.some((item) => containsForbiddenGenerationPayload(item));
   if (!isRecord(value)) return false;
-  return Object.entries(value).some(
-    ([key, nested]) => FORBIDDEN_GENERATION_KEYS.has(key) || containsForbiddenGenerationPayload(nested),
-  );
+  return Object.entries(value).some(([key, nested]) => {
+    const normalizedKey = key.toLowerCase();
+    const forbiddenKey = [...FORBIDDEN_GENERATION_KEYS].some(
+      (candidate) => candidate.toLowerCase() === normalizedKey,
+    );
+    const forbiddenFamily =
+      normalizedKey.startsWith("stripe") ||
+      normalizedKey === "apikey" ||
+      normalizedKey === "secretprompt";
+    return forbiddenKey || forbiddenFamily || containsForbiddenGenerationPayload(nested);
+  });
 };
 
 const TOP_LEVEL_FIELDS = new Set([

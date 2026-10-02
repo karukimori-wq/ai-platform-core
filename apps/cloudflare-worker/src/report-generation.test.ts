@@ -3,6 +3,7 @@ import {
   NUMERIA_REPORT_CONTRACT_VERSION,
   NUMERIA_REPORT_FEATURE_KEY,
   buildReportMessages,
+  containsForbiddenGenerationPayload,
   parseGeneratedDraft,
   parseStudioAIReportRequest,
 } from "./report-generation.js";
@@ -72,6 +73,19 @@ describe("Numeria AI report contract", () => {
     expect(parseStudioAIReportRequest({ ...validRequest(), featureKey: "studio.report.generate" })).toBeUndefined();
   });
 
+  it("rejects forbidden customer/payment/secret payloads even when nested in an allowed snapshot", () => {
+    expect(
+      containsForbiddenGenerationPayload({
+        consultationRequest: { appraisalClientSnapshot: { paymentDetails: { amount: 1000 } } },
+      }),
+    ).toBe(true);
+    expect(
+      containsForbiddenGenerationPayload({
+        consultationRequest: { appraisalClientSnapshot: { nickname: "相談者A" } },
+      }),
+    ).toBe(false);
+  });
+
   it("keeps Base Policy, Domain Knowledge, Character, Tone, Task and Numeria input separated", () => {
     const parsed = parseStudioAIReportRequest(validRequest());
     expect(parsed).toBeDefined();
@@ -105,6 +119,7 @@ describe("Numeria AI report contract", () => {
       warnings: [],
     });
     expect(parseGeneratedDraft(valid, parsed)).toBeDefined();
+    expect(parseGeneratedDraft(JSON.stringify({ ...JSON.parse(valid), reportId: "formal-report-must-not-be-here" }), parsed)).toBeUndefined();
 
     const missingSection = JSON.stringify({
       title: "鑑定書",

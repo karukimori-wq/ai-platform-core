@@ -1,3 +1,15 @@
+## 0.1.44 - Numeria structured AI report generation
+
+- Added `POST /api/v1/generations/report` for `studio-ai-report.v1`.
+- Added canonical `numeria.report.ai_generate` entitlement for the current Free / Pro release without inventing an APC numeric AI-call quota.
+- Added separated Base Policy, Domain Knowledge, Character, Tone, Task Prompt and Numeria Input layers.
+- Added versioned Numerology/Tarot knowledge metadata and prompt version metadata.
+- Added OpenAI Responses API Structured Outputs support plus APC-side output validation.
+- Activity, Analytics Usage and plan Usage are recorded internally only after output validation succeeds.
+- Added Character validation, data-minimization guards and canonical generation error mapping.
+- Kept formal Report, Report Snapshot and PDF ownership in Numeria Studio.
+- Added Production smoke verification for real Numeria report generation.
+
 # Changelog
 
 ## 0.1.43

@@ -1,3 +1,42 @@
+## 2026-10-02 - Free / Pro production verification completed
+
+### Repository
+
+- `karukimori-wq/ai-platform-core`
+
+### Production verification
+
+- Workflow: `Cloudflare Production`
+- Run ID: `36953840715` (run #25)
+- Head SHA: `986c51d9a5793506318e63c50fb229f6e64041fd`
+- Result: `completed / success`
+- Production URL: `https://ai-platform-core.karukimori.workers.dev`
+
+### Verified
+
+- Free / Pro shared plan-contract checks passed with current AI features reporting `limit=null` where no numeric AI-call quota exists.
+- Canonical Pro entitlement `numeria.report.wording_adjustment` passed.
+- Business remained recognized but unavailable and not purchasable.
+- `/version.commitSha` and `/release/status.appVersion` both returned the deployed head SHA.
+- OpenAI Responses provider reported configured without exposing secret values.
+- D1 readiness and persistence roundtrip passed.
+- Event persistence and trace/correlation propagation passed.
+- Activity, Usage, Outcome/Feedback, and Prompt Template persistence passed.
+- Workspace/user isolation checks passed.
+
+### Incident closure
+
+Two earlier false-red production checks were hardened:
+
+1. Plan API verification now polls until the newly deployed contract is visible instead of accepting the first HTTP 200 response.
+2. Release status commit resolution now falls back from the Worker binding to `process.env.COMMIT_SHA` / `VERCEL_GIT_COMMIT_SHA`, matching the version endpoint behavior.
+
+The production workflow now validates the deployed commit identity and shared Free / Pro contract before persistence E2E checks continue.
+
+### Status
+
+Free / Pro APC release readiness: `completed`.
+
 # AI Platform Core Development Log
 
 This file records development handoffs that should be easy to ingest into External Intelligence or summarize for other app teams.

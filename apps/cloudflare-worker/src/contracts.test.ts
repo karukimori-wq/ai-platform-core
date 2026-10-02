@@ -49,6 +49,9 @@ describe("Cloudflare Worker contracts", () => {
     expect(source).toContain("communication.reply.generate");
     expect(source).toContain("studio.report.ai_assist");
     expect(source).toContain("numeria.report.wording_adjustment");
+    expect(source).toContain("numeria.report.ai_generate");
+    expect(source).toContain("/api/v1/generations/report");
+    expect(source).toContain("studio-ai-report.v1");
     expect(source).toContain("velvet.ai.organize_suggest");
     expect(source).toContain("velvet.memory.summary");
     expect(source).toContain("MessageDraft");

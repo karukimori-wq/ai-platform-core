@@ -121,9 +121,6 @@ describe("Numeria AI report contract", () => {
     expect(parsed).toBeDefined();
     if (parsed === undefined) return;
 
-    const fenced = ````json
-{"title":"鑑定書","lead":"導入","sections":[{"key":"overview","heading":"全体","body":"本文"},{"key":"advice","heading":"アドバイス","body":"本文"}],"closing":"","warnings":[]}
-````;
-    expect(parseGeneratedDraft(fenced, parsed)).toBeDefined();
+    const fenced = "```json\\n{\\\"title\\\":\\\"鑑定書\\\",\\\"lead\\\":\\\"導入\\\",\\\"sections\\\":[{\\\"key\\\":\\\"overview\\\",\\\"heading\\\":\\\"全体\\\",\\\"body\\\":\\\"本文\\\"},{\\\"key\\\":\\\"advice\\\",\\\"heading\\\":\\\"アドバイス\\\",\\\"body\\\":\\\"本文\\\"}],\\\"closing\\\":\\\"\\\",\\\"warnings\\\":[]}\\n```";\n    expect(parseGeneratedDraft(fenced, parsed)).toBeDefined();
   });
 });

@@ -291,9 +291,17 @@ function integrationStatus(): Response {
         capabilities: [
           "studio.report.generate",
           "studio.report.ai_assist",
+          "numeria.report.ai_generate",
           "numeria.report.wording_adjustment",
         ],
-        inputRefOnly: true,
+        inputRefOnly: false,
+        generationInputContract: {
+          contractVersion: "studio-ai-report.v1",
+          endpoint: "/api/v1/generations/report",
+          allowsConfirmedNumeriaResultForGenerationOnly: true,
+          persistsGenerationInputInActivityOrUsage: false,
+          formalReportOwnedByNumeria: true,
+        },
         forbiddenPayloadFields: forbidden,
       },
       {
@@ -340,6 +348,7 @@ function integrationStatus(): Response {
     endpoints: {
       activityCreate: "/api/activities",
       gatewayRun: "/v1/gateway/run",
+      numeriaReportGeneration: "/api/v1/generations/report",
       usageRead: "/v1/analytics/usage",
       planUsageRead: "/v1/usage",
       entitlementRead: "/v1/entitlements",

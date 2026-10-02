@@ -116,6 +116,32 @@ const BASE_POLICY = [
   "Return only the requested JSON draft. Do not include Markdown fences or commentary outside the JSON.",
 ].join("\n");
 
+const REPORT_DRAFT_SCHEMA: Readonly<Record<string, unknown>> = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    title: { type: "string" },
+    lead: { type: "string" },
+    sections: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          key: { type: "string" },
+          heading: { type: "string" },
+          body: { type: "string" },
+          warnings: { type: "array", items: { type: "string" } },
+        },
+        required: ["key", "heading", "body", "warnings"],
+      },
+    },
+    closing: { type: "string" },
+    warnings: { type: "array", items: { type: "string" } },
+  },
+  required: ["title", "lead", "sections", "closing", "warnings"],
+};
+
 const TASK_PROMPT = [
   "Create one structured appraisal report draft.",
   "Use only the supplied consultation request and confirmedResult as appraisal facts.",
@@ -592,6 +618,11 @@ export async function handleStudioAIReportGeneration(
       contractVersion: body.contractVersion,
       sessionId: body.sessionId,
       locale: body.locale,
+    },
+    structuredOutput: {
+      name: "numeria_ai_report_draft_v1",
+      schema: REPORT_DRAFT_SCHEMA,
+      strict: true,
     },
     metadata: {
       generationId,

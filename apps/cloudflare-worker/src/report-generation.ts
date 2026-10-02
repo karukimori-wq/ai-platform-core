@@ -140,6 +140,32 @@ const KNOWLEDGE: Readonly<Record<string, { knowledgeKey: string; version: string
   },
 };
 
+const FORBIDDEN_GENERATION_KEYS = new Set([
+  "customerMaster",
+  "paymentDetails",
+  "paymentStatus",
+  "salesAmount",
+  "stripeCustomerId",
+  "stripePaymentIntentId",
+  "apiKey",
+  "secret",
+  "secretPrompt",
+  "fullConversationHistory",
+  "fullConversationText",
+  "fullMessageText",
+  "fullReportBody",
+  "fullAppraisalText",
+  "fullConsultationText",
+]);
+
+export const containsForbiddenGenerationPayload = (value: unknown): boolean => {
+  if (Array.isArray(value)) return value.some((item) => containsForbiddenGenerationPayload(item));
+  if (!isRecord(value)) return false;
+  return Object.entries(value).some(
+    ([key, nested]) => FORBIDDEN_GENERATION_KEYS.has(key) || containsForbiddenGenerationPayload(nested),
+  );
+};
+
 const TOP_LEVEL_FIELDS = new Set([
   "contractVersion",
   "appName",
@@ -496,6 +522,16 @@ export async function handleStudioAIReportGeneration(
       "INVALID_INPUT",
       "Request does not conform to studio-ai-report-request.v1.",
       correlationId,
+      traceId,
+      false,
+    );
+  }
+  if (containsForbiddenGenerationPayload(body)) {
+    return errorResult(
+      400,
+      "INVALID_INPUT",
+      "Request contains data that is forbidden by the AI report generation data-minimization contract.",
+      body.correlationId,
       traceId,
       false,
     );

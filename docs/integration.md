@@ -9,6 +9,9 @@ Before changing cross-app behavior, read the latest main branch contracts,
 including:
 
 - `docs/contracts/plan-contract.md`
+- `docs/contracts/numeria-ai-report-contract.md`
+- `schemas/studio-ai-report-request.v1.schema.json`
+- `schemas/studio-ai-report-response.v1.schema.json`
 - `docs/release-readiness/free-pro-release-implementation-requests.md`
 - `docs/contracts/app-responsibilities.md`
 - `docs/contracts/identity-contract.md`
@@ -172,20 +175,60 @@ remain with the application that owns the corresponding domain record.
 Numeria Studio may call AI Platform Core for AI assistance around interpretation
 and report composition only.
 
-Canonical shared-plan capability currently registered for Pro is:
+The canonical structured report-draft generation capability is:
 
-- `numeria.report.wording_adjustment`
+- `numeria.report.ai_generate`
+- Endpoint: `POST /api/v1/generations/report`
+- Contract: `studio-ai-report.v1`
 
-Legacy APC compatibility aliases remain temporarily registered while the app
-integration migrates:
+The report-generation endpoint accepts only the request shape defined by
+`professional-platform-contracts/schemas/studio-ai-report-request.v1.schema.json`
+and returns a Structured Report Draft conforming to
+`studio-ai-report-response.v1.schema.json`.
 
-- `studio.report.generate`
-- `studio.report.ai_assist`
+Generation instruction layers are kept separate and applied in this order:
 
-The compatibility aliases do not create an APC-owned 20-call Free quota.
+1. Base Policy.
+2. Domain Knowledge.
+3. Character.
+4. Tone.
+5. Task Prompt.
+6. Numeria Input Data.
 
-Numeria Studio remains the source of truth for Sessions and Reports. AI Platform
-Core must not own appraisal records, Report Snapshots, customer master data,
+Numeria sends confirmed appraisal data for generation. APC may use that content
+transiently to generate the draft, but persisted Activity and Usage records do
+not retain the consultation/appraisal body. Character is a structured snapshot,
+not a raw system prompt, and cannot override Base Policy.
+
+For report generation the processing order is:
+
+```text
+Request validation
+  -> plan / feature / usage allowance
+  -> Base Policy + versioned Knowledge + Character + Tone + Task
+  -> model execution
+  -> Structured Output validation
+  -> Activity + Analytics Usage recording
+  -> plan Usage recording
+  -> Structured Report Draft response
+```
+
+APC's response is an AI Generation / AI Draft only. Numeria Studio alone reviews,
+edits, finalizes, stores the Report Snapshot, generates PDF, and emits
+`studio.report.generated.v1`.
+
+Other canonical/compatibility capabilities remain:
+
+- `numeria.report.wording_adjustment` (Pro)
+- `studio.report.generate` (legacy compatibility)
+- `studio.report.ai_assist` (legacy compatibility)
+
+These capabilities do not create an APC-owned 20-call Free quota. Numeria's
+20-completed-appraisals/month Free limit remains a Numeria Studio domain limit.
+
+Numeria Studio remains the source of truth for Session, confirmed divination
+results, Character master/version management, formal Report, Report Snapshot and
+PDF. AI Platform Core must not own those records, customer master data,
 reservations, payments, sales, or UI state.
 
 ## Velvet capabilities

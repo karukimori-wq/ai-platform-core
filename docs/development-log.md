@@ -17,9 +17,13 @@
 - Business remains unavailable.
 - Added versioned Base Policy, report Task Prompt, Numerology knowledge and Tarot knowledge.
 - Character Snapshot supports `preset` and `custom`; Character remains structured style configuration rather than a raw system prompt.
+- Current canonical schema requires `characterVersion`; deprecated `version` is accepted only as an optional compatibility alias when `characterVersion` is present.
+- Character policy-override attempts are rejected with `CHARACTER_INVALID` before provider execution.
 - Generation layers remain separate: Base Policy -> Domain Knowledge -> Character -> Tone -> Task Prompt -> Numeria Input Data.
 - Added OpenAI Responses API Structured Outputs support through `text.format` JSON Schema.
 - APC validates the generated draft again after provider execution.
+- Successful responses include the canonical `draftType: "ai_draft"` boundary.
+- Added orchestration tests proving valid output records Activity/Analytics/plan Usage, while invalid output and provider failures do not record successful Usage.
 - Activity, Analytics Usage and plan Usage are recorded only after output validation succeeds.
 - Generation content is transient; persisted Activity storage continues to redact context/input/provider output and Usage stores operational metadata only.
 - Added canonical errors for invalid input, character validation, unsupported divination, insufficient reading data, feature/usage denial, provider failure, output schema failure and service unavailability.

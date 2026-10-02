@@ -161,6 +161,104 @@ jobs:
           if (release.plans?.business?.releaseStatus !== 'unavailable' || release.plans?.business?.purchasable !== false) throw new Error('Production Business release status check failed');
           if (providers.status !== 'success' || providers.providers?.openai?.configured !== true || providers.secretValuesExposed !== false) throw new Error('Production provider readiness check failed');
           NODE
+      - name: Verify Numeria AI report generation
+        shell: bash
+        run: |
+          set -euo pipefail
+          RUN_ID="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          WORKSPACE="ws-numeria-report-${RUN_ID}"
+          USER="user-numeria-report-${RUN_ID}"
+          SESSION="session-numeria-report-${RUN_ID}"
+          TRACE="trace-numeria-report-${RUN_ID}"
+          CORR="corr-numeria-report-${RUN_ID}"
+
+          cat >/tmp/numeria-report-request.json <<EOF
+          {
+            "contractVersion":"studio-ai-report.v1",
+            "appName":"numeria-studio",
+            "appVersion":"$GITHUB_SHA",
+            "workspaceId":"$WORKSPACE",
+            "userId":"$USER",
+            "sessionId":"$SESSION",
+            "planId":"free",
+            "featureKey":"numeria.report.ai_generate",
+            "traceId":"$TRACE",
+            "correlationId":"$CORR",
+            "locale":"ja-JP",
+            "characterSnapshot":{
+              "characterId":"production-smoke-gentle",
+              "type":"preset",
+              "version":"1",
+              "name":"やさしい占い師",
+              "personality":"落ち着いて寄り添う",
+              "speakingStyle":"やわらかく明確",
+              "writingRules":["断定しすぎない"],
+              "customInstruction":""
+            },
+            "consultationRequest":{
+              "question":"これから仕事にどう向き合うとよいですか",
+              "theme":"仕事"
+            },
+            "divination":{
+              "methods":[{"methodKey":"numerology","displayName":"数秘術","version":"1"}]
+            },
+            "confirmedResult":{
+              "summary":"Numeria Studioでライフパス7として確定済み",
+              "results":[{"methodKey":"numerology","resultKey":"life-path","data":{"number":7}}]
+            },
+            "outputFormat":{
+              "formatKey":"production-smoke",
+              "tone":"やさしく寄り添う",
+              "length":"short",
+              "sections":[
+                {"key":"overview","heading":"鑑定結果","required":true},
+                {"key":"advice","heading":"これからのヒント","required":true}
+              ]
+            }
+          }
+          EOF
+
+          curl --fail-with-body --silent --show-error -X POST "$PRODUCTION_URL/api/v1/generations/report" \
+            -H 'content-type: application/json' \
+            -H "x-client-id: numeria-studio" \
+            -H "x-app-version: $GITHUB_SHA" \
+            -H "x-workspace-id: $WORKSPACE" \
+            -H "x-user-id: $USER" \
+            -H "x-trace-id: $TRACE" \
+            -H "x-correlation-id: $CORR" \
+            --data-binary @/tmp/numeria-report-request.json | tee /tmp/numeria-report-response.json
+
+          curl --fail --silent --show-error \
+            "$PRODUCTION_URL/v1/usage?appId=numeria-studio&appVersion=$GITHUB_SHA&workspaceId=$WORKSPACE&userId=$USER&planId=free&featureKey=numeria.report.ai_generate" \
+            -H "x-client-id: numeria-studio" \
+            -H "x-app-version: $GITHUB_SHA" \
+            -H "x-workspace-id: $WORKSPACE" \
+            -H "x-user-id: $USER" | tee /tmp/numeria-report-plan-usage.json
+
+          curl --fail --silent --show-error \
+            "$PRODUCTION_URL/v1/analytics/usage?client=numeria-studio&workspaceId=$WORKSPACE&userId=$USER&period=all" \
+            -H "x-client-id: numeria-studio" \
+            -H "x-workspace-id: $WORKSPACE" \
+            -H "x-user-id: $USER" | tee /tmp/numeria-report-analytics.json
+
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const response = JSON.parse(fs.readFileSync('/tmp/numeria-report-response.json', 'utf8'));
+          const planUsage = JSON.parse(fs.readFileSync('/tmp/numeria-report-plan-usage.json', 'utf8'));
+          const analytics = JSON.parse(fs.readFileSync('/tmp/numeria-report-analytics.json', 'utf8'));
+          if (!['success','warning'].includes(response.status)) throw new Error('Numeria AI report generation did not succeed');
+          if (typeof response.generationId !== 'string' || response.generationId.length === 0) throw new Error('Numeria generationId missing');
+          if (!String(response.correlationId).startsWith('corr-numeria-report-')) throw new Error('Numeria correlationId mismatch');
+          if (!String(response.traceId).startsWith('trace-numeria-report-')) throw new Error('Numeria traceId mismatch');
+          if (response.promptKey !== 'numeria.report.generate.structured' || response.promptVersion !== '1.0.0') throw new Error('Numeria prompt version contract failed');
+          if (!response.knowledgeVersions?.some((item) => item.knowledgeKey === 'numeria.numerology.interpretation' && item.version === '1.0.0')) throw new Error('Numeria knowledge version contract failed');
+          if (response.model?.provider !== 'openai' || typeof response.model?.modelId !== 'string') throw new Error('Numeria model contract failed');
+          if (!Array.isArray(response.sections) || !response.sections.some((section) => section.key === 'overview') || !response.sections.some((section) => section.key === 'advice')) throw new Error('Numeria structured sections failed');
+          if (response.usage?.usageRecorded !== true || response.usage?.limit !== null || response.usage?.overLimit !== false) throw new Error('Numeria response Usage contract failed');
+          if ('reportId' in response || 'reportRef' in response || 'pdf' in response) throw new Error('APC must not return formal Report ownership fields');
+          if (planUsage.status !== 'success' || planUsage.featureKey !== 'numeria.report.ai_generate' || planUsage.usageCount < 1 || planUsage.limit !== null || planUsage.overLimit !== false) throw new Error('Numeria plan Usage was not recorded');
+          if (analytics.ok !== true || analytics.summary?.usageCount < 1) throw new Error('Numeria Analytics Usage was not recorded');
+          NODE
       - name: Verify production D1 persistence
         run: |
           curl --fail --silent --show-error "$PRODUCTION_URL/api/persistence/status" | tee /tmp/persistence.json

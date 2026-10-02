@@ -2,6 +2,9 @@ import baseWorker from "./index.js";
 import { handleEntitlementRead, handleUsageConsume, handleUsageRead } from "./plan-api.js";
 import { commitGatewayPlanUsage, enforceGatewayPlan } from "./gateway-plan-guard.js";
 import type { D1DatabaseLike } from "@ai-platform-core/storage";
+import { createCloudflarePlatformRuntime } from "@ai-platform-core/runtime/cloudflare";
+import type { PlatformRuntime } from "@ai-platform-core/runtime";
+import { handleStudioAIReportGeneration } from "./report-generation.js";
 
 interface Env {
   DB: D1DatabaseLike;
@@ -9,6 +12,8 @@ interface Env {
   OPENAI_API_KEY?: string;
   OPENAI_DEFAULT_MODEL?: string;
 }
+
+let reportRuntime: PlatformRuntime | undefined;
 
 const cors = {
   "access-control-allow-origin": "*",
@@ -140,6 +145,21 @@ export default {
       request.method === "POST"
     ) {
       const result = await handleUsageConsume(request, env.DB);
+      return json(result.body, result.status);
+    }
+
+    if (
+      (pathname === "/api/v1/generations/report" || pathname === "/v1/generations/report") &&
+      request.method === "POST"
+    ) {
+      reportRuntime ??= createCloudflarePlatformRuntime({
+        db: env.DB,
+        env: {
+          OPENAI_API_KEY: env.OPENAI_API_KEY,
+          OPENAI_DEFAULT_MODEL: env.OPENAI_DEFAULT_MODEL,
+        },
+      });
+      const result = await handleStudioAIReportGeneration(request, { runtime: reportRuntime, db: env.DB });
       return json(result.body, result.status);
     }
 

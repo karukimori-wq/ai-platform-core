@@ -248,6 +248,7 @@ jobs:
           const analytics = JSON.parse(fs.readFileSync('/tmp/numeria-report-analytics.json', 'utf8'));
           if (!['success','warning'].includes(response.status)) throw new Error('Numeria AI report generation did not succeed');
           if (typeof response.generationId !== 'string' || response.generationId.length === 0) throw new Error('Numeria generationId missing');
+          if (response.draftType !== 'ai_draft') throw new Error('Numeria response must remain an AI Draft');
           if (!String(response.correlationId).startsWith('corr-numeria-report-')) throw new Error('Numeria correlationId mismatch');
           if (!String(response.traceId).startsWith('trace-numeria-report-')) throw new Error('Numeria traceId mismatch');
           if (response.promptKey !== 'numeria.report.generate.structured' || response.promptVersion !== '1.0.0') throw new Error('Numeria prompt version contract failed');

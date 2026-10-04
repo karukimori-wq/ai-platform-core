@@ -559,7 +559,7 @@ const requiresProPlan = (body: StudioAIReportRequest): boolean =>
 export const isReportGenerationPlanAllowed = (body: StudioAIReportRequest): boolean => {
   if (body.planId === "business") return false;
   if (body.planId === "free" && requiresProPlan(body)) return false;
-  return body.planId === "free" || body.planId === "pro";
+  return true;
 };
 
 export async function handleStudioAIReportGeneration(

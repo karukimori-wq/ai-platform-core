@@ -553,6 +553,15 @@ const authorizeScope = (request: Request, body: StudioAIReportRequest): boolean 
   request.headers.get("x-workspace-id") === body.workspaceId &&
   request.headers.get("x-user-id") === body.userId;
 
+const requiresProPlan = (body: StudioAIReportRequest): boolean =>
+  body.characterSnapshot.type === "custom" || body.outputFormat.length === "detailed";
+
+export const isReportGenerationPlanAllowed = (body: StudioAIReportRequest): boolean => {
+  if (body.planId === "business") return false;
+  if (body.planId === "free" && requiresProPlan(body)) return false;
+  return body.planId === "free" || body.planId === "pro";
+};
+
 export async function handleStudioAIReportGeneration(
   request: Request,
   dependencies: ReportGenerationDependencies,
@@ -620,6 +629,18 @@ export async function handleStudioAIReportGeneration(
   }
 
   const generationId = dependencies.id?.() ?? crypto.randomUUID();
+  if (!isReportGenerationPlanAllowed(body)) {
+    return errorResult(
+      403,
+      "FEATURE_NOT_ALLOWED",
+      "Custom Character and detailed AI report generation require a Pro Numeria plan.",
+      body.correlationId,
+      traceId,
+      false,
+      generationId,
+    );
+  }
+
   const knowledge = resolveKnowledge(body);
   if (knowledge === undefined) {
     return errorResult(422, "UNSUPPORTED_DIVINATION", "One or more divination methodKey values are not supported.", body.correlationId, traceId, false, generationId);

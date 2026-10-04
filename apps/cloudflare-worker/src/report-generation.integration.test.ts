@@ -76,7 +76,7 @@ const requestBody = () => ({
   locale: "ja-JP",
   characterSnapshot: {
     characterId: "gentle",
-    type: "custom",
+    type: "preset",
     characterVersion: "1",
     name: "やさしい占い師",
     personality: "calm",
@@ -167,6 +167,24 @@ const throwingProvider = () => ({
   id: "openai",
   chat: async () => {
     throw new Error("network unavailable");
+  },
+});
+
+const countingProvider = (calls: { count: number }) => ({
+  id: "openai",
+  chat: async () => {
+    calls.count += 1;
+    return {
+      ok: true,
+      value: {
+        output: { text: validDraft },
+        text: validDraft,
+        model: "test-model",
+        tokens: { input: 100, output: 80, total: 180 },
+        cost: { amount: 0.001, currency: "USD" },
+        knowledgeUsed: [],
+      },
+    };
   },
 });
 
@@ -265,6 +283,117 @@ describe("Numeria report generation orchestration", () => {
     const analytics = await runtime.analytics.listUsage();
     expect(analytics.ok).toBe(true);
     if (analytics.ok) expect(analytics.value).toHaveLength(0);
+  });
+
+  it("enforces Pro-only Custom Character before model execution or usage recording", async () => {
+    const db = new MemoryD1();
+    const calls = { count: 0 };
+    const runtime = createTestRuntime(validDraft);
+    runtime.providers.register(countingProvider(calls));
+    const body = requestBody();
+    body.characterSnapshot.type = "custom";
+    body.planId = "free";
+    const request = new Request("https://apc.test/api/v1/generations/report", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-client-id": "numeria-studio",
+        "x-app-version": "integration-test",
+        "x-workspace-id": "ws-report",
+        "x-user-id": "user-report",
+        "x-trace-id": "trace-report",
+      },
+      body: JSON.stringify(body),
+    });
+
+    const result = await handleStudioAIReportGeneration(request, {
+      runtime,
+      db,
+      id: () => "generation-free-custom-denied",
+      now: () => new Date("2026-10-02T04:00:00.000Z"),
+    });
+
+    expect(result.status).toBe(403);
+    expect(result.body).toMatchObject({
+      status: "error",
+      generationId: "generation-free-custom-denied",
+      error: { code: "FEATURE_NOT_ALLOWED", retryable: false },
+    });
+    expect(calls.count).toBe(0);
+
+    const planUsage = await getUsageSnapshot(
+      db,
+      {
+        appId: "numeria-studio",
+        appVersion: "integration-test",
+        workspaceId: "ws-report",
+        userId: "user-report",
+        planId: "free",
+        featureKey: NUMERIA_REPORT_FEATURE_KEY,
+      },
+      new Date("2026-10-02T04:00:00.000Z"),
+    );
+    expect(planUsage.usageCount).toBe(0);
+  });
+
+  it("enforces Pro-only detailed AI reports while allowing the same request on Pro", async () => {
+    const db = new MemoryD1();
+    const freeRuntime = createTestRuntime(validDraft);
+    const freeBody = requestBody();
+    freeBody.outputFormat.length = "detailed";
+    const freeRequest = new Request("https://apc.test/api/v1/generations/report", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-client-id": "numeria-studio",
+        "x-app-version": "integration-test",
+        "x-workspace-id": "ws-report",
+        "x-user-id": "user-report",
+        "x-trace-id": "trace-report",
+      },
+      body: JSON.stringify(freeBody),
+    });
+
+    const freeResult = await handleStudioAIReportGeneration(freeRequest, {
+      runtime: freeRuntime,
+      db,
+      id: () => "generation-free-detailed-denied",
+      now: () => new Date("2026-10-02T04:00:00.000Z"),
+    });
+    expect(freeResult.status).toBe(403);
+    expect(freeResult.body).toMatchObject({
+      error: { code: "FEATURE_NOT_ALLOWED" },
+    });
+
+    const proRuntime = createTestRuntime(validDraft);
+    const proBody = requestBody();
+    proBody.planId = "pro";
+    proBody.outputFormat.length = "detailed";
+    const proRequest = new Request("https://apc.test/api/v1/generations/report", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-client-id": "numeria-studio",
+        "x-app-version": "integration-test",
+        "x-workspace-id": "ws-report",
+        "x-user-id": "user-report",
+        "x-trace-id": "trace-report",
+      },
+      body: JSON.stringify(proBody),
+    });
+
+    const proResult = await handleStudioAIReportGeneration(proRequest, {
+      runtime: proRuntime,
+      db,
+      id: () => "generation-pro-detailed",
+      now: () => new Date("2026-10-02T04:00:00.000Z"),
+    });
+    expect(proResult.status).toBe(200);
+    expect(proResult.body).toMatchObject({
+      status: "success",
+      generationId: "generation-pro-detailed",
+      draftType: "ai_draft",
+    });
   });
 
   it("normalizes provider transport failures to SERVICE_UNAVAILABLE without recording usage", async () => {
